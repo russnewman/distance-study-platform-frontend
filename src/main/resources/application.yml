@@ -1,0 +1,9 @@
+server:
+  port: 8081
+
+rest:
+  url: ${REST_URL:http://localhost:8080}
+
+spring:
+  mvc:
+    static-path-pattern: /static/**
