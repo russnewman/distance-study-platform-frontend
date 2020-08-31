@@ -3,6 +3,7 @@ package com.netcracker.edu.distancestudyweb.service.impl.auth;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.netcracker.edu.distancestudyweb.domain.ClientPrincipal;
+import com.netcracker.edu.distancestudyweb.domain.Role;
 import com.netcracker.edu.distancestudyweb.dto.authentication.AuthenticationRequest;
 import com.netcracker.edu.distancestudyweb.dto.authentication.AuthenticationResponse;
 import com.netcracker.edu.distancestudyweb.exception.ExternalServiceException;
@@ -52,8 +53,13 @@ public class RestAuthenticationProvider implements AuthenticationProvider {
             restAuthRequest = new AuthenticationRequest(authentication.getName(), authentication.getCredentials().toString());
             AuthenticationResponse restAuthResponse = authenticate(restAuthRequest);
             JwtPayload payload = getJwtPayloadFromToken(restAuthResponse.getJwtToken());
-            ClientPrincipal principal = new ClientPrincipal(restAuthResponse.getJwtToken(),payload.getEmail(), payload.getAuthorities().stream().map(SimpleGrantedAuthority::new).collect(Collectors.toList()));
-            return new UsernamePasswordAuthenticationToken(principal.getEmail(), null, principal.getAuthorities());
+            Role role = extractRole(payload.getAuthorities());
+            ClientPrincipal principal = ClientPrincipal.builder()
+                    .authorities(payload.getAuthorities().stream().map(SimpleGrantedAuthority::new).collect(Collectors.toList()))
+                    .email(payload.getSub())
+                    .role(role)
+                    .token(restAuthResponse.getJwtToken()).build();
+            return new UsernamePasswordAuthenticationToken(principal, null, principal.getAuthorities());
         } catch (JsonProcessingException e) {
             String message = "Payload has incorrect structure";
             log.error(message, e);
@@ -62,12 +68,20 @@ public class RestAuthenticationProvider implements AuthenticationProvider {
             log.error("An external exception has occurred while authenticating", e);
             throw e;
         } catch (BadCredentialsException e) {
-            log.trace(String.format("Bad credentials:\n\temail: %s\n\tpassword: %s", restAuthRequest.getUsername(), restAuthRequest.getPassword()));
+            log.trace(String.format("Bad credentials:\n\temail: %s\n\tpassword: %s", restAuthRequest.getEmail(), restAuthRequest.getPassword()));
             throw e;
         } catch (Exception e) {
             log.error("An unexpected exception has occurred while authenticating", e);
             throw new InternalServiceException(e);
         }
+    }
+
+    private Role extractRole(List<String> authorities) {
+        List<String> roles = authorities.stream().filter(authority -> authority.startsWith("ROLE_")).collect(Collectors.toList());
+        if (roles.size() != 1) {
+            throw new ExternalServiceException("Server sent more then one role!");
+        }
+        return Role.valueOf(roles.get(0));
     }
 
     private AuthenticationResponse authenticate(AuthenticationRequest restAuthRequest) {
@@ -97,7 +111,7 @@ public class RestAuthenticationProvider implements AuthenticationProvider {
 
     @Data
     private static class JwtPayload {
-        private String email;
+        private String sub;
         private List<String> authorities;
     }
 }

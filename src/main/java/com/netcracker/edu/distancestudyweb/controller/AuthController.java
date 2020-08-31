@@ -1,14 +1,10 @@
 package com.netcracker.edu.distancestudyweb.controller;
 
-import com.netcracker.edu.distancestudyweb.domain.ClientPrincipal;
 import com.netcracker.edu.distancestudyweb.dto.authentication.AuthenticationRequest;
 import com.netcracker.edu.distancestudyweb.service.AuthenticationService;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -29,13 +25,14 @@ public class AuthController {
 
     @PostMapping
     public String authenticate(AuthenticationRequest authRequest, Model model) {
-        String username = authRequest.getUsername();
+        String username = authRequest.getEmail();
         String viewName = null;
         try {
             Authentication response = authService.authenticate(new UsernamePasswordAuthenticationToken(username, authRequest.getPassword()));
             SecurityContextHolder.getContext().setAuthentication(response);
+            return "redirect:home";
         } catch (final BadCredentialsException ex) {
-            viewName = handleException(model,"Bad credentials");
+            viewName = handleException(model, "Bad credentials");
         } catch (Exception e) {
             viewName = handleException(model, SERVICE_ERROR_MESSAGE);
         }
@@ -49,7 +46,7 @@ public class AuthController {
 
     private String handleException(Model model, String errorMessage) {
         model.addAttribute("message", errorMessage);
-        model.addAttribute("messageType","danger");
+        model.addAttribute("messageType", "danger");
         return "auth";
     }
 
