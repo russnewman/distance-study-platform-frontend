@@ -85,7 +85,7 @@ public class RestAuthenticationProvider implements AuthenticationProvider {
     }
 
     private AuthenticationResponse authenticate(AuthenticationRequest restAuthRequest) {
-        HttpEntity<AuthenticationRequest> httpEntity = httpEntityProvider.getDefault(restAuthRequest);
+        HttpEntity<AuthenticationRequest> httpEntity = httpEntityProvider.getDefault(restAuthRequest, null);
         ResponseEntity<AuthenticationResponse> restAuthResponse = restTemplate.exchange(url + authEndpoint, HttpMethod.POST, httpEntity, AuthenticationResponse.class);
         if (restAuthResponse.getStatusCode().equals(HttpStatus.UNAUTHORIZED)) {
             throw new BadCredentialsException("Invalid email or password");

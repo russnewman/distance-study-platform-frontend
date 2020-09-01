@@ -14,11 +14,12 @@
                 </button>
                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
                     <ul class="navbar-nav ml-auto smooth-scroll">
-                        <li id="register-item" class="nav-item">
-                            <div sec:authentication="principal.email"></div>
+                        <li id="register-item" class="nav-item" sec:authentication="principal.email">
                         </li>
-                        <li>
-                            
+                        <li class="nav-item">
+                            <form action="/logout" method="post">
+                                <button id="sign_out_button" class="btn btn-outline-info waves-effect btn-sm" type="submit">Sign Out</button>
+                            </form>
                         </li>
                     </ul>
                 </div>

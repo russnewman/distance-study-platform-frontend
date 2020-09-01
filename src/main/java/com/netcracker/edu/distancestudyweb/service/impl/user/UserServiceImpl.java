@@ -32,7 +32,7 @@ public class UserServiceImpl implements UserService {
     @Override
     @Cacheable(value = "users", key = "#request.getEmail()")
     public GetUserInfoResponse getUserInfo(GetUserInfoRequest request) throws UserNotFoundException{
-        HttpEntity<String> httpEntity = entityProvider.getDefault(null);
+        HttpEntity<String> httpEntity = entityProvider.getDefaultWithTokenFromContext(null, null);
         String url = serverUrl + usersEndpoint + URL_DELIMITER + request.getEmail();
         ResponseEntity<GetUserInfoResponse> restAuthResponse = restTemplate.exchange(url, HttpMethod.GET, httpEntity, GetUserInfoResponse.class);
         if (restAuthResponse.getStatusCode().equals(HttpStatus.NO_CONTENT)) {
