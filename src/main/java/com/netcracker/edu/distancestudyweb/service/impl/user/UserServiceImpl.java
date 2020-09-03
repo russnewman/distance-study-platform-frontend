@@ -1,16 +1,13 @@
 package com.netcracker.edu.distancestudyweb.service.impl.user;
 
-import com.netcracker.edu.distancestudyweb.dto.user.GetUserInfoRequest;
-import com.netcracker.edu.distancestudyweb.dto.user.GetUserInfoResponse;
-import com.netcracker.edu.distancestudyweb.exception.UserNotFoundException;
+import com.netcracker.edu.distancestudyweb.domain.User;
+import com.netcracker.edu.distancestudyweb.dto.user.ChangePasswordRequest;
 import com.netcracker.edu.distancestudyweb.service.HttpEntityProvider;
 import com.netcracker.edu.distancestudyweb.service.UserService;
 import com.netcracker.edu.distancestudyweb.service.impl.SecurityUtils;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -30,6 +27,20 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public User getUserInfo() {
+        String email = SecurityUtils.getEmail();
+        HttpEntity<User> httpEntity = entityProvider.getDefaultWithTokenFromContext(null, null);
+        String url = serverUrl + usersEndpoint + URL_DELIMITER + email;
+        ResponseEntity<User> restAuthResponse = restTemplate.exchange(url, HttpMethod.GET, httpEntity, User.class);
+        return restAuthResponse.getBody();
+    }
+
+    @Override
+    public void changePassword(ChangePasswordRequest request) {
+
+    }
+
+    /*@Override
     @Cacheable(value = "users", key = "#request.getEmail()")
     public GetUserInfoResponse getUserInfo(GetUserInfoRequest request) throws UserNotFoundException{
         HttpEntity<String> httpEntity = entityProvider.getDefaultWithTokenFromContext(null, null);
@@ -39,5 +50,5 @@ public class UserServiceImpl implements UserService {
             throw new UserNotFoundException("User with email: " + SecurityUtils.getEmail() + " not found");
         }
         return restAuthResponse.getBody();
-    }
+    }*/
 }

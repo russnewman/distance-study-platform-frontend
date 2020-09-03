@@ -1,0 +1,13 @@
+.wrapper {
+    margin-top: 100px;
+    margin-bottom: 20px; }
+
+.form-edit {
+    max-width: 600px;
+    padding: 50px 38px 66px;
+    margin: 0 auto; }
+
+input[type="password"] {
+    margin-bottom: 0px;
+    border-top-left-radius: 0;
+    border-top-right-radius: 0; }

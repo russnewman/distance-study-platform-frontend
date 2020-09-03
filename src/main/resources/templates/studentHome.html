@@ -1,7 +1,7 @@
 <!DOCTYPE HTML>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <th:block th:insert="fragments/commonHeaders.html :: links" />
+    <th:block th:insert="fragments/commonHeaders.html :: commonHead" />
 </head>
 <body>
     <th:block th:insert="fragments/navbar.html :: navbar" />
@@ -42,9 +42,21 @@
                     </div>
                 </div>
             </div>
+
+            <div class="col-md-4">
+                <div class="card bg-light rounded mt-4">
+                    <div class="view">
+                        <img class="card-img-top" src="/static/images/curriculum.svg" alt="Card image cap" height="200">
+                    </div>
+                    <div class="card-footer text-center">
+                        Profile
+                        <a href="/profile" class="stretched-link"></a>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
-    <script th:src="@{/static/js/home/home.js}"></script>
     <th:block th:insert="fragments/commoneJsFiles.html :: jsFiles" />
+    <script th:src="@{/static/js/home/home.js}"></script>
 </body>
 </html>

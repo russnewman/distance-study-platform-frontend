@@ -1,0 +1,94 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:insert="fragments/commonHeaders.html :: commonHead"/>
+    <link rel="stylesheet" th:href="@{/static/css/profile.css}"/>
+</head>
+<body>
+<th:block th:insert="fragments/navbar.html :: navbar"/>
+<div class="container">
+    <div class="wrapper">
+        <div class="form-edit">
+            <ul class="nav nav-tabs" id="myTab" role="tablist">
+                <li class="nav-item">
+                    <a class="nav-link" th:classappend="${!passwordTab} ? 'active'" id="home-tab" data-toggle="tab"
+                       href="#profile" role="tab">
+                        <i class="fa fa-user" aria-hidden="true"></i>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:classappend="${passwordTab} ? 'active'" id="profile-tab" data-toggle="tab"
+                       href="#password" role="tab">
+                        <i class="fa fa-unlock-alt" aria-hidden="true"></i>
+                    </a>
+                </li>
+            </ul>
+            <div class="tab-content" id="myTabContent">
+                <div class="tab-pane fade" th:classappend="${!passwordTab} ? 'show active'" id="profile" role="tabpanel"
+                     aria-labelledby="home-tab">
+                    <form id="user-info-form" class="form-edit"
+                          novalidate>
+                        <div class="form-row">
+                            <div class="form-group col-md-6">
+                                <label for="first-name-input">First name</label>
+                                <input name="firstName" type="text" readonly class="form-control"
+                                       th:value="${user.getName()}" id="first-name-input">
+                            </div>
+                            <div class="form-group col-md-6">
+                                <label for="last-name-input">Last name</label>
+                                <input name="lastName" type="text" th:value="${user.getSurname()}" class="form-control"
+                                       id="last-name-input" readonly>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="email-input">Email</label>
+                            <input name="email" type="email" th:value="${user.getEmail()}" readonly class="form-control"
+                                   id="email-input">
+                        </div>
+                        <button id="back-button" type="button" class="btn btn-secondary" onclick="back()">Back</button>
+                    </form>
+                </div>
+                <div class="tab-pane fade" th:classappend="${passwordTab} ? 'show active'" id="password" role="tabpanel"
+                     aria-labelledby="profile-tab">
+                    <form th:action="@{/profile}" method="post" id="user-password-form"
+                          class="needs-validation form-edit" novalidate>
+                        <th:block th:if="${passwordTab}">
+                            <th:block th:if="${error != null}">
+                                <th:block
+                                        th:insert="fragments/alert.html :: alert(style = 'danger', value = 'Error message')"/>
+                            </th:block>
+                            <th:block th:if="${success != null}">
+                                <th:block
+                                        th:insert="fragments/alert.html :: alert(style = 'success', value = 'Success message')"/>
+                            </th:block>
+                        </th:block>
+                        <div class="form-group">
+                            <label for="old-password-input">Old password</label>
+                            <input name="oldPassword" type="password" class="form-control" id="old-password-input"
+                                   oninput="inputValidator.validateSinglePass(this)">
+                            <div class="invalid-feedback">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="new-password-input">New password</label>
+                            <input name="newPassword" type="password" class="form-control" id="new-password-input">
+                            <div class="invalid-feedback">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="new-password-confirm-input">Confirm password</label>
+                            <input type="password" class="form-control" id="new-password-confirm-input">
+                            <div class="invalid-feedback">
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Save</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+    <th:block th:insert="fragments/commoneJsFiles.html :: jsFiles"/>
+    <script th:src="@{/static/js/profile/profile.js}"></script>
+</body>
+</html>

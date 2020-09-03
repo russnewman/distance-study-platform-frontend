@@ -1,9 +1,9 @@
 package com.netcracker.edu.distancestudyweb.service;
 
-import com.netcracker.edu.distancestudyweb.dto.user.GetUserInfoRequest;
-import com.netcracker.edu.distancestudyweb.dto.user.GetUserInfoResponse;
-import com.netcracker.edu.distancestudyweb.exception.UserNotFoundException;
+import com.netcracker.edu.distancestudyweb.domain.User;
+import com.netcracker.edu.distancestudyweb.dto.user.ChangePasswordRequest;
 
 public interface UserService {
-    GetUserInfoResponse getUserInfo(GetUserInfoRequest request) throws UserNotFoundException;
+    User getUserInfo();
+    void changePassword(ChangePasswordRequest request);
 }
