@@ -2,6 +2,7 @@ package com.netcracker.edu.distancestudyweb.controller;
 
 import com.netcracker.edu.distancestudyweb.domain.Role;
 import com.netcracker.edu.distancestudyweb.service.impl.SecurityUtils;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 

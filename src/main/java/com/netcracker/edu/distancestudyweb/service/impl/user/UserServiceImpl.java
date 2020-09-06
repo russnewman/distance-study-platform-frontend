@@ -2,12 +2,14 @@ package com.netcracker.edu.distancestudyweb.service.impl.user;
 
 import com.netcracker.edu.distancestudyweb.domain.User;
 import com.netcracker.edu.distancestudyweb.dto.user.ChangePasswordRequest;
+import com.netcracker.edu.distancestudyweb.exception.DifferentPasswordsException;
 import com.netcracker.edu.distancestudyweb.service.HttpEntityProvider;
 import com.netcracker.edu.distancestudyweb.service.UserService;
 import com.netcracker.edu.distancestudyweb.service.impl.SecurityUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -36,19 +38,13 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void changePassword(ChangePasswordRequest request) {
-
-    }
-
-    /*@Override
-    @Cacheable(value = "users", key = "#request.getEmail()")
-    public GetUserInfoResponse getUserInfo(GetUserInfoRequest request) throws UserNotFoundException{
-        HttpEntity<String> httpEntity = entityProvider.getDefaultWithTokenFromContext(null, null);
-        String url = serverUrl + usersEndpoint + URL_DELIMITER + request.getEmail();
-        ResponseEntity<GetUserInfoResponse> restAuthResponse = restTemplate.exchange(url, HttpMethod.GET, httpEntity, GetUserInfoResponse.class);
-        if (restAuthResponse.getStatusCode().equals(HttpStatus.NO_CONTENT)) {
-            throw new UserNotFoundException("User with email: " + SecurityUtils.getEmail() + " not found");
+    public void changePassword(ChangePasswordRequest request) throws DifferentPasswordsException {
+        String email = SecurityUtils.getEmail();
+        HttpEntity<ChangePasswordRequest> httpEntity = entityProvider.getDefaultWithTokenFromContext(request, null);
+        String url = serverUrl + usersEndpoint + URL_DELIMITER + email + "/password";
+        ResponseEntity<String> restAuthResponse = restTemplate.exchange(url, HttpMethod.PUT, httpEntity, String.class);
+        if (restAuthResponse.getStatusCode().equals(HttpStatus.CONFLICT)) {
+            throw new DifferentPasswordsException("Different passwords");
         }
-        return restAuthResponse.getBody();
-    }*/
+    }
 }

@@ -55,11 +55,11 @@
                         <th:block th:if="${passwordTab}">
                             <th:block th:if="${error != null}">
                                 <th:block
-                                        th:insert="fragments/alert.html :: alert(style = 'danger', value = 'Error message')"/>
+                                        th:insert="fragments/alert.html :: alert(style = 'danger', value = ${error})"/>
                             </th:block>
                             <th:block th:if="${success != null}">
                                 <th:block
-                                        th:insert="fragments/alert.html :: alert(style = 'success', value = 'Success message')"/>
+                                        th:insert="fragments/alert.html :: alert(style = 'success', value = ${success})"/>
                             </th:block>
                         </th:block>
                         <div class="form-group">
