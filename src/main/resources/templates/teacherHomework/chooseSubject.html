@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Getting Started: Serving Web Content</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+    <th:block th:fragment="links" >
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/mdbootstrap/4.19.1/css/mdb.min.css" rel="stylesheet">
+    </th:block>
+
+
+</head>
+<body>
+<th:block th:insert="fragments/navbar.html :: navbar" />
+
+
+<br></br>
+<h3 align="center" class="container">Выберите предмет</h3>
+<br></br>
+
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-6" th:each="subject: ${subjects}">
+            <div class="card bg-light rounded mt-6 h-100">
+                <div class="card-header">
+                    <a th:if="${action} == 'add'" th:text="${subject.getName()}" th:href="'/teacherHomework/addEvent/' + ${teacherId} + '/' + ${subject.getName()}" class="stretched-link"></a>
+                    <a th:if="${action} == 'show'" th:text="${subject.getName()}" th:href="'/teacherHomework/getEvents/' + ${teacherId}" class="stretched-link"></a>
+                </div>
+                <div class="card-body" th:text="${subject.getDescription()}">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

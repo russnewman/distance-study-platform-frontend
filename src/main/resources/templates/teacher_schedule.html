@@ -1,0 +1,173 @@
+
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Getting Started: Serving Web Content</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+    <th:block th:fragment="links" >
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/mdbootstrap/4.19.1/css/mdb.min.css" rel="stylesheet">
+    </th:block>
+
+    <style>
+        .table-bordered{
+            width: 60%;
+            text-align: center;
+            background-color: #e9ecef;
+        }
+        select {
+            font-size: 120%;
+            width: 20%;
+        }
+    </style>
+</head>
+
+<body>
+        <th:block th:insert="fragments/navbar.html :: navbar" />
+
+        <br></br>
+
+        <form  align="center" th:action="'/teacherSchedule/' + ${teacherId}"  method='GET'>
+                <div>
+                    <p>
+                        <select name="weekIsOdd">
+                            <option th:value="null"> Четная/Нечетная неделя</option>
+                            <option   th:value="false" th:selected="${weekIsOdd} == false">Четная неделя</option>
+                            <option   th:value="true"  th:selected="${weekIsOdd} == true">Нечетная неделя</option>>
+                        </select>
+                    </p>
+                    <p>
+                        <select name="subjectId">
+                            <option th:value="null">Все предметы</option>
+                            <option  th:each="el: ${subjects}" th:value="${el.getId()}" th:text="${el.getName()}" th:selected="${subjectId}==${el.getId()}"></option>>
+                        </select>
+                    </p>
+                    <p><input  type="submit" value="Показать"/></p>
+                </div>
+        </form>
+
+
+        <br></br>
+        <h2 align="center" class="container">Расписание на завтра</h2>
+        <br></br>
+
+
+        <table align="center" class="table table-bordered">
+
+            <thead class="thead-dark">
+                <tr>
+                    <th scope="col">День</th>
+                    <th scope="col">Время</th>
+                    <th scope="col">Предмет</th>
+                    <th scope="col">Группа</th>
+                </tr>
+            </thead>
+
+            <tbody>
+            <div th:each="el, iStat: ${tomorrowScheduleMap.entrySet()}"  th:with="dayOfWeek=${el.getKey().getDayName()}">
+
+                <tr>
+                    <div th:if="${iStat.first}">
+                        <th class="day" th:text="${dayOfWeek}"></th>
+                    </div>
+
+
+                    <div th:unless="${iStat.first}">
+                        <th th:if="${dayOfWeek != tomorrowScheduleMapKeys.get(iStat.index - 1).getDayName()}" th:text="${dayOfWeek}"></th>
+                        <th th:if="${dayOfWeek == tomorrowScheduleMapKeys.get(iStat.index - 1).getDayName()}"></th>
+                    </div>
+
+                    <td>
+                        <dl>
+                            <dt  th:text="${el.getKey().getClassTimeDto().getStartTime()} +'-'+ ${el.getKey().getClassTimeDto().getEndTime()}"></dt>
+                            <dt th:if="${el.getKey().getWeekIsOdd()}">Нечетная неделя</dt>
+                            <dt th:unless="${el.getKey().getWeekIsOdd()}">Четная неделя</dt>
+                        </dl>
+                    </td>
+
+                    <td>
+                        <dl>
+                            <dt><b th:text="${el.getKey().getSubjectDto().getName()}"></b></dt>
+                            <dt th:if="${el.getKey().getClassType().toString() == 'LECTURE'}">Лекция</dt>
+                            <dt th:if="${el.getKey().getClassType().toString() == 'SEMINAR'}">Семинар</dt>
+                            <dt th:if="${el.getKey().getClassType().toString() == 'LAB'}">Лабораторный практикум</dt>
+                        </dl>
+                    </td>
+
+                    <td>
+                        <dl th:each="group: ${el.getValue()}">
+                            <dt><b th:text="${group.getGroupName()}"></b></dt>
+                        </dl>
+                    </td>
+                </tr>
+            </div>
+            </tbody>
+        </table>
+
+
+        <br><br></br></br>
+
+        <h2 align="center">Расписание на неделю</h2>
+        <br></br>
+
+        <table align="center" class="table table-bordered">
+
+            <thead class="thead-dark">
+                <tr>
+                    <th scope="col">День</th>
+                    <th scope="col">Время</th>
+                    <th scope="col">Предмет</th>
+                    <th scope="col">Группа</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                <div th:each="el, iStat: ${weekScheduleMap.entrySet()}" th:with="dayOfWeek=${el.getKey().getDayName()}">
+
+                    <tr>
+
+                        <div th:if="${iStat.first}">
+                            <th class="day" th:text="${dayOfWeek}"></th>
+                        </div>
+
+
+                        <div th:unless="${iStat.first}">
+                            <th th:if="${dayOfWeek != weekScheduleMapKeys.get(iStat.index - 1).getDayName()}" th:text="${dayOfWeek}"></th>
+                            <th th:if="${dayOfWeek == weekScheduleMapKeys.get(iStat.index - 1).getDayName()}"></th>
+                        </div>
+
+
+                        <td>
+                            <dl>
+                                <dt th:text="${el.getKey().getClassTimeDto().getStartTime()} +'-'+ ${el.getKey().getClassTimeDto().getEndTime()}"></dt>
+                                <dt th:if="${el.getKey().getWeekIsOdd()}">Нечетная неделя</dt>
+                                <dt th:unless="${el.getKey().getWeekIsOdd()}">Четная неделя</dt>
+                            </dl>
+                        </td>
+
+                        <td>
+                            <dl>
+                                <dt><b th:text="${el.getKey().getSubjectDto().getName()}"></b></dt>
+                                <dt th:if="${el.getKey().getClassType().toString()=='LECTURE'}">Лекция</dt>
+                                <dt th:if="${el.getKey().getClassType().toString()=='SEMINAR'}">Семинар</dt>
+                                <dt th:if="${el.getKey().getClassType().toString()=='LAB'}">Лабораторный практикум</dt>
+
+                            </dl>
+                        </td>
+
+                        <td>
+                            <dl th:each="group: ${el.getValue()}">
+                                <dt><b th:text="${group.getGroupName()}"></b></dt>
+                            </dl>
+                        </td>
+
+                    </tr>
+                </div>
+            </tbody>
+        </table>
+</body>
+</html>
+
+
+
