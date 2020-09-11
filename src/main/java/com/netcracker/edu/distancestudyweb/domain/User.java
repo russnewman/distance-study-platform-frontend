@@ -1,5 +1,7 @@
 package com.netcracker.edu.distancestudyweb.domain;
 
+
+
 import lombok.Data;
 
 @Data
