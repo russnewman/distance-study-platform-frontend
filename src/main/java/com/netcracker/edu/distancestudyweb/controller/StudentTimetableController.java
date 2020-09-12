@@ -34,8 +34,6 @@ public class StudentTimetableController {
         model.addAttribute("subjects", subjectUiService.getAllSubjects().getSubjects());
         model.addAttribute("todaySchedules", scheduleUiService.getStudentTodaySchedule(studentId).getSchedules());
         model.addAttribute("tomorrowSchedules", scheduleUiService.getStudentTomorrowSchedule(studentId).getSchedules());
-        //model.addAttribute("currentSubject", scheduleUiService.getStudentCurrentSubject(studentId));
-        //model.addAttribute("nextSubject", scheduleUiService.getStudentNextSubject(studentId));
         return "student_schedule";
     }
 
