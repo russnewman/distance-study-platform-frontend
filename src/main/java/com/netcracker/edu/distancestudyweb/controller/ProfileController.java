@@ -37,7 +37,7 @@ public class ProfileController {
     public String changePassword(ChangePasswordRequest request, Model model) {
         try {
             userService.changePassword(request);
-            model.addAttribute("success", "Password has been changed");
+            model.addAttribute(SUCCESS, "Password has been changed");
         } catch (DifferentPasswordsException e) {
             model.addAttribute(ERROR, "Old password is not correct");
         } catch (Exception e) {

@@ -27,4 +27,9 @@ public class GeneralController {
         }
         return view;
     }
+
+    @GetMapping(value = "/test")
+    public String getTest() {
+        return "testUploadFile";
+    }
 }

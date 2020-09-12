@@ -1,0 +1,65 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:insert="fragments/commonHeaders.html :: commonHead" />
+</head>
+<body>
+    <th:block th:insert="fragments/navbar.html :: navbar" />
+    <div class="container">
+        <div class="row card bg-light mt-3" th:each="event: ${studentEvents}">
+            <div class="col-12">
+                <div class="row">
+                    <div class="col-8">
+                        <div class="col-12 text-left font-weight-normal" th:text="${event.getSubject()}">
+
+                        </div>
+                        <div class="col-12 text-left font-weight-light" th:text="${event.getDescription()}">
+
+                        </div>
+                        <div class="col-12">
+                            <a th:href="${serverUrl} + 'downloadFile/' + ${event.getDbFile().getId()}" class="btn btn-light btn-sm" download>Download</a>
+                        </div>
+                    </div>
+                    <div class="col-4">
+                        <div class="col-12">
+                            <div class="grade text-center" th:text="${event.getAssignments().get(0).getGrade()}">
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#uploadFileModal">
+                               Upload
+                            </button>
+
+                            <!-- Modal -->
+                            <div class="modal fade" id="uploadFileModal" tabindex="-1" role="dialog" aria-labelledby="uploadFileModal"
+                                 aria-hidden="true">
+                                <div class="modal-dialog" role="document">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="exampleModalLabel">Upload file form</h5>
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                <span aria-hidden="true">&times;</span>
+                                            </button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <form th:action="@{/homework}" method="post" id="file-upload-form" enctype="multipart/form-data">
+                                                <div class="form-group">
+                                                    <label for="file-input">File</label>
+                                                    <input name="file" type="file" class="form-control" id="file-input">
+                                                </div>
+                                                <input name="eventId" th:value="${event.getId()}" >
+                                                <button type="submit" class="btn btn-primary">Upload</button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <th:block th:insert="fragments/commoneJsFiles.html :: jsFiles" />
+</body>
+</html>
