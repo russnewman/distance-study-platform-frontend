@@ -6,5 +6,6 @@ import com.netcracker.edu.distancestudyweb.exception.DifferentPasswordsException
 
 public interface UserService {
     User getUserInfo();
+    User getUserInfo(String token, String email);
     void changePassword(ChangePasswordRequest request) throws DifferentPasswordsException;
 }

@@ -7,7 +7,11 @@ import org.springframework.security.core.context.SecurityContextHolder;
 
 public class SecurityUtils {
     public static String getEmail() {
-        return getPrincipal().getEmail();
+        return getPrincipal().getUser().getEmail();
+    }
+
+    public static Long getId() {
+        return getPrincipal().getUser().getId();
     }
 
     public static boolean isAdmin() {
@@ -31,6 +35,6 @@ public class SecurityUtils {
     }
 
     public static Role getRole() {
-        return getPrincipal().getRole();
+        return getPrincipal().getUser().getRole();
     }
 }

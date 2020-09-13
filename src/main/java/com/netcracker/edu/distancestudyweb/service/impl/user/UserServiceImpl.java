@@ -32,8 +32,18 @@ public class UserServiceImpl implements UserService {
     public User getUserInfo() {
         String email = SecurityUtils.getEmail();
         HttpEntity<User> httpEntity = entityProvider.getDefaultWithTokenFromContext(null, null);
+        return getUserInfo(httpEntity, email);
+    }
+
+    @Override
+    public User getUserInfo(String token, String email) {
+        HttpEntity<User> httpEntity = entityProvider.getDefaultWithSpecifiedToken(token,null, null);
+        return getUserInfo(httpEntity, email);
+    }
+
+    private User getUserInfo(HttpEntity<User> entity, String email) {
         String url = serverUrl + usersEndpoint + URL_DELIMITER + email;
-        ResponseEntity<User> restAuthResponse = restTemplate.exchange(url, HttpMethod.GET, httpEntity, User.class);
+        ResponseEntity<User> restAuthResponse = restTemplate.exchange(url, HttpMethod.GET, entity, User.class);
         return restAuthResponse.getBody();
     }
 

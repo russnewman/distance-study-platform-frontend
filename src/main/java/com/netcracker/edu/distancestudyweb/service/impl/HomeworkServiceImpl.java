@@ -1,20 +1,28 @@
 package com.netcracker.edu.distancestudyweb.service.impl;
 
-import com.netcracker.edu.distancestudyweb.domain.Assignment;
+import com.netcracker.edu.distancestudyweb.domain.FileInfo;
 import com.netcracker.edu.distancestudyweb.domain.StudentEvent;
+import com.netcracker.edu.distancestudyweb.dto.homework.AssignmentFormRequest;
+import com.netcracker.edu.distancestudyweb.dto.homework.AssignmentRequestDto;
+import com.netcracker.edu.distancestudyweb.dto.homework.EventFormRequest;
+import com.netcracker.edu.distancestudyweb.exception.InternalServiceException;
 import com.netcracker.edu.distancestudyweb.service.HomeworkService;
 import com.netcracker.edu.distancestudyweb.service.HttpEntityProvider;
+import com.netcracker.edu.distancestudyweb.service.ServiceUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.core.io.Resource;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.time.LocalDateTime;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static com.netcracker.edu.distancestudyweb.controller.ControllerUtils.URL_DELIMITER;
 
@@ -23,69 +31,55 @@ public class HomeworkServiceImpl implements HomeworkService {
     private @Value("${rest.url}") String serverUrl;
     private RestTemplate restTemplate;
     private HttpEntityProvider entityProvider;
-    private List<StudentEvent> events;
 
     public HomeworkServiceImpl(RestTemplate restTemplate, HttpEntityProvider entityProvider) {
         this.restTemplate = restTemplate;
         this.entityProvider = entityProvider;
-        initEvents();
-    }
-
-    private void initEvents() {
-
-        StudentEvent event1 = new StudentEvent();
-        event1.setTeacher("Teacher1");
-        event1.setDescription("Description for 1 event");
-        event1.setEndDate(LocalDateTime.now().plusMonths(1L));
-        event1.setStartDate(LocalDateTime.now());
-        event1.setId(1L);
-        event1.setSubject("Mathematic");
-        event1.setFileId(1L);
-
-        StudentEvent event2 = new StudentEvent();
-        event2.setTeacher("Teacher2");
-        event2.setDescription("Description for 2 event");
-        event2.setEndDate(LocalDateTime.now().plusMonths(1L));
-        event2.setStartDate(LocalDateTime.now());
-        event2.setId(2L);
-        event2.setSubject("Geometric");
-        event2.setFileId(2L);
-
-        StudentEvent event3 = new StudentEvent();
-        event3.setTeacher("Teacher3");
-        event3.setDescription("Description for 3 event");
-        event3.setEndDate(LocalDateTime.now().plusMonths(1L));
-        event3.setStartDate(LocalDateTime.now());
-        event3.setId(3L);
-        event3.setSubject("Analitic");
-        event3.setFileId(3L);
-
-        events.add(event1);
-        events.add(event2);
-        events.add(event3);
     }
 
     @Override
-    public List<StudentEvent> getEvents() {
-        return events;
-        /*String email = SecurityUtils.getEmail();
-        HttpEntity<StudentEvent> httpEntity = entityProvider.getDefaultWithTokenFromContext(null, null);
-        String url = serverUrl + "/users" + URL_DELIMITER + email + "/events";
-        ResponseEntity<List<StudentEvent>> restAuthResponse = restTemplate.exchange(url, HttpMethod.GET, httpEntity, new ParameterizedTypeReference<>() {});
-        return restAuthResponse.getBody();*/
-
+    public List<StudentEvent> getEvents(EventFormRequest formRequest) {
+        try {
+            Long studentId = SecurityUtils.getId();
+            HttpEntity<StudentEvent> httpEntity = entityProvider.getDefaultWithTokenFromContext(null, null);
+            Map<String, Object> parameters = new HashMap<>();
+            parameters.put("subjectId", formRequest.getSubjectId());
+            parameters.put("studentId", studentId);
+            String url = ServiceUtils.injectParamsInUrl(serverUrl + "/events", parameters);
+            ResponseEntity<List<StudentEvent>> restAuthResponse = restTemplate.exchange(url, HttpMethod.GET, httpEntity, new ParameterizedTypeReference<>() {});
+            return restAuthResponse.getBody();
+        } catch (UnsupportedEncodingException e) {
+            throw new InternalServiceException(e);
+        }
     }
 
     @Override
-    public void uploadHomework(MultipartFile file, String eventId) {
-        /*String email = SecurityUtils.getEmail();
-        HttpEntity<StudentEvent> httpEntity = entityProvider.getDefaultWithTokenFromContext(null, null);
-        String url = serverUrl + "/users" + URL_DELIMITER + email + "/events" + URL_DELIMITER + eventId + "/assignments";
-        ResponseEntity<String> restAuthResponse = restTemplate.exchange(url, HttpMethod.POST, httpEntity, String.class);*/
-        Assignment assignment = new Assignment();
-        assignment.setCommentary("Commentary assignment for eventId" + eventId);
-        assignment.setId(4L);
-        assignment.setGrade(5);
-        events.get((int) Long.parseLong(eventId)).getAssignments().add(assignment);
+    public void uploadHomework(AssignmentFormRequest formRequest) {
+        try {
+            AssignmentRequestDto requestDto = prepareRequestForAssignment(formRequest);
+            HttpEntity<AssignmentRequestDto> httpEntity = entityProvider.getDefaultWithTokenFromContext(requestDto, null);
+            String url = serverUrl + "/events" + URL_DELIMITER + formRequest.getEventId() + "/assignments";
+            restTemplate.exchange(url, HttpMethod.POST, httpEntity, String.class);
+        } catch (Exception e) {
+            throw new InternalServiceException(e);
+        }
+    }
+
+    private AssignmentRequestDto prepareRequestForAssignment(AssignmentFormRequest formRequest) throws IOException {
+        AssignmentRequestDto assignment = new AssignmentRequestDto();
+        assignment.setDescription(formRequest.getDescription());
+        assignment.setStudentId(SecurityUtils.getId());
+        FileInfo fileInfo = new FileInfo();
+        fileInfo.setData(formRequest.getFile().getBytes());
+        fileInfo.setType(formRequest.getFile().getContentType());
+        assignment.setFileInfo(fileInfo);
+        return assignment;
+    }
+
+    @Override
+    public ResponseEntity<Resource> downloadFile(Long fileId) {
+        HttpEntity<Resource> httpEntity = entityProvider.getDefaultWithTokenFromContext(null, null);
+        String url = serverUrl + "/downloadFile" + URL_DELIMITER + fileId;
+        return restTemplate.exchange(url, HttpMethod.GET, httpEntity, Resource.class);
     }
 }

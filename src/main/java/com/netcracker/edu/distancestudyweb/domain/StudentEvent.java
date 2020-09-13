@@ -3,6 +3,7 @@ package com.netcracker.edu.distancestudyweb.domain;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.expression.spel.ast.Assign;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -16,7 +17,7 @@ public class StudentEvent {
     private String subject;
     private LocalDateTime startDate;
     private LocalDateTime endDate;
-    private List<Assignment> assignments;
+    private Assignment assignment;
     private String description;
     private Long fileId;
 }
