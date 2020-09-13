@@ -7,4 +7,5 @@ import org.springframework.util.MimeType;
 public class FileInfo {
     private byte[] data;
     private String type;
+    private String name;
 }
