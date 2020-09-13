@@ -72,6 +72,7 @@ public class HomeworkServiceImpl implements HomeworkService {
         FileInfo fileInfo = new FileInfo();
         fileInfo.setData(formRequest.getFile().getBytes());
         fileInfo.setType(formRequest.getFile().getContentType());
+        fileInfo.setName(formRequest.getFile().getName());
         assignment.setFileInfo(fileInfo);
         return assignment;
     }
