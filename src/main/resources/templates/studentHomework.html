@@ -1,86 +1,111 @@
 <!DOCTYPE HTML>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <th:block th:insert="fragments/commonHeaders.html :: commonHead" />
+    <th:block th:insert="fragments/commonHeaders.html :: commonHead"/>
+    <link rel="stylesheet" th:href="@{/static/css/studentHomework.css}"/>
 </head>
 <body>
-    <th:block th:insert="fragments/navbar.html :: navbar" />
-    <div class="container">
-        <div class="card bg-light mt-4" th:each="event: ${events}">
-            <div class="card-header">
-                <div class="row">
-                    <div class="col-9">
-                        Teacher attachment
-                    </div>
-                    <div class="col-3">
-                        Student attachment
-                    </div>
+<th:block th:insert="fragments/navbar.html :: navbar"/>
+<div class="container">
+    <div class="row d-flex justify-content-center">
+        <form class="mt-5 subject-search" th:action="@{/homework}" method="get" id="subject-choose-form">
+            <div class="form-group row">
+                <label for="subject-input" class="col-md-4 col-form-label text-center">Subject</label>
+                <select class="col-md-8 form-control" id="subject-input" name="subjectId">
+                    <option th:text="--" value=""></option>
+                    <option th:each="subject: ${subjects}" th:text="${subject.getName()}" th:value="${subject.getId()}" th:selected="${subject.isSelected()}"></option>
+                </select>
+            </div>
+            <div class="form-group row">
+                <div class="col-md-4 text-right">
+                    <button type="submit" class="btn btn-primary">Search</button>
+                </div>
+                <div class="col-md-8 offset-md-8">
                 </div>
             </div>
-            <div class="card-body">
-                <div class="row">
-                    <div class="col-3">
-                        <div class="col-12 text-center font-weight-normal" th:text="${event.getSubject()}">
+        </form>
+    </div>
 
-                        </div>
-                        <div class="col-12 text-center">
-                            <a th:href="${serverUrl} + '/files/' + ${event.getFileId()}" class="btn btn-info btn-sm" download>Download</a>
-                        </div>
+    <div class="card bg-light mt-4" th:each="event: ${events}">
+        <div class="card-header">
+            <div class="row">
+                <div class="col-md-9">
+                    Teacher attachment
+                </div>
+                <div class="col-md-3">
+                    Student attachment
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="col-md-12 text-center font-weight-normal" th:text="${event.getSubject()}">
+
                     </div>
-                    <div class="col-6">
-                        <div class="text-left font-weight-light" th:text="${event.getDescription()}"></div>
+                    <div class="col-md-12 text-center">
+                        <a th:href="${serverUrl} + '/files/' + ${event.getFileId()}" class="btn btn-info btn-sm"
+                           download>Download</a>
                     </div>
-                    <div class="col-3">
-                        <th:block th:if="${event.getAssignment() != null}">
-                            <div class="row">
-                                <div class="col-6 text-center">
-                                    <a th:href="${serverUrl} + '/files/' + ${event.getAssignment().getFileId()}" class="btn btn-primary" download>Download</a>
-                                </div>
-                                <div class="col-6 text-center" th:text="${event.getAssignment().getGrade()}">
-                                </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="text-left font-weight-light" th:text="${event.getDescription()}"></div>
+                </div>
+                <div class="col-md-3">
+                    <th:block th:if="${event.getAssignments() != null && !#lists.isEmpty(event.getAssignments())}">
+                        <div class="row">
+                            <div class="col-md-6 text-center">
+                                <a th:href="${serverUrl} + '/files/' + ${event.getAssignments().get(0).getFileId()}"
+                                   class="btn btn-primary" download>Download</a>
                             </div>
-                        </th:block>
-                        <th:block th:if="${event.getAssignment() == null}">
-                            <div class="col-6 text-center">
-                                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#uploadFileModal-" th:attrappend="data-target=${event.getId()}">
-                                    Upload
-                                </button>
+                            <div class="col-md-6 text-center" th:text="${event.getAssignments().get(0).getGrade()}">
+                            </div>
+                        </div>
+                    </th:block>
+                    <th:block th:if="${event.getAssignments() == null || #lists.isEmpty(event.getAssignments())}">
+                        <div class="col-md-6 text-center">
+                            <button type="button" class="btn btn-primary" data-toggle="modal"
+                                    data-target="#uploadFileModal-" th:attrappend="data-target=${event.getId()}">
+                                Upload
+                            </button>
 
-                                <div class="modal fade" th:id="|uploadFileModal-${event.getId()}|" tabindex="-1" role="dialog" aria-labelledby="uploadFileModal"
-                                     aria-hidden="true">
-                                    <div class="modal-dialog" role="document">
-                                        <div class="modal-content">
-                                            <div class="modal-header">
-                                                <h5 class="modal-title" id="exampleModalLabel">Upload file form</h5>
-                                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                                    <span aria-hidden="true">&times;</span>
-                                                </button>
-                                            </div>
-                                            <div class="modal-body">
-                                                <form th:action="@{/homework}" method="post" id="file-upload-form" enctype="multipart/form-data">
-                                                    <div class="form-group">
-                                                        <label for="file-input">File</label>
-                                                        <input name="file" type="file" class="form-control" id="file-input">
-                                                    </div>
-                                                    <div class="form-group">
-                                                        <label for="description-input">Description</label>
-                                                        <input name="description" type="text" class="form-control" id="description-input">
-                                                    </div>
-                                                    <input type="hidden" name="eventId" th:value="${event.getId()}" >
-                                                    <button type="submit" class="btn btn-primary">Upload</button>
-                                                </form>
-                                            </div>
+                            <div class="modal fade" th:id="|uploadFileModal-${event.getId()}|" tabindex="-1"
+                                 role="dialog" aria-labelledby="uploadFileModal"
+                                 aria-hidden="true">
+                                <div class="modal-dialog" role="document">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="exampleModalLabel">Upload file form</h5>
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                <span aria-hidden="true">&times;</span>
+                                            </button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <form th:action="@{/homework}" method="post" id="file-upload-form"
+                                                  enctype="multipart/form-data">
+                                                <div class="form-group">
+                                                    <label for="file-input">File</label>
+                                                    <input name="file" type="file" class="form-control" id="file-input">
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="description-input">Description</label>
+                                                    <input name="commentary" type="text" class="form-control"
+                                                           id="description-input">
+                                                </div>
+                                                <input type="hidden" name="eventId" th:value="${event.getId()}">
+                                                <button type="submit" class="btn btn-primary">Upload</button>
+                                            </form>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-6"></div>
-                        </th:block>
-                    </div>
+                        </div>
+                    </th:block>
                 </div>
             </div>
         </div>
     </div>
-    <th:block th:insert="fragments/commoneJsFiles.html :: jsFiles" />
+</div>
+<th:block th:insert="fragments/commoneJsFiles.html :: jsFiles"/>
 </body>
 </html>

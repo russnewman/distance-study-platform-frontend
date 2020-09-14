@@ -6,6 +6,6 @@ import org.springframework.web.multipart.MultipartFile;
 @Data
 public class AssignmentFormRequest {
     private Long eventId;
-    private String description;
+    private String commentary;
     private MultipartFile file;
 }

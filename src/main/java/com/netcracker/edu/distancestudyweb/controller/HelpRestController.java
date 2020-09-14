@@ -18,7 +18,7 @@ public class HelpRestController {
     }
 
     @GetMapping("/files/{fileId}")
-    public ResponseEntity<Resource> downloadFile(@PathVariable Long fileId) {
+    public ResponseEntity<Resource> downloadFile(@PathVariable String fileId) {
         return homeworkService.downloadFile(fileId);
     }
 }

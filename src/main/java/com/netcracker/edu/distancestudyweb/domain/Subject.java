@@ -7,9 +7,9 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class Assignment {
+public class Subject {
     private Long id;
-    private int grade;
-    private String fileId;
-    private String commentary;
+    private String name;
+    private String description;
+    private boolean selected;
 }

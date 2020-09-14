@@ -11,5 +11,5 @@ import java.util.List;
 public interface HomeworkService {
     List<StudentEvent> getEvents(EventFormRequest formRequest);
     void uploadHomework(AssignmentFormRequest formRequest);
-    ResponseEntity<Resource> downloadFile(Long fileId);
+    ResponseEntity<Resource> downloadFile(String fileId);
 }

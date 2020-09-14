@@ -1,6 +1,6 @@
 package com.netcracker.edu.distancestudyweb.service.impl;
 
-import com.netcracker.edu.distancestudyweb.domain.FileInfo;
+import com.netcracker.edu.distancestudyweb.dto.homework.DatabaseFileDto;
 import com.netcracker.edu.distancestudyweb.domain.StudentEvent;
 import com.netcracker.edu.distancestudyweb.dto.homework.AssignmentFormRequest;
 import com.netcracker.edu.distancestudyweb.dto.homework.AssignmentRequestDto;
@@ -67,18 +67,18 @@ public class HomeworkServiceImpl implements HomeworkService {
 
     private AssignmentRequestDto prepareRequestForAssignment(AssignmentFormRequest formRequest) throws IOException {
         AssignmentRequestDto assignment = new AssignmentRequestDto();
-        assignment.setDescription(formRequest.getDescription());
+        assignment.setCommentary(formRequest.getCommentary());
         assignment.setStudentId(SecurityUtils.getId());
-        FileInfo fileInfo = new FileInfo();
-        fileInfo.setData(formRequest.getFile().getBytes());
-        fileInfo.setType(formRequest.getFile().getContentType());
-        fileInfo.setName(formRequest.getFile().getName());
-        assignment.setFileInfo(fileInfo);
+        DatabaseFileDto databaseFileDto = new DatabaseFileDto();
+        databaseFileDto.setFile(formRequest.getFile().getBytes());
+        databaseFileDto.setFileType(formRequest.getFile().getContentType());
+        databaseFileDto.setFileName(formRequest.getFile().getOriginalFilename());
+        assignment.setDbFileDto(databaseFileDto);
         return assignment;
     }
 
     @Override
-    public ResponseEntity<Resource> downloadFile(Long fileId) {
+    public ResponseEntity<Resource> downloadFile(String fileId) {
         HttpEntity<Resource> httpEntity = entityProvider.getDefaultWithTokenFromContext(null, null);
         String url = serverUrl + "/downloadFile" + URL_DELIMITER + fileId;
         return restTemplate.exchange(url, HttpMethod.GET, httpEntity, Resource.class);

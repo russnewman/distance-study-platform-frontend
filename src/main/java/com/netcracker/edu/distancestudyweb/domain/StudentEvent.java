@@ -17,7 +17,7 @@ public class StudentEvent {
     private String subject;
     private LocalDateTime startDate;
     private LocalDateTime endDate;
-    private Assignment assignment;
+    private List<Assignment> assignments;
     private String description;
-    private Long fileId;
+    private String fileId;
 }
