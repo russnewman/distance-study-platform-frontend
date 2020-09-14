@@ -8,7 +8,7 @@
 <th:block th:insert="fragments/navbar.html :: navbar"/>
 <div class="container">
     <div class="row d-flex justify-content-center">
-        <form class="mt-5 subject-search" th:action="@{/homework}" method="get" id="subject-choose-form">
+        <form class="mt-5 subject-search" th:action="@{/studentHomework}" method="get" id="subject-choose-form">
             <div class="form-group row">
                 <label for="subject-input" class="col-md-4 col-form-label text-center">Subject</label>
                 <select class="col-md-8 form-control" id="subject-input" name="subjectId">
@@ -81,7 +81,7 @@
                                             </button>
                                         </div>
                                         <div class="modal-body">
-                                            <form th:action="@{/homework}" method="post" id="file-upload-form"
+                                            <form th:action="@{/studentHomework}" method="post" id="file-upload-form"
                                                   enctype="multipart/form-data">
                                                 <div class="form-group">
                                                     <label for="file-input">File</label>

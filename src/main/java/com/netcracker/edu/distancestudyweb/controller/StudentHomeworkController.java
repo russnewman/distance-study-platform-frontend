@@ -1,6 +1,5 @@
 package com.netcracker.edu.distancestudyweb.controller;
 
-import com.netcracker.edu.distancestudyweb.domain.Role;
 import com.netcracker.edu.distancestudyweb.domain.StudentEvent;
 import com.netcracker.edu.distancestudyweb.domain.Subject;
 import com.netcracker.edu.distancestudyweb.dto.homework.AssignmentFormRequest;
@@ -15,7 +14,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.util.List;
-import java.util.Optional;
 
 @Controller
 @RequestMapping("/studentHomework")
@@ -45,21 +43,6 @@ public class StudentHomeworkController {
     @PostMapping
     public String uploadHomework(AssignmentFormRequest formRequest) {
         homeworkService.uploadHomework(formRequest);
-        return "redirect:/homework";
-    }
-
-    private String chooseView(Role role) {
-        String view;
-        switch (role) {
-            case ROLE_STUDENT:
-                view = "studentHomework";
-                break;
-            case ROLE_TEACHER:
-                view = "teacherHomework";
-                break;
-            default:
-                throw new IllegalArgumentException("Not supported role: " + role.name());
-        }
-        return view;
+        return "redirect:/studentHomework";
     }
 }
