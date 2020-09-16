@@ -20,4 +20,5 @@ public class StudentEvent {
     private List<Assignment> assignments;
     private String description;
     private String fileId;
+    boolean elapsed;
 }

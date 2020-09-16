@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Controller
@@ -30,6 +31,7 @@ public class StudentHomeworkController {
     @GetMapping
     public String getHomework(Model model, EventFormRequest formRequest) {
         List<StudentEvent> studentEvents = homeworkService.getEvents(formRequest);
+        studentEvents.forEach(event -> event.setElapsed(event.getEndDate().isBefore(LocalDateTime.now())));
         List<Subject> subjects = subjectService.getAll();
         subjects.stream()
                 .filter(subject -> subject.getId().equals(formRequest.getSubjectId()))
