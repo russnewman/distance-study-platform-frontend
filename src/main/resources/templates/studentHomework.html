@@ -7,24 +7,30 @@
 <body>
 <th:block th:insert="fragments/navbar.html :: navbar"/>
 <div class="container">
-    <div class="row d-flex justify-content-center">
-        <form class="mt-5 subject-search" th:action="@{/studentHomework}" method="get" id="subject-choose-form">
-            <div class="form-group row">
-                <label for="subject-input" class="col-md-4 col-form-label text-center">Subject</label>
-                <select class="col-md-8 form-control" id="subject-input" name="subjectId">
-                    <option th:text="--" value=""></option>
-                    <option th:each="subject: ${subjects}" th:text="${subject.getName()}" th:value="${subject.getId()}"
-                            th:selected="${subject.isSelected()}"></option>
-                </select>
-            </div>
-            <div class="form-group row">
-                <div class="col-md-4 text-right">
-                    <button type="submit" class="btn btn-primary">Search</button>
+    <div class="row mt-5">
+        <div class="col-md-3 text-center">
+            <a class="btn btn-secondary btn-lg" href="/home">Back</a>
+        </div>
+        <div class="col-md-6">
+            <form th:action="@{/studentHomework}" method="get" id="subject-choose-form">
+                <div class="form-group row">
+                    <label for="subject-input" class="col-md-4 col-form-label text-center">Subject</label>
+                    <select class="col-md-8 form-control" id="subject-input" name="subjectId">
+                        <option th:text="--" value=""></option>
+                        <option th:each="subject: ${subjects}" th:text="${subject.getName()}" th:value="${subject.getId()}"
+                                th:selected="${subject.isSelected()}"></option>
+                    </select>
                 </div>
-                <div class="col-md-8 offset-md-8">
+                <div class="form-group row">
+                    <div class="col-md-4 text-right">
+                        <button type="submit" class="btn btn-primary">Search</button>
+                    </div>
+                    <div class="col-md-8 offset-md-8">
+                    </div>
                 </div>
-            </div>
-        </form>
+            </form>
+        </div>
+        <div class="col-md-6 offset-md-6"></div>
     </div>
 
     <div id="accordion">
