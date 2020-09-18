@@ -15,7 +15,7 @@
     <description>Web app for distance study platform</description>
 
     <properties>
-        <java.version>1.8</java.version>
+        <java.version>14</java.version>
     </properties>
 
     <dependencies>
