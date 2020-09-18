@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Getting Started: Serving Web Content</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+    <th:block th:fragment="links" >
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/mdbootstrap/4.19.1/css/mdb.min.css" rel="stylesheet">
+    </th:block>
+
+
+    <style>
+        .table{
+            width: 30%;
+            text-align: center;
+        }
+        select {
+            font-size: 120%;
+            width: 20%;
+        }
+    </style>
+
+</head>
+<body>
+<th:block th:insert="fragments/navbar.html :: navbar" />
+
+<form  align="center" th:action="'/teacherHomework/getEvents/' + ${teacherId}"  method='GET'>
+    <table align= "center" class="table">
+        <tr>
+            <td width="35%">Сортировать</td>
+            <td width="65%"><select name="sortingTypeOptional" class="form-control">
+                <option th:value="'addSort'">По дате добавления</option>
+                <option th:value="'deadlineSort'" th:selected="${sortingType}=='deadlineSort'">По дате дедлайна</option>
+            </select></td>
+        </tr>
+        <tr>
+            <td width="35%">Предмет</td>
+            <td width="65%"><select name="subjectNameOptional" class="form-control">
+                <option th:value="'all'">Все</option>
+                <option  th:each="el: ${subjects}" th:value="${el.getName()}" th:text="${el.getName()}" th:selected="${subjectName}==${el.getName()}"></option>
+            </select></td>
+        </tr>
+        <tr>
+            <td colspan="2">
+                <button class="btn" type="submit">Показать</button></td>
+        </tr>
+    </table>
+</form>
+
+<div class="container">
+    <div class="row p-3">
+        <div class="col-md-4 p-3" th:each="event: ${events}">
+            <div class="card bg-light rounded mt-4 h-100">
+                <div class="card-header" th:text="${event.getStartDate().format(dateTimeFormatter)} +' - '+ ${event.getEndDate().format(dateTimeFormatter)}">
+                </div>
+                <div class="card-body text-center">
+
+                    <h5 th:text="${event.getSubject().getName()}"></h5>
+                    <h5 th:text="'Группа: '+ ${event.getGroup().getGroupName()}"></h5>
+
+
+<!--                    <div class="btn-group">-->
+<!--                        <button type="button" class="btn btn-light btn-sm dropdown-toggle" data-toggle="dropdown">-->
+<!--                            Описание-->
+<!--                        </button>-->
+<!--                        <div class="dropdown-menu p-4 text-muted" style="max-width: 300px;">-->
+<!--                            <p th:text="${event.getDescription()}"></p>-->
+<!--                        </div>-->
+<!--                    </div>-->
+
+
+<!--                    <div class="dropdown">-->
+<!--                        <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenu2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">-->
+<!--                            Dropdown-->
+<!--                        </button>-->
+<!--                        <div class="dropdown-menu" aria-labelledby="dropdownMenu2">-->
+<!--                            <p th:text="${event.getDescription()}"></p>-->
+<!--                        </div>-->
+<!--                    </div>-->
+
+
+                    <div th:unless="${event.getDatabaseFileDto().getFileName().isEmpty()}">
+                        <p><a th:href="${uiUrl} + 'teacherHomework/downloadFile/' + ${event.getId()}" class="btn btn-light btn-sm" download>Скачать файл</a>
+                    </div>
+
+                </div>
+                <div class="card-footer">
+                    <div class="row justify-content-md-center">
+
+                        <form th:action="'/teacherHomework/editEvent/' + ${teacherId} +'/' + ${event.getId()}" th:method="GET">
+                            <input type="hidden" name="sortingType" th:value="${sortingType}">
+                            <input type="hidden" name="subjectName" th:value="${subjectName}">
+                            <button class="btn btn-primary btn-sm" type="submit">Редактировать</button>
+                        </form>
+
+
+                        <form th:action="'/teacherHomework/deleteEvent/' + ${teacherId} + '/' + ${event.getId()}" th:method="POST">
+                            <input type="hidden" name="sortingType" th:value="${sortingType}">
+                            <input type="hidden" name="subjectName" th:value="${subjectName}">
+                            <button class="btn btn-danger btn-sm" type="submit">Удалить</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+</div>
+
+<!--<th:block th:insert="resources/templates/fragments/jsFiles.html :: jsFiles" />-->
+<!--<script th:src="@{/static/js/home/home.js}"></script>-->
+
+
+</body>
+</html>

@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Getting Started: Serving Web Content</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+    <th:block th:fragment="links" >
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/mdbootstrap/4.19.1/css/mdb.min.css" rel="stylesheet">
+    </th:block>
+
+
+    <style>
+        .table-dark{
+            width: 45%;
+            text-align: center;
+        }
+        select {
+            font-size: 120%;
+            width: 20%;
+        }
+    </style>
+
+</head>
+<body>
+<th:block th:insert="fragments/navbar.html :: navbar" />
+
+<br></br>
+<form enctype="multipart/form-data" th:action="'/teacherHomework/addEvent/' + ${teacherId}" th:method="POST">
+    <input type="hidden" name="subjectName" th:value="${subjectName}">
+    <table align= "center" class="table table-dark">
+
+        <tr>
+            <td width="35%">Предмет</td>
+            <td><h3 th:text="${subjectName}"></h3></td>
+        </tr>
+
+        <tr>
+            <td width="35%">Группа</td>
+            <td width="65%"><select name="groupName" class="form-control" required>
+                        <option th:value="null"></option>
+                        <option th:each="groupDto: ${groups}" th:utext="${groupDto.getGroupName()}"></option>
+                        </select></td>
+        </tr>
+        <tr>
+            <td width="35%">Описание</td>
+            <td width="65%">
+
+                <input type="text" name="description" class="form-control" required><td>
+        </tr>
+
+
+        <tr>
+            <td width="35%">Дедлайн</td>
+            <td width="65%"><input type="date" name="endTime" value="newDate" class="form-control" required><td>
+        </tr>
+
+        <tr>
+            <td width="35%">Файл</td>
+            <td width="65%"><input type="file" name ="fileOptional"><td>
+        </tr>
+
+        <tr>
+            <td colspan="2">
+                <button class="btn" type="submit">Сохранить</button></td>
+        </tr>
+    </table>
+</form>
+
+</body>
+</html>
