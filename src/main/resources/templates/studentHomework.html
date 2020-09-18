@@ -1,0 +1,168 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:insert="fragments/commonHeaders.html :: commonHead"/>
+    <link rel="stylesheet" th:href="@{/static/css/studentHomework.css}"/>
+</head>
+<body>
+<th:block th:insert="fragments/navbar.html :: navbar"/>
+<div class="container">
+    <div class="row mt-5">
+        <div class="col-md-3 text-center">
+            <a class="btn btn-secondary btn-lg" href="/home">Back</a>
+        </div>
+        <div class="col-md-6">
+            <form th:action="@{/studentHomework}" method="get" id="subject-choose-form">
+                <div class="form-group row">
+                    <label for="subject-input" class="col-md-4 col-form-label text-center">Subject</label>
+                    <select class="col-md-8 form-control" id="subject-input" name="subjectId">
+                        <option th:text="--" value=""></option>
+                        <option th:each="subject: ${subjects}" th:text="${subject.getName()}" th:value="${subject.getId()}"
+                                th:selected="${subject.isSelected()}"></option>
+                    </select>
+                </div>
+                <div class="form-group row">
+                    <div class="col-md-4 text-right">
+                        <button type="submit" class="btn btn-primary">Search</button>
+                    </div>
+                    <div class="col-md-8 offset-md-8">
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="col-md-6 offset-md-6"></div>
+    </div>
+
+    <div id="accordion">
+        <div class="card" th:each="event: ${events}">
+            <div class="card-header collapsed card-link pointer" data-toggle="collapse" data-target="#collapse-"
+                 th:attrappend="data-target=${event.getId()}" aria-expanded="true" onmouseover="">
+                <div class="row">
+                    <div class="col-md-3">
+                        <div class="row">
+                            <div class="h5 col-md-12 text-center text-default" th:text="${event.getSubject()}">
+
+                            </div>
+                            <div class="col-md-12 text-center" th:text="${event.getTeacher()}">
+
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 font-weight-light" th:text="${event.getDescription()}">
+
+                    </div>
+                    <div class="col-md-3 align-self-center">
+                        <div class="row">
+                            <span>
+                                Deadline:
+                            </span>
+                            <span class="ml-3 text-muted" th:text="${#strings.replace(event.getEndDate(), 'T', ' ')}" th:classappend="${event.isElapsed() ? 'text-danger' : 'text-success'}">
+
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div th:id="|collapse-${event.getId()}|" class="collapse" data-parent="#accordion">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <span>
+                                        Teacher attachment:
+                                    </span>
+                                    <a th:if="${event.getFileId() != null}" th:href="${serverUrl} + '/files/' + ${event.getFileId()}"
+                                       class="ml-3 btn btn-info btn-sm"
+                                       download>Download</a>
+                                    <span class="ml-3" th:unless="${event.getFileId() != null}">
+                                        Not attached
+                                    </span>
+                                </div>
+                                <div class="col-md-12">
+                                    <span>
+                                        Student attachment:
+                                    </span>
+                                    <th:block
+                                            th:if="${event.getAssignments() != null && !#lists.isEmpty(event.getAssignments())}">
+                                        <a th:href="${serverUrl} + '/files/' + ${event.getAssignments().get(0).getFileId()}"
+                                           class="ml-3 btn btn-primary btn-sm" download>Download</a>
+                                    </th:block>
+                                    <th:block
+                                            th:if="${!event.isElapsed() && (event.getAssignments() == null || #lists.isEmpty(event.getAssignments()))}">
+                                        <button type="button" class="ml-3 btn btn-primary btn-sm" data-toggle="modal"
+                                                data-target="#uploadFileModal-"
+                                                th:attrappend="data-target=${event.getId()}">
+                                            Attach
+                                        </button>
+
+                                        <div class="modal fade" th:id="|uploadFileModal-${event.getId()}|" tabindex="-1"
+                                             role="dialog" aria-labelledby="uploadFileModal"
+                                             aria-hidden="true">
+                                            <div class="modal-dialog" role="document">
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        <h5 class="modal-title" id="exampleModalLabel">Upload file
+                                                            form</h5>
+                                                        <button type="button" class="close" data-dismiss="modal"
+                                                                aria-label="Close">
+                                                            <span aria-hidden="true">&times;</span>
+                                                        </button>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        <form th:action="@{/studentHomework}" method="post"
+                                                              id="file-upload-form"
+                                                              enctype="multipart/form-data">
+                                                            <div class="form-group">
+                                                                <label for="file-input">File</label>
+                                                                <input name="file" type="file" class="form-control"
+                                                                       id="file-input">
+                                                            </div>
+                                                            <div class="form-group">
+                                                                <label for="description-input">Description</label>
+                                                                <input name="commentary" type="text"
+                                                                       class="form-control"
+                                                                       id="description-input">
+                                                            </div>
+                                                            <input type="hidden" name="eventId"
+                                                                   th:value="${event.getId()}">
+                                                            <button type="submit" class="btn btn-primary btn-sm">
+                                                                Upload
+                                                            </button>
+                                                        </form>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </th:block>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-8 align-self-center">
+                            <div class="row">
+                                <span class="h3">Grade:</span>
+                                <span class="h3 ml-3"
+                                      th:if="${event.getAssignments() != null && !#lists.isEmpty(event.getAssignments()) && event.getAssignments().get(0).getGrade() > 0}"
+                                      th:text="${event.getAssignments().get(0).getGrade()}">
+                                        </span>
+                                <span class="h3 ml-3"
+                                      th:unless="${event.getAssignments() != null && !#lists.isEmpty(event.getAssignments()) && event.getAssignments().get(0).getGrade() > 0}">
+                                            Homework not rated
+                                        </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<th:block th:insert="fragments/commoneJsFiles.html :: jsFiles"/>
+<script>
+    function changeColor(event) {
+
+    }
+</script>
+</body>
+</html>

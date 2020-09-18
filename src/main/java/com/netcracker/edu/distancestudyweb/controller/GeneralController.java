@@ -29,4 +29,9 @@ public class GeneralController {
         model.addAttribute("teacherId",teacherId);
         return "teacher_profile";
     }
+
+    @GetMapping(value = "/test")
+    public String getTest() {
+        return "testUploadFile";
+    }
 }

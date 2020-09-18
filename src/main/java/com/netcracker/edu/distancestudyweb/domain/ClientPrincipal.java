@@ -12,19 +12,17 @@ import java.util.List;
 @Builder
 public class ClientPrincipal {
     private String token;
-    private String email;
-    private Role role;
-    private List<GrantedAuthority> authorities;
+    private User user;
 
     public boolean isAdmin() {
-        return role.equals(Role.ROLE_ADMIN);
+        return user.getRole().equals(Role.ROLE_ADMIN);
     }
 
     public boolean isStudent() {
-        return role.equals(Role.ROLE_STUDENT);
+        return user.getRole().equals(Role.ROLE_STUDENT);
     }
 
     public boolean isTeacher() {
-        return role.equals(Role.ROLE_TEACHER);
+        return user.getRole().equals(Role.ROLE_TEACHER);
     }
 }

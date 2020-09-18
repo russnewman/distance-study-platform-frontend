@@ -4,11 +4,13 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.netcracker.edu.distancestudyweb.domain.ClientPrincipal;
 import com.netcracker.edu.distancestudyweb.domain.Role;
+import com.netcracker.edu.distancestudyweb.domain.User;
 import com.netcracker.edu.distancestudyweb.dto.authentication.AuthenticationRequest;
 import com.netcracker.edu.distancestudyweb.dto.authentication.AuthenticationResponse;
 import com.netcracker.edu.distancestudyweb.exception.ExternalServiceException;
 import com.netcracker.edu.distancestudyweb.exception.InternalServiceException;
 import com.netcracker.edu.distancestudyweb.service.HttpEntityProvider;
+import com.netcracker.edu.distancestudyweb.service.UserService;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.tomcat.util.codec.binary.Base64;
@@ -39,11 +41,13 @@ public class RestAuthenticationProvider implements AuthenticationProvider {
     private final RestTemplate restTemplate;
     private final HttpEntityProvider httpEntityProvider;
     private final ObjectMapper mapper;
+    private final UserService userService;
 
-    public RestAuthenticationProvider(RestTemplate restTemplate, HttpEntityProvider httpEntityProvider, ObjectMapper mapper) {
+    public RestAuthenticationProvider(RestTemplate restTemplate, HttpEntityProvider httpEntityProvider, ObjectMapper mapper, UserService userService) {
         this.restTemplate = restTemplate;
         this.httpEntityProvider = httpEntityProvider;
         this.mapper = mapper;
+        this.userService = userService;
     }
 
     @Override
@@ -52,14 +56,14 @@ public class RestAuthenticationProvider implements AuthenticationProvider {
         try {
             restAuthRequest = new AuthenticationRequest(authentication.getName(), authentication.getCredentials().toString());
             AuthenticationResponse restAuthResponse = authenticate(restAuthRequest);
+            String token = restAuthResponse.getJwtToken();
             JwtPayload payload = getJwtPayloadFromToken(restAuthResponse.getJwtToken());
-            Role role = extractRole(payload.getAuthorities());
+            String email = payload.getSub();
+            User user  = userService.getUserInfo(token, email);
             ClientPrincipal principal = ClientPrincipal.builder()
-                    .authorities(payload.getAuthorities().stream().map(SimpleGrantedAuthority::new).collect(Collectors.toList()))
-                    .email(payload.getSub())
-                    .role(role)
-                    .token(restAuthResponse.getJwtToken()).build();
-            return new UsernamePasswordAuthenticationToken(principal, null, principal.getAuthorities());
+                    .user(user)
+                    .token(token).build();
+            return new UsernamePasswordAuthenticationToken(principal, null, user.getAuthorities().stream().map(SimpleGrantedAuthority::new).collect(Collectors.toSet()));
         } catch (JsonProcessingException e) {
             String message = "Payload has incorrect structure";
             log.error(message, e);
@@ -76,13 +80,7 @@ public class RestAuthenticationProvider implements AuthenticationProvider {
         }
     }
 
-    private Role extractRole(List<String> authorities) {
-        List<String> roles = authorities.stream().filter(authority -> authority.startsWith("ROLE_")).collect(Collectors.toList());
-        if (roles.size() != 1) {
-            throw new ExternalServiceException("Server sent more then one role!");
-        }
-        return Role.valueOf(roles.get(0));
-    }
+
 
     private AuthenticationResponse authenticate(AuthenticationRequest restAuthRequest) {
         HttpEntity<AuthenticationRequest> httpEntity = httpEntityProvider.getDefault(restAuthRequest, null);

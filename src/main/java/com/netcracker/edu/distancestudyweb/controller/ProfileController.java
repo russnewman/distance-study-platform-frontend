@@ -30,14 +30,14 @@ public class ProfileController {
         User user = userService.getUserInfo();
         model.addAttribute("user", user);
         model.addAttribute("passwordTab", false);
-        return chooseView(SecurityUtils.getRole());
+        return "userProfile";
     }
 
     @PostMapping
     public String changePassword(ChangePasswordRequest request, Model model) {
         try {
             userService.changePassword(request);
-            model.addAttribute("success", "Password has been changed");
+            model.addAttribute(SUCCESS, "Password has been changed");
         } catch (DifferentPasswordsException e) {
             model.addAttribute(ERROR, "Old password is not correct");
         } catch (Exception e) {
@@ -45,24 +45,6 @@ public class ProfileController {
         }
         model.addAttribute("user", userService.getUserInfo());
         model.addAttribute("passwordTab", true);
-        return chooseView(SecurityUtils.getRole());
-    }
-
-    private String chooseView(Role role) {
-        String view;
-        switch (role) {
-            case ROLE_STUDENT:
-                view = "studentProfile";
-                break;
-            case ROLE_ADMIN:
-                view =  "adminProfile";
-                break;
-            case ROLE_TEACHER:
-                view = "teacherProfile";
-                break;
-            default:
-                throw new IllegalArgumentException("Not supported role: " + role.name());
-        }
-        return view;
+        return "userProfile";
     }
 }

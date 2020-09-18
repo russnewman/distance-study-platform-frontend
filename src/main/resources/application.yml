@@ -1,5 +1,6 @@
 server:
   port: 8081
+  url: ${UI_URL:http://localhost:8081}
 
 rest:
   url: ${REST_URL:http://localhost:8080}
