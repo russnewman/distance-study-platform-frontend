@@ -2,7 +2,7 @@ package com.netcracker.edu.distancestudyweb.service;
 
 
 import com.netcracker.edu.distancestudyweb.dto.SubjectDto;
-import com.netcracker.edu.distancestudyweb.dto.SubjectDtoList;
+import com.netcracker.edu.distancestudyweb.dto.wrappers.SubjectDtoList;
 
 import java.util.List;
 

@@ -1,0 +1,64 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:insert="fragments/commonHeaders.html :: commonHead" />
+</head>
+<body>
+
+
+<th:block th:insert="fragments/navbar.html :: navbar" />
+<div class="container">
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card bg-light rounded mt-4">
+                <div class="view">
+                    <img class="card-img-top" src="/static/images/calendar.svg" alt="Card image cap" height="200" >
+                </div>
+                <div class="card-footer text-center">
+                    Schedule
+                    <a th:href="'/teacherSchedule/' + ${teacherId}" class="stretched-link"></a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card bg-light rounded mt-4">
+                <div class="view">
+                    <img class="card-img-top" src="/static/images/homework.svg" alt="Card image cap" height="200">
+                </div>
+                <div class="card-footer text-center ">
+                    Homework
+                    <a th:href="'/teacherHomework/' + ${teacherId}" class="stretched-link"></a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card bg-light rounded mt-4">
+                <div class="view">
+                    <img class="card-img-top" src="/static/images/grades.svg" alt="Card image cap" height="200">
+                </div>
+                <div class="card-footer text-center">
+                    Grades
+                    <a href="/grades" class="stretched-link"></a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card bg-light rounded mt-4">
+                <div class="view">
+                    <img class="card-img-top" src="/static/images/curriculum.svg" alt="Card image cap" height="200">
+                </div>
+                <div class="card-footer text-center">
+                    Profile
+                    <a href="/profile" class="stretched-link"></a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<th:block th:insert="fragments/commoneJsFiles.html :: jsFiles" />
+<script th:src="@{/static/js/home/home.js}"></script>
+</body>
+</html>

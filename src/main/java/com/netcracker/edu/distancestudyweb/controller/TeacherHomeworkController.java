@@ -1,31 +1,25 @@
 package com.netcracker.edu.distancestudyweb.controller;
 
+import com.netcracker.edu.distancestudyweb.dto.AssignmentDto;
 import com.netcracker.edu.distancestudyweb.dto.DatabaseFileDto;
 import com.netcracker.edu.distancestudyweb.dto.EventDto;
 import com.netcracker.edu.distancestudyweb.dto.EventFormDto;
-import com.netcracker.edu.distancestudyweb.service.EventService;
-import com.netcracker.edu.distancestudyweb.service.GroupService;
-import com.netcracker.edu.distancestudyweb.service.SubjectService;
+import com.netcracker.edu.distancestudyweb.payload.Response;
+import com.netcracker.edu.distancestudyweb.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.ByteArrayResource;
-import org.springframework.core.io.Resource;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 
 
@@ -36,6 +30,8 @@ public class TeacherHomeworkController {
     private final EventService eventUiService;
     private final SubjectService subjectUiService;
     private final GroupService groupService;
+    private final AssignmentService assignmentService;
+    private final DatabaseFileService databaseFileService;
 
     //temporary
     private String uiUrl = "http://localhost:8081/";
@@ -44,10 +40,12 @@ public class TeacherHomeworkController {
 
 
     @Autowired
-    public TeacherHomeworkController(EventService eventUiService, SubjectService subjectUiService, GroupService groupService) {
+    public TeacherHomeworkController(EventService eventUiService, SubjectService subjectUiService, GroupService groupService, AssignmentService assignmentService, DatabaseFileService databaseFileService) {
         this.eventUiService = eventUiService;
         this.subjectUiService = subjectUiService;
         this.groupService = groupService;
+        this.assignmentService = assignmentService;
+        this.databaseFileService = databaseFileService;
     }
 
 
@@ -90,9 +88,8 @@ public class TeacherHomeworkController {
         model.addAttribute("subjectName", subjectName);
 
         return "teacherHomework/getEvents";
-
-
     }
+
 
 
     @GetMapping("/showSubjects/{teacherId}/{action}")
@@ -153,7 +150,7 @@ public class TeacherHomeworkController {
                             @RequestParam String groupName,
                             @RequestParam String description,
                             @RequestParam String endTime,
-                            @RequestParam Optional<MultipartFile> fileOptional,
+                            @RequestParam MultipartFile fileOptional,
 
                             @RequestParam("sortingType") String sortingType,
                             @RequestParam("subjectName") String subjectName) throws IOException
@@ -174,10 +171,10 @@ public class TeacherHomeworkController {
         eventFormDto.setEndTime(endDate);
 
 
-        if (fileOptional.isPresent()){
-            String fileName = StringUtils.cleanPath(fileOptional.get().getOriginalFilename());
-            DatabaseFileDto databaseFileDto = new DatabaseFileDto(fileName, fileOptional.get().getContentType(),
-                    fileOptional.get().getBytes());
+        if (!fileOptional.isEmpty()){
+            Response response = databaseFileService.saveDatabaseFile(fileOptional);
+            DatabaseFileDto databaseFileDto = new DatabaseFileDto();
+            databaseFileDto.setId(response.getFileId());
             eventFormDto.setDatabaseFileDto(databaseFileDto);
         }
 
@@ -194,7 +191,6 @@ public class TeacherHomeworkController {
     }
 
 
-
     @PostMapping("/addEvent/{teacherId}")
     public String eventPostAdd(
             @PathVariable Long teacherId,
@@ -202,7 +198,7 @@ public class TeacherHomeworkController {
             @RequestParam String groupName,
             @RequestParam String description,
             @RequestParam String endTime,
-            @RequestParam Optional<MultipartFile> fileOptional) throws IOException {
+            @RequestParam MultipartFile fileOptional) throws IOException {
 
 
         DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
@@ -222,10 +218,11 @@ public class TeacherHomeworkController {
         eventFormDto.setEndTime(endDate);
 
 
-        if (fileOptional.isPresent()){
-            String fileName = StringUtils.cleanPath(fileOptional.get().getOriginalFilename());
-            DatabaseFileDto databaseFileDto = new DatabaseFileDto(fileName, fileOptional.get().getContentType(),
-                                                                            fileOptional.get().getBytes());
+        if (!fileOptional.isEmpty()){
+
+            Response response = databaseFileService.saveDatabaseFile(fileOptional);
+            DatabaseFileDto databaseFileDto = new DatabaseFileDto();
+            databaseFileDto.setId(response.getFileId());
             eventFormDto.setDatabaseFileDto(databaseFileDto);
         }
         eventUiService.saveEventDto(eventFormDto);
@@ -235,12 +232,56 @@ public class TeacherHomeworkController {
 
 
 
-    @GetMapping("/downloadFile/{eventId}")
-    public ResponseEntity<Resource> download(@PathVariable Long eventId, HttpServletRequest request){
-        DatabaseFileDto dbFile = eventUiService.getEventById(eventId).getDatabaseFileDto();
-        return ResponseEntity.ok()
-                .contentType(MediaType.parseMediaType(dbFile.getFileType()))
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + dbFile.getFileName() + "\"")
-                .body(new ByteArrayResource(dbFile.getFile()));
+    @GetMapping("/getAssignments/{eventId}")
+    public String getAssignments(@PathVariable Long eventId,
+                                 @RequestParam Long groupId,
+                                 @RequestParam String startDate,
+                                 @RequestParam String endDate,
+                                 @RequestParam String subjectName, Model model){
+
+
+        List<List<AssignmentDto>> assignments = assignmentService.getAssignmentsByEvent(eventId, groupId);
+        model.addAttribute( "assessedAssignments", assignments.get(0));
+        model.addAttribute( "unassessedAssignments", assignments.get(1));
+        model.addAttribute("startDate", startDate);
+        model.addAttribute("endDate", endDate);
+        model.addAttribute("subjectName", subjectName);
+        model.addAttribute("restUrl", restUrl);
+
+        return "assignments_for_teacher";
     }
+
+
+
+
+    @PostMapping("/saveResponseForAssignment/{assignmentId}")
+    public String saveResponseForAssignment(@RequestParam String commentary,
+                                            @RequestParam Integer grade,
+                                            @RequestParam Long eventId,
+                                            @RequestParam Long groupId,
+
+                                            @RequestParam String startDate,
+                                            @RequestParam String endDate,
+                                            @RequestParam String subjectName,
+                                            @PathVariable Long assignmentId){
+
+        AssignmentDto assignment = new AssignmentDto();
+        assignment.setId(assignmentId);
+        assignment.setCommentary(commentary);
+        assignment.setGrade(grade);
+        assignmentService.update(assignment);
+
+
+        String url = uiUrl + "/teacherHomework/getAssignments/" + eventId.toString();
+
+        UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(url)
+                .queryParam("groupId", groupId)
+                .queryParam("startDate", startDate)
+                .queryParam("endDate", endDate)
+                .queryParam("subjectName", subjectName);
+
+
+        return "redirect:" + builder.toUriString();
+    }
+
 }

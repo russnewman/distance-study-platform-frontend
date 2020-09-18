@@ -3,7 +3,7 @@ package com.netcracker.edu.distancestudyweb.service;
 
 import com.netcracker.edu.distancestudyweb.dto.GroupDto;
 import com.netcracker.edu.distancestudyweb.dto.ScheduleDto;
-import com.netcracker.edu.distancestudyweb.dto.ScheduleDtoList;
+import com.netcracker.edu.distancestudyweb.dto.wrappers.ScheduleDtoList;
 import com.netcracker.edu.distancestudyweb.dto.SubjectDto;
 
 import java.util.List;

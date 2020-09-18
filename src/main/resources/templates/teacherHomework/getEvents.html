@@ -28,50 +28,50 @@
 <form  align="center" th:action="'/teacherHomework/getEvents/' + ${teacherId}"  method='GET'>
     <table align= "center" class="table">
         <tr>
-            <td width="35%">Сортировать</td>
+            <td width="35%">Sort</td>
             <td width="65%"><select name="sortingTypeOptional" class="form-control">
-                <option th:value="'addSort'">По дате добавления</option>
-                <option th:value="'deadlineSort'" th:selected="${sortingType}=='deadlineSort'">По дате дедлайна</option>
+                <option th:value="'addSort'">by adding date</option>
+                <option th:value="'deadlineSort'" th:selected="${sortingType}=='deadlineSort'">by deadline date</option>
             </select></td>
         </tr>
         <tr>
-            <td width="35%">Предмет</td>
+            <td width="35%">Subject</td>
             <td width="65%"><select name="subjectNameOptional" class="form-control">
-                <option th:value="'all'">Все</option>
+                <option th:value="'all'">All</option>
                 <option  th:each="el: ${subjects}" th:value="${el.getName()}" th:text="${el.getName()}" th:selected="${subjectName}==${el.getName()}"></option>
             </select></td>
         </tr>
         <tr>
             <td colspan="2">
-                <button class="btn" type="submit">Показать</button></td>
+                <button class="btn" type="submit">Show</button></td>
         </tr>
     </table>
 </form>
 
+
 <div class="container">
     <div class="row p-3">
-        <div class="col-md-4 p-3" th:each="event: ${events}">
+        <div class="col-md-4 p-3" th:each="event: ${events}" >
             <div class="card bg-light rounded mt-4 h-100">
-                <div class="card-header" th:text="${event.getStartDate().format(dateTimeFormatter)} +' - '+ ${event.getEndDate().format(dateTimeFormatter)}">
+                <div class="card-header" style="transform: rotate(0);">
+
+                    <div th:text="${event.getStartDate().format(dateTimeFormatter)} +' - '+ ${event.getEndDate().format(dateTimeFormatter)}"></div>
+
                 </div>
                 <div class="card-body text-center">
 
                     <h5 th:text="${event.getSubject().getName()}"></h5>
-                    <h5 th:text="'Группа: '+ ${event.getGroup().getGroupName()}"></h5>
+                    <h5 th:text="'Group: '+ ${event.getGroup().getGroupName()}"></h5>
 
 
-<!--                    <div class="btn-group">-->
-<!--                        <button type="button" class="btn btn-light btn-sm dropdown-toggle" data-toggle="dropdown">-->
-<!--                            Описание-->
-<!--                        </button>-->
-<!--                        <div class="dropdown-menu p-4 text-muted" style="max-width: 300px;">-->
-<!--                            <p th:text="${event.getDescription()}"></p>-->
-<!--                        </div>-->
-<!--                    </div>-->
+<!--                    <select  class="form-control">-->
+<!--                        <option th:text="${event.getDescription()}">Description</option>-->
+<!--                        <option th:text="${event.getDescription()}">Description</option>-->
+<!--                    </select>-->
 
 
 <!--                    <div class="dropdown">-->
-<!--                        <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenu2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">-->
+<!--                        <button class="btn btn-secondary dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">-->
 <!--                            Dropdown-->
 <!--                        </button>-->
 <!--                        <div class="dropdown-menu" aria-labelledby="dropdownMenu2">-->
@@ -79,9 +79,17 @@
 <!--                        </div>-->
 <!--                    </div>-->
 
+                    <form th:action="'/teacherHomework/getAssignments/' + ${event.getId()}" th:method="GET">
+                        <input type="hidden" name="groupId" th:value="${event.getGroup().getId()}">
+                        <input type="hidden" name="startDate"  th:value="${event.getStartDate().format(dateTimeFormatter)}">
+                        <input type="hidden" name="endDate"  th:value="${event.getEndDate().format(dateTimeFormatter)}">
+                        <input type="hidden" name="subjectName" th:value="${event.getSubject().getName()}">
+                        <button class="btn btn-sml" type="submit">Attachments</button>
+                    </form>
 
-                    <div th:unless="${event.getDatabaseFileDto().getFileName().isEmpty()}">
-                        <p><a th:href="${uiUrl} + 'teacherHomework/downloadFile/' + ${event.getId()}" class="btn btn-light btn-sm" download>Скачать файл</a>
+
+                    <div th:unless="${event.getDatabaseFileDto() == null}">
+                        <p><a th:href="${restUrl} + 'downloadFile/' + ${event.getDatabaseFileDto().getId()}" class="btn btn-light" download>Download</a>
                     </div>
 
                 </div>
@@ -91,20 +99,22 @@
                         <form th:action="'/teacherHomework/editEvent/' + ${teacherId} +'/' + ${event.getId()}" th:method="GET">
                             <input type="hidden" name="sortingType" th:value="${sortingType}">
                             <input type="hidden" name="subjectName" th:value="${subjectName}">
-                            <button class="btn btn-primary btn-sm" type="submit">Редактировать</button>
+                            <button class="btn btn-primary btn-sm" type="submit">Edit</button>
                         </form>
 
-
-                        <form th:action="'/teacherHomework/deleteEvent/' + ${teacherId} + '/' + ${event.getId()}" th:method="POST">
-                            <input type="hidden" name="sortingType" th:value="${sortingType}">
-                            <input type="hidden" name="subjectName" th:value="${subjectName}">
-                            <button class="btn btn-danger btn-sm" type="submit">Удалить</button>
-                        </form>
+                        <div th:if="${event.getCanDeleteEvent() == true}">
+                            <form th:action="'/teacherHomework/deleteEvent/' + ${teacherId} + '/' + ${event.getId()}" th:method="POST">
+                                <input type="hidden" name="sortingType" th:value="${sortingType}">
+                                <input type="hidden" name="subjectName" th:value="${subjectName}">
+                                <button class="btn btn-danger btn-sm" type="submit">Delete</button>
+                            </form>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
 </div>
+
 
 <!--<th:block th:insert="resources/templates/fragments/jsFiles.html :: jsFiles" />-->
 <!--<script th:src="@{/static/js/home/home.js}"></script>-->

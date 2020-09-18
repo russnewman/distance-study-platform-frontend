@@ -2,7 +2,7 @@ package com.netcracker.edu.distancestudyweb.service.impl;
 
 
 import com.netcracker.edu.distancestudyweb.dto.SubjectDto;
-import com.netcracker.edu.distancestudyweb.dto.SubjectDtoList;
+import com.netcracker.edu.distancestudyweb.dto.wrappers.SubjectDtoList;
 import com.netcracker.edu.distancestudyweb.service.SubjectService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
