@@ -1,0 +1,166 @@
+
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Getting Started: Serving Web Content</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+    <th:block th:fragment="links" >
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/mdbootstrap/4.19.1/css/mdb.min.css" rel="stylesheet">
+    </th:block>
+
+    <style>
+        .table-bordered{
+            width: 70%;
+            text-align: center;
+            background-color: #e9ecef;
+        }
+        .myTable{
+            width: 20%;
+            text-align: center;
+        }
+        select {
+            font-size: 120%;
+            width: 20%;
+        }
+    </style>
+</head>
+<body>
+<th:block th:insert="fragments/navbar.html :: navbar" />
+
+
+<br>
+
+<table align="center" class="table myTable">
+    <tr>
+        <td>Subject</td>
+        <td th:text="${subjectName}"></td>
+    </tr>
+    <tr>
+        <td>Start date</td>
+        <td th:text="${startDate}"></td>
+    </tr>
+    <tr>
+        <td>End date</td>
+        <td th:text="${endDate}"></td>
+    </tr>
+</table>
+
+
+
+
+<!--<div class= "row justify-content-md-center">-->
+<!--    <h2 align="center" class="container" th:text="${subjectName}"></h2>-->
+
+<!--    <h2 align="center"  th:text="${startDate + '-' + endDate}"></h2>-->
+<!--</div>-->
+
+<br>
+
+<h4 align="center" class="container">Unverified works</h4>
+<br>
+<table align="center" class="table table-bordered">
+
+    <thead class="thead-dark">
+    <tr>
+        <th scope="col">Student</th>
+        <th scope="col">File</th>
+        <th scope="col">Commentary</th>
+        <th scope="col">Grade</th>
+        <th scope="col"></th>
+    </tr>
+    </thead>
+
+    <tbody>
+        <div th:each="el:${unassessedAssignments}">
+            <tr>
+                <form  th:action="'/teacherHomework/saveResponseForAssignment/' + ${el.getId()}" th:method="POST">
+                    <td>
+                        <div  th:text="${el.getStudent().getName() + ' ' + el.getStudent().getSurname()}"></div>
+                    </td>
+                    <td>
+                        <div th:unless="${el.getDbFile() == null}">
+                            <p><a th:href="${restUrl} + 'downloadFile/' + ${el.getDbFile().getId()}" class="btn btn-sm" download>Download</a>
+                        </div>
+                    </td>
+                    <td width="35%">
+                        <input th:if="${el.getCommentary() == null}" type="text" name="commentary" class="form-control">
+                        <input th:unless="${el.getCommentary() == null}" type="text" name="commentary" class="form-control" th:value="${el.getCommentary()}">
+                    </td>
+                    <td width="10%">
+                        <input type="text" name="grade" class="form-control">
+                    </td>
+                    <input  type="hidden" name="eventId" class="form-control" th:value="${el.getEvent().getId()}">
+                    <input  type="hidden" name="groupId" class="form-control" th:value="${el.getEvent().getGroup().getId()}">
+                    <input type="hidden" name="startDate" class="form-control" th:value="${startDate}">
+                    <input type="hidden" name="endDate"  class="form-control"th:value="${endDate}">
+                    <input type="hidden" name="subjectName" class="form-control" th:value="${subjectName}">
+
+                    <td width="15%">
+                        <button class="btn" type="submit">Save</button>
+                    </td>
+                </form>
+            </tr>
+        </div>
+    </tbody>
+</table>
+
+<h4 align="center" class="container">Verified works</h4>
+<br>
+<table align="center" class="table table-bordered">
+
+    <thead class="thead-dark">
+    <tr>
+        <th scope="col">Student</th>
+        <th scope="col">File</th>
+        <th scope="col">Commentary</th>
+        <th scope="col">Grade</th>
+        <th scope="col"></th>
+    </tr>
+    </thead>
+
+
+    <tbody>
+        <div th:each="el:${assessedAssignments}">
+            <tr>
+                <form  th:action="'/teacherHomework/saveResponseForAssignment/' + ${el.getId()}" th:method="POST">
+                    <td>
+                        <b th:text="${el.getStudent().getName() + ' ' + el.getStudent().getSurname()}"></b>
+                    </td>
+                    <td>
+                        <div th:unless="${el.getDbFile() == null}">
+                            <p><a th:href="${restUrl} + 'downloadFile/' + ${el.getDbFile().getId()}" class="btn btn-light btn-sm" download>Download</a>
+                        </div>
+
+                    </td>
+                    <td width="35%">
+                        <input th:if="${el.getCommentary() == null}" type="text" name="commentary" class="form-control">
+                        <input th:unless="${el.getCommentary() == null}" type="text" name="commentary" class="form-control" th:value="${el.getCommentary()}">
+                    </td>
+                    <td width="10%">
+                        <input th:if="${el.getGrade() == null}" type="text" name="grade" class="form-control">
+                        <input th:unless="${el.getGrade() == null}" type="text" name="grade" class="form-control" th:value="${el.getGrade()}">
+                    </td>
+
+                    <input  type="hidden" name="eventId" class="form-control" th:value="${el.getEvent().getId()}">
+                    <input  type="hidden" name="groupId" class="form-control" th:value="${el.getEvent().getGroup().getId()}">
+                    <input type="hidden" name="startDate"  th:value="${startDate}">
+                    <input type="hidden" name="endDate"  th:value="${endDate}">
+                    <input type="hidden" name="subjectName" th:value="${subjectName}">
+
+
+                    <td width="15%">
+                        <button class="btn" type="submit">
+                            Update
+                        </button>
+                    </td>
+                </form>
+            </tr>
+        </div>
+    </tbody>
+
+</table>
+
+</body>
+</html>

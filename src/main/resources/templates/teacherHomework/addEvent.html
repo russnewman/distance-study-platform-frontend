@@ -31,19 +31,19 @@
     <table align= "center" class="table table-dark">
 
         <tr>
-            <td width="35%">Предмет</td>
+            <td width="35%">Subject</td>
             <td><h3 th:text="${subjectName}"></h3></td>
         </tr>
 
         <tr>
-            <td width="35%">Группа</td>
+            <td width="35%">Group</td>
             <td width="65%"><select name="groupName" class="form-control" required>
                         <option th:value="null"></option>
                         <option th:each="groupDto: ${groups}" th:utext="${groupDto.getGroupName()}"></option>
                         </select></td>
         </tr>
         <tr>
-            <td width="35%">Описание</td>
+            <td width="35%">Description</td>
             <td width="65%">
 
                 <input type="text" name="description" class="form-control" required><td>
@@ -51,18 +51,18 @@
 
 
         <tr>
-            <td width="35%">Дедлайн</td>
+            <td width="35%">Deadline</td>
             <td width="65%"><input type="date" name="endTime" value="newDate" class="form-control" required><td>
         </tr>
 
         <tr>
-            <td width="35%">Файл</td>
+            <td width="35%">File</td>
             <td width="65%"><input type="file" name ="fileOptional"><td>
         </tr>
 
         <tr>
             <td colspan="2">
-                <button class="btn" type="submit">Сохранить</button></td>
+                <button class="btn" type="submit">Save</button></td>
         </tr>
     </table>
 </form>

@@ -1,7 +1,7 @@
 package com.netcracker.edu.distancestudyweb.service.impl;
 
 import com.netcracker.edu.distancestudyweb.dto.GroupDto;
-import com.netcracker.edu.distancestudyweb.dto.GroupDtoList;
+import com.netcracker.edu.distancestudyweb.dto.wrappers.GroupDtoList;
 import com.netcracker.edu.distancestudyweb.service.GroupService;
 
 import org.springframework.http.ResponseEntity;
