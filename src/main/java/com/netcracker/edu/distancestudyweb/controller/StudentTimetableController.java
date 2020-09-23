@@ -2,8 +2,10 @@ package com.netcracker.edu.distancestudyweb.controller;
 
 import com.netcracker.edu.distancestudyweb.service.ScheduleService;
 import com.netcracker.edu.distancestudyweb.service.SubjectService;
+import com.netcracker.edu.distancestudyweb.service.impl.SecurityUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -14,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
 @Slf4j
+@PreAuthorize("isAuthenticated()")
 @RequestMapping("/studentSchedule")
 public class StudentTimetableController {
     private final ScheduleService scheduleUiService;
@@ -26,10 +29,10 @@ public class StudentTimetableController {
         this.subjectUiService = subjectUiService;
     }
 
-    @GetMapping("/full/{studentId}")
+    @GetMapping("/full")
     public String getSchedule(
-            @PathVariable("studentId") Long studentId,
             Model model){
+        Long studentId = SecurityUtils.getId();
         model.addAttribute("schedules", scheduleUiService.getStudentFullSchedule(studentId).getSchedules());
         model.addAttribute("subjects", subjectUiService.getAllSubjects().getSubjects());
         model.addAttribute("todaySchedules", scheduleUiService.getStudentTodaySchedule(studentId).getSchedules());
@@ -37,8 +40,9 @@ public class StudentTimetableController {
         return "student_schedule";
     }
 
-    @GetMapping("/subjectSchedule/{studentId}")
-    public String getSubjectSchedule(@PathVariable("studentId") Long studentId, @RequestParam("subject") Long subjectId, Model model){
+    @GetMapping("/subjectSchedule")
+    public String getSubjectSchedule(@RequestParam("subject") Long subjectId, Model model){
+        Long studentId = SecurityUtils.getId();
         model.addAttribute("schedules", scheduleUiService.getStudentSubjectSchedule(studentId, subjectId).getSchedules());
         model.addAttribute("subjects", subjectUiService.getAllSubjects().getSubjects());
         return "student_schedule";

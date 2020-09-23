@@ -5,11 +5,10 @@ import com.netcracker.edu.distancestudyweb.dto.GroupDto;
 import com.netcracker.edu.distancestudyweb.dto.ScheduleDto;
 import com.netcracker.edu.distancestudyweb.dto.wrappers.ScheduleDtoList;
 import com.netcracker.edu.distancestudyweb.dto.SubjectDto;
+import com.netcracker.edu.distancestudyweb.service.HttpEntityProvider;
 import com.netcracker.edu.distancestudyweb.service.ScheduleService;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -22,7 +21,11 @@ public class ScheduleServiceImpl implements ScheduleService {
 
 
     final static private String baseUri = "http://localhost:8080/";
+    final private HttpEntityProvider entityProvider;
 
+    public ScheduleServiceImpl(HttpEntityProvider entityProvider) {
+        this.entityProvider = entityProvider;
+    }
 
     @Override
     public ScheduleDtoList getStudentFullSchedule(Long studentId){
@@ -62,18 +65,19 @@ public class ScheduleServiceImpl implements ScheduleService {
 
     public SubjectDto getSubjectRestTemplate(String URL, Long studentId){
         RestTemplate restTemplate = new RestTemplate();
+        HttpEntity<SubjectDto> entity = entityProvider.getDefaultWithTokenFromContext(null, null);
         UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(URL)
                 .queryParam("studentId", studentId);
-        return restTemplate.getForObject(builder.toUriString(), SubjectDto.class);
+        return restTemplate.exchange(builder.toUriString(), HttpMethod.GET, entity, new ParameterizedTypeReference<SubjectDto>() {}).getBody();
     }
 
     public ScheduleDtoList getStudentScheduleRestTemplate(String URL, Long studentId){
         RestTemplate restTemplate = new RestTemplate();
         UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(URL)
                 .queryParam("studentId", studentId);
-
+        HttpEntity<SubjectDto> entity = entityProvider.getDefaultWithTokenFromContext(null, null);
         ResponseEntity<ScheduleDtoList> response
-                = restTemplate.getForEntity(builder.toUriString(), ScheduleDtoList.class);
+                = restTemplate.exchange(builder.toUriString(), HttpMethod.GET, entity, new ParameterizedTypeReference<>() {});
 
         return new ScheduleDtoList(Objects.requireNonNull(response.getBody()).getSchedules());
     }
@@ -83,8 +87,9 @@ public class ScheduleServiceImpl implements ScheduleService {
         UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(URL)
                 .queryParam("studentId", studentId)
                 .queryParam("subjectId", subjectId);
+        HttpEntity<SubjectDto> entity = entityProvider.getDefaultWithTokenFromContext(null , null);
         ResponseEntity<ScheduleDtoList> response
-                = restTemplate.getForEntity(builder.toUriString(), ScheduleDtoList.class);
+                = restTemplate.exchange(builder.toUriString(), HttpMethod.GET, entity, new ParameterizedTypeReference<>() {});
 
         return new ScheduleDtoList(Objects.requireNonNull(response.getBody()).getSchedules());
     }
