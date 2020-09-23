@@ -132,20 +132,6 @@ public class AssignmentServiceImpl implements AssignmentService {
         catch (UnsupportedEncodingException e) {
             throw new InternalServiceException(e);
         }
-
-
-//        String URL = serverUrl + "/updateAssignment";
-//        RestTemplate restTemplate = new RestTemplate();
-//
-//
-//        UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(URL);
-//
-//        HttpHeaders headers = new HttpHeaders();
-//        headers.setContentType(MediaType.APPLICATION_JSON);
-//        HttpEntity<AssignmentDto> request = new HttpEntity<>(assignment, headers);
-//
-//        ResponseEntity<String> response = restTemplate.postForEntity(builder.toUriString(),request, String.class);
-
     }
 
 
@@ -192,21 +178,6 @@ public class AssignmentServiceImpl implements AssignmentService {
         catch (UnsupportedEncodingException e) {
             throw new InternalServiceException(e);
         }
-
-
-
-//        String URL = serverUrl + "/saveEmptyAssignment";
-//
-//        RestTemplate restTemplate = new RestTemplate();
-//        UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(URL)
-//                .queryParam("eventId", eventId)
-//                .queryParam("studentId", studentId);
-//
-//
-//        ResponseEntity<AssignmentDto> response
-//                = restTemplate.getForEntity(builder.toUriString(), AssignmentDto.class);
-//
-//        return response.getBody();
     }
 
 
@@ -230,16 +201,6 @@ public class AssignmentServiceImpl implements AssignmentService {
         }
 
 
-
-//        String URL = serverUrl + "/getAssignmentsByEvent";
-//        RestTemplate restTemplate = new RestTemplate();
-//
-//        UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(URL)
-//                .queryParam("eventId", eventId);
-//
-//        ResponseEntity<AssignmentDtoList> response = restTemplate.getForEntity(builder.toUriString(), AssignmentDtoList.class);
-//
-//
 
         List<StudentDto> Students = studentService.getStudentsByGroup(groupId);
 

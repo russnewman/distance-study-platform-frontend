@@ -78,11 +78,11 @@ public class TeacherHomeworkController {
         String sortingType = sortingTypeOptional.orElse("addSort");
         String subjectName = subjectNameOptional.orElse("all");
 
+
         model.addAttribute("events", eventUiService.getEvents(teacherId, sortingType, subjectName));
         model.addAttribute("subjects", subjectUiService.getSubjectsByTeacherId(teacherId));
         model.addAttribute("dateTimeFormatter", DateTimeFormatter.ofPattern("dd.MM.yyyy"));
         model.addAttribute("uiUrl", uiUrl);
-        model.addAttribute("restUrl", restUrl);
 
         model.addAttribute("sortingType", sortingType);
         model.addAttribute("subjectName", subjectName);
@@ -115,7 +115,6 @@ public class TeacherHomeworkController {
         model.addAttribute("groups", groupService.findGroupsByTeacherAndSubject(teacherId, event.getSubject().getName()));
         model.addAttribute("dateTimeFormatter", DateTimeFormatter.ofPattern("yyyy-MM-dd"));
         model.addAttribute("uiUrl", uiUrl);
-        model.addAttribute("restUrl", restUrl);
 
 
         model.addAttribute("sortingType", sortingType);
@@ -281,7 +280,6 @@ public class TeacherHomeworkController {
 
         return "redirect:" + builder.toUriString();
     }
-
 
     @GetMapping("/downloadFile/{fileId}")
     public ResponseEntity<Resource> downloadFile(@PathVariable String fileId){

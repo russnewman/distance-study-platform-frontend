@@ -49,16 +49,6 @@ public class EventServiceImpl implements EventService {
         catch (UnsupportedEncodingException e) {
             throw new InternalServiceException(e);
         }
-
-
-//
-//        String URL = restURL + "/saveEvent";
-//        RestTemplate restTemplate = new RestTemplate();
-//        HttpHeaders headers = new HttpHeaders();
-//        headers.setContentType(MediaType.APPLICATION_JSON);
-//        HttpEntity<EventFormDto> request = new HttpEntity<>(eventDto, headers);
-//        ResponseEntity<String> response
-//                = restTemplate.postForEntity(URL, request, String.class);
     }
 
 
@@ -75,18 +65,6 @@ public class EventServiceImpl implements EventService {
         catch (UnsupportedEncodingException e) {
             throw new InternalServiceException(e);
         }
-
-
-//
-//        String URL = restURL + "/editEvent";
-//        RestTemplate restTemplate = new RestTemplate();
-//        HttpHeaders headers = new HttpHeaders();
-//        headers.setContentType(MediaType.APPLICATION_JSON);
-//        UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(URL)
-//                .queryParam("eventId", eventId);
-//        HttpEntity<EventFormDto> request = new HttpEntity<>(eventFormDto, headers);
-//        ResponseEntity<String> response
-//                = restTemplate.postForEntity(builder.toUriString(), request, String.class);
     }
 
 
@@ -107,20 +85,6 @@ public class EventServiceImpl implements EventService {
         catch (UnsupportedEncodingException e) {
             throw new InternalServiceException(e);
         }
-
-
-//
-//        String URL = restURL + "/getEvents";
-//        RestTemplate restTemplate = new RestTemplate();
-//        UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(URL)
-//                .queryParam("teacherId", teacherId)
-//                .queryParam("sortingType", sortingType)
-//                .queryParam("subjectName", subjectName);
-//
-//
-//        ResponseEntity<EventDtoList> response
-//                = restTemplate.getForEntity(builder.toUriString(), EventDtoList.class);
-//        return response.getBody().getEvents();
     }
 
 
@@ -138,15 +102,6 @@ public class EventServiceImpl implements EventService {
         catch (UnsupportedEncodingException e) {
             throw new InternalServiceException(e);
         }
-
-
-//        String URL = restURL + "/deleteEvent";
-//        RestTemplate restTemplate = new RestTemplate();
-//        HttpHeaders headers = new HttpHeaders();
-//        headers.setContentType(MediaType.APPLICATION_JSON);
-//        HttpEntity<Long> request = new HttpEntity<>(eventId, headers);
-//        ResponseEntity<String> response
-//                = restTemplate.postForEntity(URL, request, String.class);
     }
 
 
@@ -164,16 +119,6 @@ public class EventServiceImpl implements EventService {
         catch (UnsupportedEncodingException e) {
             throw new InternalServiceException(e);
         }
-
-
-
-//        String URL = restURL + "/getEventById";
-//        RestTemplate restTemplate = new RestTemplate();
-//        UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(URL)
-//                .queryParam("eventId", eventId);
-//        ResponseEntity<EventDto> response
-//                = restTemplate.getForEntity(builder.toUriString(), EventDto.class);
-//        return response.getBody();
     }
 
 
@@ -192,16 +137,6 @@ public class EventServiceImpl implements EventService {
         catch (UnsupportedEncodingException e) {
             throw new InternalServiceException(e);
         }
-
-
-
-//        String URL = restURL + "/canDeleteEvent";
-//        RestTemplate restTemplate = new RestTemplate();
-//        UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(URL)
-//                .queryParam("eventId", eventId);
-//        ResponseEntity<Boolean> response
-//                = restTemplate.getForEntity(builder.toUriString(), Boolean.class);
-//        return response.getBody();
     }
 
 

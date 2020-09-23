@@ -119,11 +119,6 @@ public class ScheduleServiceImpl implements ScheduleService {
         ResponseEntity<ScheduleDtoList> restAuthResponse = restTemplate.exchange(builder.toUriString(), HttpMethod.GET, httpEntity, ScheduleDtoList.class);
         return restAuthResponse.getBody().getSchedules();
 
-
-
-
-//        String URL = baseUri + "teacherWeekSchedule";
-//        return getScheduleRestTemplate(URL, teacherId, weekIsOdd);
     }
 
 
@@ -141,9 +136,6 @@ public class ScheduleServiceImpl implements ScheduleService {
             ResponseEntity<ScheduleDtoList> restAuthResponse = restTemplate.exchange(builder.toUriString(), HttpMethod.GET, httpEntity, ScheduleDtoList.class);
             return restAuthResponse.getBody().getSchedules();
 
-
-//        String URL = baseUri + "tomorrowTeacherWeekSchedule";
-//        return getScheduleRestTemplate(URL, teacherId, weekIsOdd);
     }
 
 
@@ -161,37 +153,7 @@ public class ScheduleServiceImpl implements ScheduleService {
         catch (UnsupportedEncodingException e) {
             throw new InternalServiceException(e);
         }
-
-
-
-//        RestTemplate restTemplate = new RestTemplate();
-//        UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(serverUrl + "/subjectTeacherSchedule")
-//                .queryParam("subjectId", subjectId);
-//
-//        HttpHeaders headers = new HttpHeaders();
-//        headers.setContentType(MediaType.APPLICATION_JSON);
-//        HttpEntity<List<ScheduleDto>> request = new HttpEntity<>(schedules, headers);
-//        ResponseEntity<ScheduleDtoList> response
-//                = restTemplate.postForEntity(builder.toUriString(), request, ScheduleDtoList.class);
-//        return response.getBody().getSchedules();
-
     }
-
-
-//    private List<ScheduleDto> getScheduleRestTemplate(String URL, Long teacherId, Optional<Boolean> weekIsOddOptional){
-//        RestTemplate restTemplate = new RestTemplate();
-//        UriComponentsBuilder builder;
-//
-//        builder = weekIsOddOptional.map(aBoolean -> UriComponentsBuilder.fromHttpUrl(URL)
-//                .queryParam("teacherId", teacherId)
-//                .queryParam("weekIsOddOptional", aBoolean))
-//                .orElseGet(() -> UriComponentsBuilder.fromHttpUrl(URL)
-//                .queryParam("teacherId", teacherId));
-//
-//        ResponseEntity<ScheduleDtoList> response
-//                = restTemplate.getForEntity(builder.toUriString(), ScheduleDtoList.class);
-//        return response.getBody().getSchedules();
-//    }
 
 
 

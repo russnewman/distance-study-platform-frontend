@@ -44,7 +44,6 @@ public class DatabaseFileUiServiceImpl implements DatabaseFileService {
     public Response saveDatabaseFile(MultipartFile multipartFile) {
 
 
-
             Authentication auth = SecurityContextHolder.getContext().getAuthentication();
             if (auth == null) {
                 throw new IllegalStateException("There is no authenticated client");
@@ -65,31 +64,6 @@ public class DatabaseFileUiServiceImpl implements DatabaseFileService {
 
         return response.getBody();
 
-
-
-
-
-
-
-
-
-
-//        try{
-//            MultiValueMap<String, Object> body
-//                    = new LinkedMultiValueMap<>();
-//            body.add("file", multipartFile.getResource());
-//
-//            HttpEntity<MultiValueMap<String, Object>> httpEntity = entityProvider.getDefaultWithTokenFromContextMULTIPART_FORM_DATA(body,null);
-//
-//            Map<String, Object> parameters = new HashMap<>();
-//            String url = ServiceUtils.injectParamsInUrl(serverUrl + "/upload", parameters);
-//            ResponseEntity<Response> restAuthResponse = restTemplate.exchange(url, HttpMethod.POST, httpEntity, Response.class);
-//            return restAuthResponse.getBody();
-//        }
-//        catch (UnsupportedEncodingException e) {
-//            throw new InternalServiceException(e);
-//        }
-
     }
 
     @Override
@@ -98,8 +72,8 @@ public class DatabaseFileUiServiceImpl implements DatabaseFileService {
             HttpEntity<?> httpEntity = entityProvider.getDefaultWithTokenFromContext(null, null);
             Map<String, Object> parameters = new HashMap<>();
             String url = ServiceUtils.injectParamsInUrl(serverUrl + "/downloadFile/" + fileId, parameters);
-            ResponseEntity<ResponseEntity<Resource>> restAuthResponse = restTemplate.exchange(url, HttpMethod.GET, httpEntity, new ParameterizedTypeReference<>() {});
-            return restAuthResponse.getBody();
+            ResponseEntity<Resource> restAuthResponse = restTemplate.exchange(url, HttpMethod.GET, httpEntity, Resource.class);
+            return restAuthResponse;
         }
         catch (UnsupportedEncodingException e) {
             throw new InternalServiceException(e);

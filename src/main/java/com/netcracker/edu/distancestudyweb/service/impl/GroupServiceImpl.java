@@ -37,7 +37,6 @@ public class GroupServiceImpl implements GroupService {
 
 
 
-
     @Override
     public List<GroupDto> findGroupsByTeacherAndSubject(Long teacherId, String subjectName) {
 
@@ -55,16 +54,6 @@ public class GroupServiceImpl implements GroupService {
             throw new InternalServiceException(e);
         }
 
-
-//        String URL = restUrl + "findGroupsByTeacherAndSubject";
-//        RestTemplate restTemplate = new RestTemplate();
-//        UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(URL)
-//                .queryParam("teacherId", teacherId)
-//                .queryParam("subjectName", subjectName);
-//
-//        ResponseEntity<GroupDtoList> response
-//                = restTemplate.getForEntity(builder.toUriString(), GroupDtoList.class);
-//        return response.getBody().getGroups();
     }
 
 

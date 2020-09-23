@@ -71,14 +71,6 @@ public class SubjectServiceImpl implements SubjectService {
         catch (UnsupportedEncodingException e) {
             throw new InternalServiceException(e);
         }
-
-//        RestTemplate restTemplate = new RestTemplate();
-//        String URL = serverUrl + "subjectsByTeacher";
-//        UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(URL)
-//                .queryParam("teacherId", teacherId);
-//        ResponseEntity<SubjectDtoList> response
-//                = restTemplate.getForEntity(builder.toUriString(), SubjectDtoList.class);
-//        return response.getBody().getSubjects();
     }
 
 

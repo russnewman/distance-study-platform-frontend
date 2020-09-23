@@ -74,18 +74,5 @@ public class StudentServiceImpl implements StudentService {
             throw new InternalServiceException(e);
         }
 
-
-//
-//        String URL = restUrl + "students/getStudentsByGroup";
-//        RestTemplate restTemplate = new RestTemplate();
-//        UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(URL)
-//                .queryParam("groupId", groupId);
-//
-//        ResponseEntity<StudentDtoList> response
-//                = restTemplate.getForEntity(builder.toUriString(), StudentDtoList.class);
-//
-//
-//        List<StudentDto> students = response.getBody().getStudents();
-
     }
 }

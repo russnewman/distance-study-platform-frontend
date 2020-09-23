@@ -48,6 +48,18 @@
     </table>
 </form>
 
+<div class="btn-group">
+    <button type="button" class="btn btn-danger dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        Action
+    </button>
+    <div class="dropdown-menu">
+        <a class="dropdown-item" href="#">Action</a>
+        <a class="dropdown-item" href="#">Another action</a>
+        <a class="dropdown-item" href="#">Something else here</a>
+        <div class="dropdown-divider"></div>
+        <a class="dropdown-item" href="#">Separated link</a>
+    </div>
+</div>
 
 <div class="container">
     <div class="row p-3">
@@ -64,20 +76,15 @@
                     <h5 th:text="'Group: '+ ${event.getGroup().getGroupName()}"></h5>
 
 
-<!--                    <select  class="form-control">-->
-<!--                        <option th:text="${event.getDescription()}">Description</option>-->
-<!--                        <option th:text="${event.getDescription()}">Description</option>-->
-<!--                    </select>-->
+                    <div class="btn-group">
+                        <button type="button" class="btn btn-light btn-sm dropdown-toggle" data-toggle="dropdown">
+                            Описание
+                        </button>
+                        <div class="dropdown-menu p-4 text-muted" style="max-width: 300px;">
+                            <p class="card-text" th:text="${event.getDescription()}"></p>
+                        </div>
+                    </div>
 
-
-<!--                    <div class="dropdown">-->
-<!--                        <button class="btn btn-secondary dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">-->
-<!--                            Dropdown-->
-<!--                        </button>-->
-<!--                        <div class="dropdown-menu" aria-labelledby="dropdownMenu2">-->
-<!--                            <p th:text="${event.getDescription()}"></p>-->
-<!--                        </div>-->
-<!--                    </div>-->
 
                     <form th:action="'/teacherHomework/getAssignments/' + ${event.getId()}" th:method="GET">
                         <input type="hidden" name="groupId" th:value="${event.getGroup().getId()}">
@@ -115,10 +122,10 @@
         </div>
 </div>
 
+</div>
 
-<!--<th:block th:insert="resources/templates/fragments/jsFiles.html :: jsFiles" />-->
-<!--<script th:src="@{/static/js/home/home.js}"></script>-->
-
+<th:block th:insert="fragments/commoneJsFiles.html :: jsFiles"/>
+<script th:src="@{/static/js/home/home.js}"></script>
 
 </body>
 </html>
