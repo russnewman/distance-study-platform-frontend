@@ -25,7 +25,7 @@
 <body>
 <th:block th:insert="fragments/navbar.html :: navbar" />
 
-<form  align="center" th:action="'/teacherHomework/getEvents/' + ${teacherId}"  method='GET'>
+<form  align="center" th:action="'/teacherHomework/getEvents/'"  method='GET'>
     <table align= "center" class="table">
         <tr>
             <td width="35%">Sort</td>
@@ -89,21 +89,21 @@
 
 
                     <div th:unless="${event.getDatabaseFileDto() == null}">
-                        <p><a th:href="${restUrl} + 'downloadFile/' + ${event.getDatabaseFileDto().getId()}" class="btn btn-light" download>Download</a>
+                        <p><a th:href="'downloadFile/' + ${event.getDatabaseFileDto().getId()}" class="btn btn-light" download>Download</a>
                     </div>
 
                 </div>
                 <div class="card-footer">
                     <div class="row justify-content-md-center">
 
-                        <form th:action="'/teacherHomework/editEvent/' + ${teacherId} +'/' + ${event.getId()}" th:method="GET">
+                        <form th:action="'/teacherHomework/editEvent/' + ${event.getId()}" th:method="GET">
                             <input type="hidden" name="sortingType" th:value="${sortingType}">
                             <input type="hidden" name="subjectName" th:value="${subjectName}">
                             <button class="btn btn-primary btn-sm" type="submit">Edit</button>
                         </form>
 
                         <div th:if="${event.getCanDeleteEvent() == true}">
-                            <form th:action="'/teacherHomework/deleteEvent/' + ${teacherId} + '/' + ${event.getId()}" th:method="POST">
+                            <form th:action="'/teacherHomework/deleteEvent/' + ${event.getId()}" th:method="POST">
                                 <input type="hidden" name="sortingType" th:value="${sortingType}">
                                 <input type="hidden" name="subjectName" th:value="${subjectName}">
                                 <button class="btn btn-danger btn-sm" type="submit">Delete</button>

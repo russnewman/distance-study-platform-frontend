@@ -13,7 +13,7 @@ import org.springframework.stereotype.Service;
 @Slf4j
 public class AuthenticationServiceImpl implements AuthenticationService {
 
-//    @Autowired
+    @Autowired
     private AuthenticationManager authManager;
 
     @Override
