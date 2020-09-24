@@ -13,6 +13,8 @@ import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -66,24 +68,24 @@ public class ScheduleServiceImpl implements ScheduleService {
 
     public SubjectDto getSubjectRestTemplate(String url, Long studentId){
         RestRequestConstructor<SubjectDto> ctor = new RestRequestConstructor<>(entityProvider);
-        UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(url)
-                .queryParam("studentId", studentId);
-        return ctor.getRestTemplate(url, builder);
+        MultiValueMap<String, String> params =new LinkedMultiValueMap<>();
+        params.add("studentId", studentId.toString());
+        return ctor.getRestTemplate(url, params);
     }
 
     public List<ScheduleDto> getStudentScheduleRestTemplate(String url, Long studentId){
         RestRequestConstructor<List<ScheduleDto>> ctor = new RestRequestConstructor<>(entityProvider);
-        UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(url)
-                .queryParam("studentId", studentId);
-        return ctor.getRestTemplate(url, builder);
+        MultiValueMap<String, String> params =new LinkedMultiValueMap<>();
+        params.add("studentId", studentId.toString());
+        return ctor.getRestTemplate(url, params);
     }
 
     public List<ScheduleDto> getStudentScheduleRestTemplate(String url, Long studentId, Long subjectId){
         RestRequestConstructor<List<ScheduleDto>> ctor = new RestRequestConstructor<>(entityProvider);
-        UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(url)
-                .queryParam("studentId", studentId)
-                .queryParam("subjectId", subjectId);
-        return ctor.getRestTemplate(url, builder);
+        MultiValueMap<String, String> params =new LinkedMultiValueMap<>();
+        params.add("studentId", studentId.toString());
+        params.add("subjectId", subjectId.toString());
+        return ctor.getRestTemplate(url, params);
     }
 
 

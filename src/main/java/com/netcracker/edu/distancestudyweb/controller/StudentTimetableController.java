@@ -47,13 +47,4 @@ public class StudentTimetableController {
         model.addAttribute("subjects", subjectUiService.getAllSubjects());
         return "student_schedule";
     }
-
-    @GetMapping("/test_page")
-    public String test(Model model,
-                       @RequestParam(name="name", required=false, defaultValue="World") String name){
-        model.addAttribute("name", name);
-        return "test_page";
-    }
-
-
 }
