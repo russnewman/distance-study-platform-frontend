@@ -2,6 +2,7 @@ package com.netcracker.edu.distancestudyweb.controller;
 
 import com.netcracker.edu.distancestudyweb.domain.StudentEvent;
 import com.netcracker.edu.distancestudyweb.domain.Subject;
+import com.netcracker.edu.distancestudyweb.dto.SubjectDto;
 import com.netcracker.edu.distancestudyweb.dto.homework.AssignmentFormRequest;
 import com.netcracker.edu.distancestudyweb.dto.homework.EventFormRequest;
 import com.netcracker.edu.distancestudyweb.service.HomeworkService;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Controller

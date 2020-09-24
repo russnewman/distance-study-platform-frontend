@@ -7,6 +7,9 @@ import com.netcracker.edu.distancestudyweb.dto.wrappers.ScheduleDtoList;
 import com.netcracker.edu.distancestudyweb.dto.SubjectDto;
 import com.netcracker.edu.distancestudyweb.service.HttpEntityProvider;
 import com.netcracker.edu.distancestudyweb.service.ScheduleService;
+import com.netcracker.edu.distancestudyweb.utils.RestRequestConstructor;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
@@ -18,80 +21,69 @@ import java.util.stream.Collectors;
 
 @Service
 public class ScheduleServiceImpl implements ScheduleService {
-
-
-    final static private String baseUri = "http://localhost:8080/";
     final private HttpEntityProvider entityProvider;
+    private @Value("${rest.url}") String serverUrl;
 
     public ScheduleServiceImpl(HttpEntityProvider entityProvider) {
         this.entityProvider = entityProvider;
     }
 
     @Override
-    public ScheduleDtoList getStudentFullSchedule(Long studentId){
-        String URL = baseUri + "full";
-        return getStudentScheduleRestTemplate(URL, studentId);
+    public List<ScheduleDto> getStudentFullSchedule(Long studentId){
+        String url = serverUrl + "/full";
+        return getStudentScheduleRestTemplate(url, studentId);
     }
 
     @Override
-    public ScheduleDtoList getStudentTodaySchedule(Long studentId){
-        String URL = baseUri + "todayStudentSchedule";
-        return getStudentScheduleRestTemplate(URL, studentId);
+    public List<ScheduleDto> getStudentTodaySchedule(Long studentId){
+        String url = serverUrl + "/todayStudentSchedule";
+        return getStudentScheduleRestTemplate(url, studentId);
     }
 
     @Override
-    public ScheduleDtoList getStudentTomorrowSchedule(Long studentId) {
-        String URL = baseUri + "tomorrowStudentSchedule";
-        return getStudentScheduleRestTemplate(URL, studentId);
+    public List<ScheduleDto> getStudentTomorrowSchedule(Long studentId) {
+        String url = serverUrl + "/tomorrowStudentSchedule";
+        return getStudentScheduleRestTemplate(url, studentId);
     }
 
     @Override
     public SubjectDto getStudentCurrentSubject(Long studentId) {
-        String URL = baseUri + "currentStudentSubject";
-        return getSubjectRestTemplate(URL, studentId);
+        String url = serverUrl + "/currentStudentSubject";
+        return getSubjectRestTemplate(url, studentId);
     }
 
     @Override
     public SubjectDto getStudentNextSubject(Long studentId) {
-        String URL = baseUri + "nextStudentSubject";
-        return getSubjectRestTemplate(URL, studentId);
+        String url = serverUrl + "/nextStudentSubject";
+        return getSubjectRestTemplate(url, studentId);
     }
 
     @Override
-    public ScheduleDtoList getStudentSubjectSchedule(Long studentId, Long subjectId){
-        String URL = baseUri + "getSubjectStudentSchedule";
-        return getStudentScheduleRestTemplate(URL, studentId, subjectId);
+    public List<ScheduleDto> getStudentSubjectSchedule(Long studentId, Long subjectId){
+        String url = serverUrl + "/getSubjectStudentSchedule";
+        return getStudentScheduleRestTemplate(url, studentId, subjectId);
     }
 
-    public SubjectDto getSubjectRestTemplate(String URL, Long studentId){
-        RestTemplate restTemplate = new RestTemplate();
-        HttpEntity<SubjectDto> entity = entityProvider.getDefaultWithTokenFromContext(null, null);
-        UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(URL)
+    public SubjectDto getSubjectRestTemplate(String url, Long studentId){
+        RestRequestConstructor<SubjectDto> ctor = new RestRequestConstructor<>(entityProvider);
+        UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(url)
                 .queryParam("studentId", studentId);
-        return restTemplate.exchange(builder.toUriString(), HttpMethod.GET, entity, new ParameterizedTypeReference<SubjectDto>() {}).getBody();
+        return ctor.getRestTemplate(url, builder);
     }
 
-    public ScheduleDtoList getStudentScheduleRestTemplate(String URL, Long studentId){
-        RestTemplate restTemplate = new RestTemplate();
-        UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(URL)
+    public List<ScheduleDto> getStudentScheduleRestTemplate(String url, Long studentId){
+        RestRequestConstructor<List<ScheduleDto>> ctor = new RestRequestConstructor<>(entityProvider);
+        UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(url)
                 .queryParam("studentId", studentId);
-        HttpEntity<SubjectDto> entity = entityProvider.getDefaultWithTokenFromContext(null, null);
-        ResponseEntity<ScheduleDtoList> response
-                = restTemplate.exchange(builder.toUriString(), HttpMethod.GET, entity, new ParameterizedTypeReference<>() {});
-
-        return new ScheduleDtoList(Objects.requireNonNull(response.getBody()).getSchedules());
+        return ctor.getRestTemplate(url, builder);
     }
 
-    public ScheduleDtoList getStudentScheduleRestTemplate(String URL, Long studentId, Long subjectId){
-        RestTemplate restTemplate = new RestTemplate();
-        UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(URL)
+    public List<ScheduleDto> getStudentScheduleRestTemplate(String url, Long studentId, Long subjectId){
+        RestRequestConstructor<List<ScheduleDto>> ctor = new RestRequestConstructor<>(entityProvider);
+        UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(url)
                 .queryParam("studentId", studentId)
                 .queryParam("subjectId", subjectId);
-        HttpEntity<SubjectDto> entity = entityProvider.getDefaultWithTokenFromContext(null , null);
-        ResponseEntity<ScheduleDtoList> response
-                = restTemplate.exchange(builder.toUriString(), HttpMethod.GET, entity, new ParameterizedTypeReference<>() {});
-
-        return new ScheduleDtoList(Objects.requireNonNull(response.getBody()).getSchedules());
+        return ctor.getRestTemplate(url, builder);
     }
 
 
@@ -100,23 +92,22 @@ public class ScheduleServiceImpl implements ScheduleService {
 
     @Override
     public List<ScheduleDto> getTeacherSchedule(Long teacherId, Optional<Boolean> weekIsOdd) {
-        String URL = baseUri + "teacherWeekSchedule";
-        return getScheduleRestTemplate(URL, teacherId, weekIsOdd);
+        String url = serverUrl + "/teacherWeekSchedule";
+        return getScheduleRestTemplate(url, teacherId, weekIsOdd);
     }
 
 
     @Override
     public  List<ScheduleDto> getTomorrowTeacherSchedule(Long teacherId, Optional<Boolean> weekIsOdd) {
-        String URL = baseUri + "tomorrowTeacherWeekSchedule";
-        return getScheduleRestTemplate(URL, teacherId, weekIsOdd);
+        String url = serverUrl + "tomorrowTeacherWeekSchedule";
+        return getScheduleRestTemplate(url, teacherId, weekIsOdd);
     }
 
 
     @Override
     public List<ScheduleDto> getSubjectTeacherSchedule(List<ScheduleDto> schedules, Long subjectId){
-
         RestTemplate restTemplate = new RestTemplate();
-        UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(baseUri + "subjectTeacherSchedule")
+        UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(serverUrl + "subjectTeacherSchedule")
                 .queryParam("subjectId", subjectId);
 
         HttpHeaders headers = new HttpHeaders();
@@ -128,19 +119,20 @@ public class ScheduleServiceImpl implements ScheduleService {
     }
 
 
-    private List<ScheduleDto> getScheduleRestTemplate(String URL, Long teacherId, Optional<Boolean> weekIsOddOptional){
+    private List<ScheduleDto> getScheduleRestTemplate(String url, Long teacherId, Optional<Boolean> weekIsOddOptional){
         RestTemplate restTemplate = new RestTemplate();
         UriComponentsBuilder builder;
 
-        builder = weekIsOddOptional.map(aBoolean -> UriComponentsBuilder.fromHttpUrl(URL)
+        builder = weekIsOddOptional.map(aBoolean -> UriComponentsBuilder.fromHttpUrl(url)
                 .queryParam("teacherId", teacherId)
                 .queryParam("weekIsOddOptional", aBoolean))
-                .orElseGet(() -> UriComponentsBuilder.fromHttpUrl(URL)
+                .orElseGet(() -> UriComponentsBuilder.fromHttpUrl(url)
                 .queryParam("teacherId", teacherId));
-
-        ResponseEntity<ScheduleDtoList> response
-                = restTemplate.getForEntity(builder.toUriString(), ScheduleDtoList.class);
-        return response.getBody().getSchedules();
+        HttpEntity<SubjectDto> entity = entityProvider.getDefaultWithTokenFromContext(null , null);
+        ResponseEntity<List<ScheduleDto>> response
+                = restTemplate.exchange(
+                        builder.toUriString(), HttpMethod.GET, entity, new ParameterizedTypeReference<>() {});
+        return response.getBody();
     }
 
 
