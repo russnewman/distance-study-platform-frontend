@@ -39,20 +39,20 @@ public class StudentTimetableController {
     public String getSchedule(
             Model model){
         Long studentId = SecurityUtils.getId();
-        model.addAttribute("schedules", scheduleUiService.getStudentFullSchedule(studentId));
         model.addAttribute("subjects", subjectUiService.getAllSubjects());
-        model.addAttribute("todaySchedules", scheduleUiService.getStudentTodaySchedule(studentId));
-        model.addAttribute("tomorrowSchedules", scheduleUiService.getStudentTomorrowSchedule(studentId));
-        model.addAttribute("mappedSchedule", scheduleUiService.getStudentMappedSchedule(studentId));
+        model.addAttribute("mappedSchedule", scheduleUiService.getStudentFullSchedule(studentId));
+        model.addAttribute("todaySchedule", scheduleUiService.getStudentTodaySchedule(studentId));
+        model.addAttribute("tomorrowSchedule", scheduleUiService.getStudentTomorrowSchedule(studentId));
         return "student_schedule";
     }
 
     @GetMapping("/subjectSchedule")
     public String getSubjectSchedule(@RequestParam("subject") Long subjectId, Model model){
         Long studentId = SecurityUtils.getId();
-        model.addAttribute("schedules", scheduleUiService.getStudentSubjectSchedule(studentId, subjectId));
         model.addAttribute("subjects", subjectUiService.getAllSubjects());
-        model.addAttribute("mappedSchedule", scheduleUiService.getStudentMappedSchedule(studentId));
+        model.addAttribute("mappedSchedule", scheduleUiService.getStudentSubjectSchedule(studentId, subjectId));
+        model.addAttribute("todaySchedule", scheduleUiService.getStudentTodaySchedule(studentId));
+        model.addAttribute("tomorrowSchedule", scheduleUiService.getStudentTomorrowSchedule(studentId));
         return "student_schedule";
     }
 }

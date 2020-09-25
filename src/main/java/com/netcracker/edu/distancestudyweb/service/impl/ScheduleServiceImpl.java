@@ -29,10 +29,40 @@ public class ScheduleServiceImpl implements ScheduleService {
     }
 
     @Override
-    public List<ScheduleVDto> getStudentFullSchedule(Long studentId){
+    public Map<AbstractMap.SimpleEntry<String, Boolean>, List<ScheduleVDto>> getStudentFullSchedule(Long studentId){
         String url = serverUrl + "/full";
         UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(url);
         builder.queryParam("studentId", studentId);
+        return mapSchedule(getScheduleVDtos(builder));
+    }
+
+    @Override
+    public Map<AbstractMap.SimpleEntry<String, Boolean>, List<ScheduleVDto>> getStudentSubjectSchedule(Long studentId, Long subjectId){
+        String url = serverUrl + "/getSubjectStudentSchedule";
+        UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(url);
+        builder
+                .queryParam("studentId", studentId)
+                .queryParam("subjectId", subjectId);
+        return mapSchedule(getScheduleVDtos(builder));
+    }
+
+    @Override
+    public List<ScheduleVDto> getStudentTodaySchedule(Long studentId){
+        String url = serverUrl + "/todayStudentSchedule";
+        UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(url);
+        builder.queryParam("studentId", studentId);
+        return getScheduleVDtos(builder);
+    }
+
+    @Override
+    public List<ScheduleVDto> getStudentTomorrowSchedule(Long studentId) {
+        String url = serverUrl + "/tomorrowStudentSchedule";
+        UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(url);
+        builder.queryParam("studentId", studentId);
+        return getScheduleVDtos(builder);
+    }
+
+    private List<ScheduleVDto> getScheduleVDtos(UriComponentsBuilder builder) {
         HttpEntity<List<ScheduleVDto>> entity = entityProvider.getWithTokenFromContext(null, null, null);
         RestTemplate restTemplate = new RestTemplate();
         ResponseEntity<List<ScheduleVDto>> response
@@ -46,18 +76,6 @@ public class ScheduleServiceImpl implements ScheduleService {
     }
 
     @Override
-    public List<ScheduleVDto> getStudentTodaySchedule(Long studentId){
-        String url = serverUrl + "/todayStudentSchedule";
-        return getStudentScheduleRestTemplate(url, studentId);
-    }
-
-    @Override
-    public List<ScheduleVDto> getStudentTomorrowSchedule(Long studentId) {
-        String url = serverUrl + "/tomorrowStudentSchedule";
-        return getStudentScheduleRestTemplate(url, studentId);
-    }
-
-    @Override
     public SubjectDto getStudentCurrentSubject(Long studentId) {
         String url = serverUrl + "/currentStudentSubject";
         return getSubjectRestTemplate(url, studentId);
@@ -67,17 +85,6 @@ public class ScheduleServiceImpl implements ScheduleService {
     public SubjectDto getStudentNextSubject(Long studentId) {
         String url = serverUrl + "/nextStudentSubject";
         return getSubjectRestTemplate(url, studentId);
-    }
-
-    @Override
-    public List<ScheduleVDto> getStudentSubjectSchedule(Long studentId, Long subjectId){
-        String url = serverUrl + "/getSubjectStudentSchedule";
-        return getStudentScheduleRestTemplate(url, studentId, subjectId);
-    }
-
-    @Override
-    public Map<AbstractMap.SimpleEntry<String, Boolean>, List<ScheduleVDto>> getStudentMappedSchedule(Long studentId){
-        return mapSchedule(getStudentFullSchedule(studentId));
     }
 
     private SubjectDto getSubjectRestTemplate(String url, Long studentId){
@@ -113,7 +120,7 @@ public class ScheduleServiceImpl implements ScheduleService {
         mapped.forEach((key, value) -> value.sort(new ScheduleListComp()));
         return mapped;
     }
-    
+
     static class ScheduleMapComp implements Comparator<AbstractMap.SimpleEntry <String, Boolean>>{
         @Override
         public int compare(AbstractMap.SimpleEntry<String, Boolean> o1, AbstractMap.SimpleEntry<String, Boolean> o2) {
