@@ -26,7 +26,7 @@
 <th:block th:insert="fragments/navbar.html :: navbar" />
 
 <br></br>
-<form enctype="multipart/form-data" th:action="'/teacherHomework/editEvent/' + ${teacherId} +'/'+ ${event.getId()}" th:method="POST">
+<form enctype="multipart/form-data" th:action="'/teacherHomework/editEvent/'w+ ${event.getId()}" th:method="POST">
 
     <table align= "center" class="table table-dark">
 
@@ -55,7 +55,7 @@
         </tr>
 
         <tr th:unless="${event.getDatabaseFileDto() == null}">
-            <td width="35%">File/td>
+            <td width="35%">File</td>
             <td><p><a th:href="${restUrl} + 'downloadFile/' + ${event.getDatabaseFileDto().getId()}"  type="button" class="btn btn-light btn-sm" download>Скачать</a></p></td>
         </tr>
         <tr>

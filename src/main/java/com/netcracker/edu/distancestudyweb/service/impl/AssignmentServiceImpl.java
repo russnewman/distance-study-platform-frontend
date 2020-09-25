@@ -5,34 +5,42 @@ package com.netcracker.edu.distancestudyweb.service.impl;
 import com.netcracker.edu.distancestudyweb.dto.AssignmentDto;
 import com.netcracker.edu.distancestudyweb.dto.StudentDto;
 import com.netcracker.edu.distancestudyweb.dto.wrappers.AssignmentDtoList;
+import com.netcracker.edu.distancestudyweb.dto.wrappers.GroupDtoList;
+import com.netcracker.edu.distancestudyweb.exception.InternalServiceException;
 import com.netcracker.edu.distancestudyweb.service.AssignmentService;
+import com.netcracker.edu.distancestudyweb.service.HttpEntityProvider;
+import com.netcracker.edu.distancestudyweb.service.ServiceUtils;
 import com.netcracker.edu.distancestudyweb.service.StudentService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
+import java.io.UnsupportedEncodingException;
+import java.util.*;
 
 @Service
 public class AssignmentServiceImpl implements AssignmentService {
-    final static private String baseUri = "http://localhost:8080/";
-
+    private @Value("${rest.url}") String serverUrl;
+    private RestTemplate restTemplate;
+    private HttpEntityProvider entityProvider;
     private final StudentService studentService;
 
     @Autowired
-    public AssignmentServiceImpl(StudentService studentService) {
+    public AssignmentServiceImpl(StudentService studentService, RestTemplate restTemplate, HttpEntityProvider entityProvider) {
+        this.restTemplate = restTemplate;
+        this.entityProvider = entityProvider;
         this.studentService = studentService;
     }
 
 
+
     @Override
     public List<AssignmentDto> getAllStudentAssignments(Long studentId) {
-        String URL = baseUri + "studentAssignments";
+        String URL = serverUrl + "/studentAssignments";
         return getStudentAssignmentRestTemplate(
                 URL, studentId
         );
@@ -45,7 +53,7 @@ public class AssignmentServiceImpl implements AssignmentService {
 
     @Override
     public List<AssignmentDto> getAssessedStudentAssignments(Long studentId) {
-        String URL = baseUri + "studentAssessedAssignments";
+        String URL = serverUrl + "/studentAssessedAssignments";
         return getStudentAssignmentRestTemplate(
                 URL, studentId
         );
@@ -53,7 +61,7 @@ public class AssignmentServiceImpl implements AssignmentService {
 
     @Override
     public List<AssignmentDto> getUnassessedStudentAssignments(Long studentId) {
-        String URL = baseUri + "studentUnassessedAssignments";
+        String URL = serverUrl + "/studentUnassessedAssignments";
         return getStudentAssignmentRestTemplate(
                 URL, studentId
         );
@@ -61,7 +69,7 @@ public class AssignmentServiceImpl implements AssignmentService {
 
     @Override
     public List<AssignmentDto> getActiveStudentAssignments(Long studentId) {
-        String URL = baseUri + "studentActiveAssignments";
+        String URL = serverUrl + "/studentActiveAssignments";
         return getStudentAssignmentRestTemplate(
                 URL, studentId
         );
@@ -69,7 +77,7 @@ public class AssignmentServiceImpl implements AssignmentService {
 
     @Override
     public List<AssignmentDto> getEventStudentAssignments(Long studentId, Long eventId) {
-        String URL = baseUri + "studentEventAssignments";
+        String URL = serverUrl + "/studentEventAssignments";
         return getStudentAssignmentRestTemplate(
                 URL, studentId, eventId
         );
@@ -77,7 +85,7 @@ public class AssignmentServiceImpl implements AssignmentService {
 
     @Override
     public List<AssignmentDto> getEventStudentAssessedAssignments(Long studentId, Long eventId) {
-        String URL = baseUri + "studentEventAssessedAssignments";
+        String URL = serverUrl + "/studentEventAssessedAssignments";
         return getStudentAssignmentRestTemplate(
                 URL, studentId, eventId
         );
@@ -85,7 +93,7 @@ public class AssignmentServiceImpl implements AssignmentService {
 
     @Override
     public List<AssignmentDto> getEventStudentUnassessedAssignments(Long studentId, Long eventId) {
-        String URL = baseUri + "studentEventUnassessedAssignments";
+        String URL = serverUrl + "/studentEventUnassessedAssignments";
         return getStudentAssignmentRestTemplate(
                 URL, studentId, eventId
         );
@@ -114,17 +122,29 @@ public class AssignmentServiceImpl implements AssignmentService {
 
     @Override
     public void update(AssignmentDto assignment) {
-        String URL = baseUri + "updateAssignment";
-        RestTemplate restTemplate = new RestTemplate();
+
+        try{
+            HttpEntity<?> httpEntity = entityProvider.getDefaultWithTokenFromContext(assignment, null);
+            Map<String, Object> parameters = new HashMap<>();
+            String url = ServiceUtils.injectParamsInUrl(serverUrl + "/updateAssignment", parameters);
+            restTemplate.exchange(url, HttpMethod.POST, httpEntity, String.class);
+        }
+        catch (UnsupportedEncodingException e) {
+            throw new InternalServiceException(e);
+        }
 
 
-        UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(URL);
-
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        HttpEntity<AssignmentDto> request = new HttpEntity<>(assignment, headers);
-
-        ResponseEntity<String> response = restTemplate.postForEntity(builder.toUriString(),request, String.class);
+//        String URL = serverUrl + "/updateAssignment";
+//        RestTemplate restTemplate = new RestTemplate();
+//
+//
+//        UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(URL);
+//
+//        HttpHeaders headers = new HttpHeaders();
+//        headers.setContentType(MediaType.APPLICATION_JSON);
+//        HttpEntity<AssignmentDto> request = new HttpEntity<>(assignment, headers);
+//
+//        ResponseEntity<String> response = restTemplate.postForEntity(builder.toUriString(),request, String.class);
 
     }
 
@@ -159,33 +179,68 @@ public class AssignmentServiceImpl implements AssignmentService {
 
 
     private AssignmentDto saveEmptyAssignment(Long eventId, Long studentId){
-        String URL = baseUri + "/saveEmptyAssignment";
 
-        RestTemplate restTemplate = new RestTemplate();
-        UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(URL)
-                .queryParam("eventId", eventId)
-                .queryParam("studentId", studentId);
+        try{
+            HttpEntity<?> httpEntity = entityProvider.getDefaultWithTokenFromContext(null, null);
+            Map<String, Object> parameters = new HashMap<>();
+            parameters.put("eventId", eventId);
+            parameters.put("studentId", studentId);
+            String url = ServiceUtils.injectParamsInUrl(serverUrl + "/saveEmptyAssignment", parameters);
+            ResponseEntity<AssignmentDto> restAuthResponse = restTemplate.exchange(url, HttpMethod.GET, httpEntity, AssignmentDto.class);
+            return restAuthResponse.getBody();
+        }
+        catch (UnsupportedEncodingException e) {
+            throw new InternalServiceException(e);
+        }
 
 
-        ResponseEntity<AssignmentDto> response
-                = restTemplate.getForEntity(builder.toUriString(), AssignmentDto.class);
 
-        return response.getBody();
+//        String URL = serverUrl + "/saveEmptyAssignment";
+//
+//        RestTemplate restTemplate = new RestTemplate();
+//        UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(URL)
+//                .queryParam("eventId", eventId)
+//                .queryParam("studentId", studentId);
+//
+//
+//        ResponseEntity<AssignmentDto> response
+//                = restTemplate.getForEntity(builder.toUriString(), AssignmentDto.class);
+//
+//        return response.getBody();
     }
 
 
 
     @Override
     public List<List<AssignmentDto>> getAssignmentsByEvent(Long eventId, Long groupId) {
-        String URL = baseUri + "getAssignmentsByEvent";
-        RestTemplate restTemplate = new RestTemplate();
 
-        UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(URL)
-                .queryParam("eventId", eventId);
 
-        ResponseEntity<AssignmentDtoList> response = restTemplate.getForEntity(builder.toUriString(), AssignmentDtoList.class);
+        List<AssignmentDto> assignments;
 
-        List<AssignmentDto> assignments = response.getBody().getAssignments();
+        try{
+            HttpEntity<?> httpEntity = entityProvider.getDefaultWithTokenFromContext(null, null);
+            Map<String, Object> parameters = new HashMap<>();
+            parameters.put("eventId", eventId);
+            String url = ServiceUtils.injectParamsInUrl(serverUrl + "/getAssignmentsByEvent", parameters);
+            ResponseEntity<AssignmentDtoList> restAuthResponse = restTemplate.exchange(url, HttpMethod.GET, httpEntity, AssignmentDtoList.class);
+            assignments = restAuthResponse.getBody().getAssignments();
+        }
+        catch (UnsupportedEncodingException e) {
+            throw new InternalServiceException(e);
+        }
+
+
+
+//        String URL = serverUrl + "/getAssignmentsByEvent";
+//        RestTemplate restTemplate = new RestTemplate();
+//
+//        UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(URL)
+//                .queryParam("eventId", eventId);
+//
+//        ResponseEntity<AssignmentDtoList> response = restTemplate.getForEntity(builder.toUriString(), AssignmentDtoList.class);
+//
+//
+
         List<StudentDto> Students = studentService.getStudentsByGroup(groupId);
 
         List<AssignmentDto> assessedAssignments = new ArrayList<>();

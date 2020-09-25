@@ -5,6 +5,7 @@ import com.netcracker.edu.distancestudyweb.dto.GroupDto;
 import com.netcracker.edu.distancestudyweb.dto.ScheduleDto;
 import com.netcracker.edu.distancestudyweb.service.ScheduleService;
 import com.netcracker.edu.distancestudyweb.service.SubjectService;
+import com.netcracker.edu.distancestudyweb.service.impl.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -29,12 +30,12 @@ public class TeacherTimetableController {
     }
 
 
-    @GetMapping("/teacherSchedule/{teacherId}")
+    @GetMapping("/teacherSchedule")
     public String getWeekSchedule(
-            @PathVariable("teacherId") Long teacherId,
             @RequestParam(value = "weekIsOdd", required = false) Optional<Boolean> weekIsOddOptional,
             @RequestParam(value = "subjectId", required = false) Optional<Long> subjectIdOptional, Model model)
         {
+            final Long teacherId = SecurityUtils.getId();
 
             model.addAttribute("subjects", subjectUiService.getSubjectsByTeacherId(teacherId));
             model.addAttribute("teacherId",teacherId);

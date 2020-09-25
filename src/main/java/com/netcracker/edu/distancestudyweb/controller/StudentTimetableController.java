@@ -1,7 +1,11 @@
 package com.netcracker.edu.distancestudyweb.controller;
 
+import com.netcracker.edu.distancestudyweb.dto.ScheduleDto;
+import com.netcracker.edu.distancestudyweb.dto.ScheduleVDto;
+import com.netcracker.edu.distancestudyweb.dto.StudentScheduleDto;
 import com.netcracker.edu.distancestudyweb.service.ScheduleService;
 import com.netcracker.edu.distancestudyweb.service.SubjectService;
+import com.netcracker.edu.distancestudyweb.service.impl.ScheduleServiceImpl;
 import com.netcracker.edu.distancestudyweb.service.impl.SecurityUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +16,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+
+import java.util.*;
 
 
 @Controller
@@ -37,6 +43,7 @@ public class StudentTimetableController {
         model.addAttribute("subjects", subjectUiService.getAllSubjects());
         model.addAttribute("todaySchedules", scheduleUiService.getStudentTodaySchedule(studentId));
         model.addAttribute("tomorrowSchedules", scheduleUiService.getStudentTomorrowSchedule(studentId));
+        model.addAttribute("mappedSchedule", scheduleUiService.getStudentMappedSchedule(studentId));
         return "student_schedule";
     }
 
@@ -45,6 +52,7 @@ public class StudentTimetableController {
         Long studentId = SecurityUtils.getId();
         model.addAttribute("schedules", scheduleUiService.getStudentSubjectSchedule(studentId, subjectId));
         model.addAttribute("subjects", subjectUiService.getAllSubjects());
+        model.addAttribute("mappedSchedule", scheduleUiService.getStudentMappedSchedule(studentId));
         return "student_schedule";
     }
 }

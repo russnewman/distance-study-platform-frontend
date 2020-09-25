@@ -12,9 +12,9 @@ import org.springframework.stereotype.Service;
 @Service
 @Slf4j
 public class AuthenticationServiceImpl implements AuthenticationService {
+
     @Autowired
     private AuthenticationManager authManager;
-
 
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {

@@ -52,6 +52,7 @@ public class HttpEntityProviderImpl implements HttpEntityProvider {
         return getEntityWithTokenBodyAndParameters(body, parameters, content, token, mediaTypes);
     }
 
+
     private <T> HttpEntity<T> getEntityWithTokenBodyAndParameters(@Nullable T body, @Nullable Map<String, String> parameters, MediaType content, String token, MediaType[] mediaTypes) {
         HttpHeaders headers = getHeaders(parameters, content, mediaTypes);
         headers.add("Authorization", "Bearer " + token);
@@ -75,5 +76,12 @@ public class HttpEntityProviderImpl implements HttpEntityProvider {
     @Override
     public <T> HttpEntity<T> getWithSpecifiedToken(String token, T body, Map<String, String> parameters, MediaType content, MediaType... mediaTypes) {
         return getEntityWithTokenBodyAndParameters(body, parameters, content, token, mediaTypes);
+    }
+
+
+
+    @Override
+    public <T> HttpEntity<T> getDefaultWithTokenFromContextMULTIPART_FORM_DATA(@Nullable T body, @Nullable Map<String, String> parameters) {
+        return getWithTokenFromContext(body, parameters, MediaType.MULTIPART_FORM_DATA, MediaType.MULTIPART_FORM_DATA);
     }
 }

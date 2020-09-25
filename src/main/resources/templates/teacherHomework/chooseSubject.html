@@ -25,8 +25,7 @@
         <div class="col-md-6" th:each="subject: ${subjects}">
             <div class="card bg-light rounded mt-6 h-100">
                 <div class="card-header">
-                    <a th:if="${action} == 'add'" th:text="${subject.getName()}" th:href="'/teacherHomework/addEvent/' + ${teacherId} + '/' + ${subject.getName()}" class="stretched-link"></a>
-                    <a th:if="${action} == 'show'" th:text="${subject.getName()}" th:href="'/teacherHomework/getEvents/' + ${teacherId}" class="stretched-link"></a>
+                    <a th:text="${subject.getName()}" th:href="'/teacherHomework/addEvent/'+ ${subject.getName()}" class="stretched-link"></a>
                 </div>
                 <div class="card-body" th:text="${subject.getDescription()}">
                 </div>

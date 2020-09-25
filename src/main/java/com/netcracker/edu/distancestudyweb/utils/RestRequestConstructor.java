@@ -31,7 +31,7 @@ public class RestRequestConstructor<T> {
                 builder.toUriString(),
                 HttpMethod.GET,
                 entity,
-                new ParameterizedTypeReference<>() {}
+                new ParameterizedTypeReference<T>() {}
         );
         return response.getBody();
     }

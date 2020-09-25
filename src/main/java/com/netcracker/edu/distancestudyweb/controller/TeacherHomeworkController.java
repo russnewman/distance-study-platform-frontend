@@ -6,7 +6,11 @@ import com.netcracker.edu.distancestudyweb.dto.EventDto;
 import com.netcracker.edu.distancestudyweb.dto.EventFormDto;
 import com.netcracker.edu.distancestudyweb.payload.Response;
 import com.netcracker.edu.distancestudyweb.service.*;
+import com.netcracker.edu.distancestudyweb.service.impl.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.Resource;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -14,6 +18,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.io.IOException;
+import java.sql.SQLOutput;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -21,7 +26,6 @@ import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
-
 
 @Controller
 @RequestMapping("/teacherHomework")
@@ -33,10 +37,8 @@ public class TeacherHomeworkController {
     private final AssignmentService assignmentService;
     private final DatabaseFileService databaseFileService;
 
-    //temporary
-    private String uiUrl = "http://localhost:8081/";
-    private String restUrl = "http://localhost:8080/";
-
+    private @Value("${rest.url}") String restUrl;
+    private @Value("${server.url}") String uiUrl;
 
 
     @Autowired
@@ -49,18 +51,16 @@ public class TeacherHomeworkController {
     }
 
 
-
-    @GetMapping("/{teacherId}")
-    public String homework(@PathVariable Long teacherId, Model model){
-        model.addAttribute(teacherId);
+    @GetMapping
+    public String homework(Model model){
+        model.addAttribute("teacherId", SecurityUtils.getId());
         return "teacherHomework/main";
     }
 
 
-    @GetMapping("/addEvent/{teacherId}/{subjectName}")
-    public String eventAdd(@PathVariable Long teacherId,
-                           @PathVariable String subjectName,Model model){
-
+    @GetMapping("/addEvent/{subjectName}")
+    public String eventAdd(@PathVariable String subjectName,Model model){
+        final Long teacherId = SecurityUtils.getId();
         model.addAttribute("teacherId", teacherId);
         model.addAttribute("subjectName", subjectName);
         model.addAttribute("groups", groupService.findGroupsByTeacherAndSubject(teacherId, subjectName));
@@ -68,12 +68,12 @@ public class TeacherHomeworkController {
     }
 
 
-    @GetMapping("/getEvents/{teacherId}")
-    public String getEvents(@PathVariable Long teacherId,
-                            @RequestParam Optional<String> sortingTypeOptional,
+    @GetMapping("/getEvents")
+    public String getEvents(@RequestParam Optional<String> sortingTypeOptional,
                             @RequestParam Optional<String> subjectNameOptional,
                             Model model){
 
+        final Long teacherId = SecurityUtils.getId();
 
         String sortingType = sortingTypeOptional.orElse("addSort");
         String subjectName = subjectNameOptional.orElse("all");
@@ -92,24 +92,23 @@ public class TeacherHomeworkController {
 
 
 
-    @GetMapping("/showSubjects/{teacherId}/{action}")
-    public String showSubjects(@PathVariable Long teacherId, Model model, @PathVariable String action){
+    @GetMapping("/showSubjects")
+    public String showSubjects(Model model){
+
+        final Long teacherId = SecurityUtils.getId();
         model.addAttribute("subjects", subjectUiService.getSubjectsByTeacherId(teacherId));
-        model.addAttribute("action", action);
         return "teacherHomework/chooseSubject";
     }
 
 
 
-    @GetMapping("/editEvent/{teacherId}/{eventId}")
-    public String editEvent(@PathVariable Long teacherId,
-                            @PathVariable Long eventId,
+    @GetMapping("/editEvent/{eventId}")
+    public String editEvent(@PathVariable Long eventId,
                             @RequestParam("sortingType") String sortingType,
                             @RequestParam("subjectName") String subjectName,
                             Model model){
 
-
-
+        final Long teacherId = SecurityUtils.getId();
         EventDto event = eventUiService.getEventById(eventId);
         model.addAttribute("event", event);
         model.addAttribute("teacherId", teacherId);
@@ -126,14 +125,14 @@ public class TeacherHomeworkController {
     }
 
 
-    @PostMapping("/deleteEvent/{teacherId}/{eventId}")
-    public String deleteEvent(@PathVariable Long teacherId,
-                              @PathVariable Long eventId,
+    @PostMapping("/deleteEvent/{eventId}")
+    public String deleteEvent(@PathVariable Long eventId,
                               @RequestParam("sortingType") String sortingType,
                               @RequestParam("subjectName") String subjectName){
         eventUiService.deleteEvent(eventId);
 
-        String URL = uiUrl + "teacherHomework/getEvents/" + teacherId.toString();
+
+        String URL = uiUrl + "teacherHomework/getEvents";
 
         UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(URL)
                 .queryParam("sortingTypeOptional", sortingType)
@@ -144,9 +143,8 @@ public class TeacherHomeworkController {
 
 
 
-    @PostMapping("/editEvent/{teacherId}/{eventId}")
-    public String editEvent(@PathVariable Long teacherId,
-                            @PathVariable Long eventId,
+    @PostMapping("/editEvent/{eventId}")
+    public String editEvent(@PathVariable Long eventId,
                             @RequestParam String groupName,
                             @RequestParam String description,
                             @RequestParam String endTime,
@@ -181,7 +179,7 @@ public class TeacherHomeworkController {
         eventUiService.editEvent(eventId, eventFormDto);
 
 
-        String URL = uiUrl + "teacherHomework/getEvents/" + teacherId.toString();
+        String URL = uiUrl + "teacherHomework/getEvents";
 
         UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(URL)
                 .queryParam("sortingTypeOptional", sortingType)
@@ -191,9 +189,8 @@ public class TeacherHomeworkController {
     }
 
 
-    @PostMapping("/addEvent/{teacherId}")
+    @PostMapping("/addEvent")
     public String eventPostAdd(
-            @PathVariable Long teacherId,
             @RequestParam String subjectName,
             @RequestParam String groupName,
             @RequestParam String description,
@@ -210,7 +207,7 @@ public class TeacherHomeworkController {
         }
 
         EventFormDto eventFormDto = new EventFormDto();
-        eventFormDto.setTeacherId(teacherId);
+        eventFormDto.setTeacherId(SecurityUtils.getId());
         eventFormDto.setSubjectName(subjectName);
         eventFormDto.setGroupName(groupName);
         eventFormDto.setDescription(description);
@@ -221,13 +218,15 @@ public class TeacherHomeworkController {
         if (!fileOptional.isEmpty()){
 
             Response response = databaseFileService.saveDatabaseFile(fileOptional);
+            System.out.println(response);
+
             DatabaseFileDto databaseFileDto = new DatabaseFileDto();
             databaseFileDto.setId(response.getFileId());
             eventFormDto.setDatabaseFileDto(databaseFileDto);
         }
         eventUiService.saveEventDto(eventFormDto);
 
-        return "redirect:/teacherHomework/{teacherId}";
+        return "redirect:/teacherHomework";
     }
 
 
@@ -280,8 +279,13 @@ public class TeacherHomeworkController {
                 .queryParam("endDate", endDate)
                 .queryParam("subjectName", subjectName);
 
-
         return "redirect:" + builder.toUriString();
+    }
+
+
+    @GetMapping("/downloadFile/{fileId}")
+    public ResponseEntity<Resource> downloadFile(@PathVariable String fileId){
+        return databaseFileService.downloadFile(fileId);
     }
 
 }

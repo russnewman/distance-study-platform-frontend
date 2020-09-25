@@ -1,15 +1,12 @@
 package com.netcracker.edu.distancestudyweb.service.impl;
 
 
-import com.netcracker.edu.distancestudyweb.dto.GroupDto;
-import com.netcracker.edu.distancestudyweb.dto.ScheduleDto;
+import com.netcracker.edu.distancestudyweb.dto.*;
 import com.netcracker.edu.distancestudyweb.dto.wrappers.ScheduleDtoList;
-import com.netcracker.edu.distancestudyweb.dto.SubjectDto;
 import com.netcracker.edu.distancestudyweb.service.HttpEntityProvider;
 import com.netcracker.edu.distancestudyweb.service.ScheduleService;
 import com.netcracker.edu.distancestudyweb.utils.RestRequestConstructor;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
@@ -18,6 +15,7 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import java.time.DayOfWeek;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -31,19 +29,30 @@ public class ScheduleServiceImpl implements ScheduleService {
     }
 
     @Override
-    public List<ScheduleDto> getStudentFullSchedule(Long studentId){
+    public List<ScheduleVDto> getStudentFullSchedule(Long studentId){
         String url = serverUrl + "/full";
-        return getStudentScheduleRestTemplate(url, studentId);
+        UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(url);
+        builder.queryParam("studentId", studentId);
+        HttpEntity<List<ScheduleVDto>> entity = entityProvider.getWithTokenFromContext(null, null, null);
+        RestTemplate restTemplate = new RestTemplate();
+        ResponseEntity<List<ScheduleVDto>> response
+                = restTemplate.exchange(
+                builder.toUriString(),
+                HttpMethod.GET,
+                entity,
+                new ParameterizedTypeReference<List<ScheduleVDto>>() {}
+        );
+        return response.getBody();
     }
 
     @Override
-    public List<ScheduleDto> getStudentTodaySchedule(Long studentId){
+    public List<ScheduleVDto> getStudentTodaySchedule(Long studentId){
         String url = serverUrl + "/todayStudentSchedule";
         return getStudentScheduleRestTemplate(url, studentId);
     }
 
     @Override
-    public List<ScheduleDto> getStudentTomorrowSchedule(Long studentId) {
+    public List<ScheduleVDto> getStudentTomorrowSchedule(Long studentId) {
         String url = serverUrl + "/tomorrowStudentSchedule";
         return getStudentScheduleRestTemplate(url, studentId);
     }
@@ -61,31 +70,65 @@ public class ScheduleServiceImpl implements ScheduleService {
     }
 
     @Override
-    public List<ScheduleDto> getStudentSubjectSchedule(Long studentId, Long subjectId){
+    public List<ScheduleVDto> getStudentSubjectSchedule(Long studentId, Long subjectId){
         String url = serverUrl + "/getSubjectStudentSchedule";
         return getStudentScheduleRestTemplate(url, studentId, subjectId);
     }
 
-    public SubjectDto getSubjectRestTemplate(String url, Long studentId){
+    @Override
+    public Map<AbstractMap.SimpleEntry<String, Boolean>, List<ScheduleVDto>> getStudentMappedSchedule(Long studentId){
+        return mapSchedule(getStudentFullSchedule(studentId));
+    }
+
+    private SubjectDto getSubjectRestTemplate(String url, Long studentId){
         RestRequestConstructor<SubjectDto> ctor = new RestRequestConstructor<>(entityProvider);
         MultiValueMap<String, String> params =new LinkedMultiValueMap<>();
         params.add("studentId", studentId.toString());
         return ctor.getRestTemplate(url, params);
     }
 
-    public List<ScheduleDto> getStudentScheduleRestTemplate(String url, Long studentId){
-        RestRequestConstructor<List<ScheduleDto>> ctor = new RestRequestConstructor<>(entityProvider);
+    private List<ScheduleVDto> getStudentScheduleRestTemplate(String url, Long studentId){
+        RestRequestConstructor<List<ScheduleVDto>> ctor = new RestRequestConstructor<>(entityProvider);
         MultiValueMap<String, String> params =new LinkedMultiValueMap<>();
         params.add("studentId", studentId.toString());
         return ctor.getRestTemplate(url, params);
     }
 
-    public List<ScheduleDto> getStudentScheduleRestTemplate(String url, Long studentId, Long subjectId){
-        RestRequestConstructor<List<ScheduleDto>> ctor = new RestRequestConstructor<>(entityProvider);
+    private List<ScheduleVDto> getStudentScheduleRestTemplate(String url, Long studentId, Long subjectId){
+        RestRequestConstructor<List<ScheduleVDto>> ctor = new RestRequestConstructor<>(entityProvider);
         MultiValueMap<String, String> params =new LinkedMultiValueMap<>();
         params.add("studentId", studentId.toString());
         params.add("subjectId", subjectId.toString());
         return ctor.getRestTemplate(url, params);
+    }
+
+    private Map <AbstractMap.SimpleEntry <String, Boolean>, List<ScheduleVDto>> mapSchedule(List<ScheduleVDto> schedules){
+        Map <AbstractMap.SimpleEntry <String, Boolean>, List<ScheduleVDto>> mapped = new TreeMap<>(new ScheduleMapComp());
+        schedules.forEach((s) -> {
+                    var entry = new AbstractMap.SimpleEntry<>(s.getDayName(), s.getWeekIsOdd());
+                    if(!mapped.containsKey(entry)) mapped.put(entry, new ArrayList<>());
+                    mapped.get(entry).add(s);
+                }
+        );
+        mapped.forEach((key, value) -> value.sort(new ScheduleListComp()));
+        return mapped;
+    }
+    
+    static class ScheduleMapComp implements Comparator<AbstractMap.SimpleEntry <String, Boolean>>{
+        @Override
+        public int compare(AbstractMap.SimpleEntry<String, Boolean> o1, AbstractMap.SimpleEntry<String, Boolean> o2) {
+            if(o1.getValue().equals(o2.getValue())){
+                return DayOfWeek.valueOf(o1.getKey()).compareTo(DayOfWeek.valueOf(o2.getKey()));
+            }
+            return o1.getValue().compareTo(o2.getValue());
+        }
+    }
+
+    static class ScheduleListComp implements Comparator<ScheduleVDto>{
+        @Override
+        public int compare(ScheduleVDto o1, ScheduleVDto o2) {
+            return o1.getClassTimeDto().getStartTime().compareTo(o2.getClassTimeDto().getStartTime());
+        }
     }
 
 
