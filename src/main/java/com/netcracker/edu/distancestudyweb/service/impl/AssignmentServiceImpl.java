@@ -181,13 +181,10 @@ public class AssignmentServiceImpl implements AssignmentService {
     }
 
 
-
     @Override
     public List<List<AssignmentDto>> getAssignmentsByEvent(Long eventId, Long groupId) {
 
-
         List<AssignmentDto> assignments;
-
         try{
             HttpEntity<?> httpEntity = entityProvider.getDefaultWithTokenFromContext(null, null);
             Map<String, Object> parameters = new HashMap<>();
@@ -198,6 +195,11 @@ public class AssignmentServiceImpl implements AssignmentService {
         }
         catch (UnsupportedEncodingException e) {
             throw new InternalServiceException(e);
+        }
+
+
+        for (AssignmentDto assignmentDto: assignments){
+            System.out.println(assignmentDto.getDbFile());
         }
 
 
@@ -229,6 +231,7 @@ public class AssignmentServiceImpl implements AssignmentService {
         studentsNameSorting(assessedAssignments);
         studentsNameSorting(unassessedAssignments);
 
+        System.out.println(unassessedAssignments.size());
         res.add(assessedAssignments);
         res.add(unassessedAssignments);
         return res;

@@ -19,6 +19,12 @@
             font-size: 120%;
             width: 20%;
         }
+        .btn-light{
+            width: 80%;
+        }
+        .btn-light btn-sm{
+            width: 80%;
+        }
     </style>
 
 </head>
@@ -48,18 +54,6 @@
     </table>
 </form>
 
-<div class="btn-group">
-    <button type="button" class="btn btn-danger dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-        Action
-    </button>
-    <div class="dropdown-menu">
-        <a class="dropdown-item" href="#">Action</a>
-        <a class="dropdown-item" href="#">Another action</a>
-        <a class="dropdown-item" href="#">Something else here</a>
-        <div class="dropdown-divider"></div>
-        <a class="dropdown-item" href="#">Separated link</a>
-    </div>
-</div>
 
 <div class="container">
     <div class="row p-3">
@@ -76,29 +70,26 @@
                     <h5 th:text="'Group: '+ ${event.getGroup().getGroupName()}"></h5>
 
 
-                    <div class="btn-group">
+<!--                    <div class="btn-group">-->
                         <button type="button" class="btn btn-light btn-sm dropdown-toggle" data-toggle="dropdown">
-                            Описание
+                            Description
                         </button>
                         <div class="dropdown-menu p-4 text-muted" style="max-width: 300px;">
                             <p class="card-text" th:text="${event.getDescription()}"></p>
                         </div>
-                    </div>
+<!--                    </div>-->
 
+                    <div th:unless="${event.getDatabaseFileDto() == null}">
+                        <a th:href="'/teacherHomework/downloadFile/' + ${event.getDatabaseFileDto().getId()}" class="btn btn-light btn-sm" download>Download file</a>
+                    </div>
 
                     <form th:action="'/teacherHomework/getAssignments/' + ${event.getId()}" th:method="GET">
                         <input type="hidden" name="groupId" th:value="${event.getGroup().getId()}">
                         <input type="hidden" name="startDate"  th:value="${event.getStartDate().format(dateTimeFormatter)}">
                         <input type="hidden" name="endDate"  th:value="${event.getEndDate().format(dateTimeFormatter)}">
                         <input type="hidden" name="subjectName" th:value="${event.getSubject().getName()}">
-                        <button class="btn btn-sml" type="submit">Attachments</button>
+                        <button class="btn btn-light btn-sm" type="submit">Attachments</button>
                     </form>
-
-
-                    <div th:unless="${event.getDatabaseFileDto() == null}">
-                        <p><a th:href="'downloadFile/' + ${event.getDatabaseFileDto().getId()}" class="btn btn-light" download>Download</a>
-                    </div>
-
                 </div>
                 <div class="card-footer">
                     <div class="row justify-content-md-center">
@@ -121,11 +112,9 @@
             </div>
         </div>
 </div>
-
 </div>
 
 <th:block th:insert="fragments/commoneJsFiles.html :: jsFiles"/>
-<script th:src="@{/static/js/home/home.js}"></script>
 
 </body>
 </html>

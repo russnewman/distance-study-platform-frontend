@@ -11,11 +11,11 @@ public class DatabaseFileDto {
     private String id;
     private String fileName;
     private String fileType;
-//    private byte[] file;
+    private byte[] file;
 
     public DatabaseFileDto(String fileName, String fileType){
         this.fileName = fileName;
         this.fileType = fileType;
-//        this.file = file;
+        this.file = file;
     }
 }

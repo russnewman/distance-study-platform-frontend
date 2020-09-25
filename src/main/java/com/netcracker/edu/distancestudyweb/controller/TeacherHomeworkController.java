@@ -82,7 +82,6 @@ public class TeacherHomeworkController {
         model.addAttribute("events", eventUiService.getEvents(teacherId, sortingType, subjectName));
         model.addAttribute("subjects", subjectUiService.getSubjectsByTeacherId(teacherId));
         model.addAttribute("dateTimeFormatter", DateTimeFormatter.ofPattern("dd.MM.yyyy"));
-        model.addAttribute("uiUrl", uiUrl);
 
         model.addAttribute("sortingType", sortingType);
         model.addAttribute("subjectName", subjectName);
@@ -101,7 +100,6 @@ public class TeacherHomeworkController {
     }
 
 
-
     @GetMapping("/editEvent/{eventId}")
     public String editEvent(@PathVariable Long eventId,
                             @RequestParam("sortingType") String sortingType,
@@ -114,7 +112,7 @@ public class TeacherHomeworkController {
         model.addAttribute("teacherId", teacherId);
         model.addAttribute("groups", groupService.findGroupsByTeacherAndSubject(teacherId, event.getSubject().getName()));
         model.addAttribute("dateTimeFormatter", DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-        model.addAttribute("uiUrl", uiUrl);
+//        model.addAttribute("uiUrl", uiUrl);
 
 
         model.addAttribute("sortingType", sortingType);
@@ -139,8 +137,6 @@ public class TeacherHomeworkController {
 
         return "redirect:" +  builder.toUriString();
     }
-
-
 
     @PostMapping("/editEvent/{eventId}")
     public String editEvent(@PathVariable Long eventId,
@@ -280,6 +276,7 @@ public class TeacherHomeworkController {
 
         return "redirect:" + builder.toUriString();
     }
+
 
     @GetMapping("/downloadFile/{fileId}")
     public ResponseEntity<Resource> downloadFile(@PathVariable String fileId){
