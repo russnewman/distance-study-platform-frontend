@@ -1,9 +1,15 @@
 package com.netcracker.edu.distancestudyweb.controller;
 
+import com.netcracker.edu.distancestudyweb.dto.ScheduleDto;
+import com.netcracker.edu.distancestudyweb.dto.ScheduleVDto;
+import com.netcracker.edu.distancestudyweb.dto.StudentScheduleDto;
 import com.netcracker.edu.distancestudyweb.service.ScheduleService;
 import com.netcracker.edu.distancestudyweb.service.SubjectService;
+import com.netcracker.edu.distancestudyweb.service.impl.ScheduleServiceImpl;
+import com.netcracker.edu.distancestudyweb.service.impl.SecurityUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -11,9 +17,12 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.util.*;
+
 
 @Controller
 @Slf4j
+@PreAuthorize("isAuthenticated()")
 @RequestMapping("/studentSchedule")
 public class StudentTimetableController {
     private final ScheduleService scheduleUiService;
@@ -26,32 +35,24 @@ public class StudentTimetableController {
         this.subjectUiService = subjectUiService;
     }
 
-    @GetMapping("/full/{studentId}")
+    @GetMapping("/full")
     public String getSchedule(
-            @PathVariable("studentId") Long studentId,
             Model model){
-        model.addAttribute("schedules", scheduleUiService.getStudentFullSchedule(studentId).getSchedules());
-        model.addAttribute("subjects", subjectUiService.getAllSubjects().getSubjects());
-        model.addAttribute("todaySchedules", scheduleUiService.getStudentTodaySchedule(studentId).getSchedules());
-        model.addAttribute("tomorrowSchedules", scheduleUiService.getStudentTomorrowSchedule(studentId).getSchedules());
-        //model.addAttribute("currentSubject", scheduleUiService.getStudentCurrentSubject(studentId));
-        //model.addAttribute("nextSubject", scheduleUiService.getStudentNextSubject(studentId));
+        Long studentId = SecurityUtils.getId();
+        model.addAttribute("subjects", subjectUiService.getAllSubjects());
+        model.addAttribute("mappedSchedule", scheduleUiService.getStudentFullSchedule(studentId));
+        model.addAttribute("todaySchedule", scheduleUiService.getStudentTodaySchedule(studentId));
+        model.addAttribute("tomorrowSchedule", scheduleUiService.getStudentTomorrowSchedule(studentId));
         return "student_schedule";
     }
 
-    @GetMapping("/subjectSchedule/{studentId}")
-    public String getSubjectSchedule(@PathVariable("studentId") Long studentId, @RequestParam("subject") Long subjectId, Model model){
-        model.addAttribute("schedules", scheduleUiService.getStudentSubjectSchedule(studentId, subjectId).getSchedules());
-        model.addAttribute("subjects", subjectUiService.getAllSubjects().getSubjects());
+    @GetMapping("/subjectSchedule")
+    public String getSubjectSchedule(@RequestParam("subject") Long subjectId, Model model){
+        Long studentId = SecurityUtils.getId();
+        model.addAttribute("subjects", subjectUiService.getAllSubjects());
+        model.addAttribute("mappedSchedule", scheduleUiService.getStudentSubjectSchedule(studentId, subjectId));
+        model.addAttribute("todaySchedule", scheduleUiService.getStudentTodaySchedule(studentId));
+        model.addAttribute("tomorrowSchedule", scheduleUiService.getStudentTomorrowSchedule(studentId));
         return "student_schedule";
     }
-
-    @GetMapping("/test_page")
-    public String test(Model model,
-                       @RequestParam(name="name", required=false, defaultValue="World") String name){
-        model.addAttribute("name", name);
-        return "test_page";
-    }
-
-
 }

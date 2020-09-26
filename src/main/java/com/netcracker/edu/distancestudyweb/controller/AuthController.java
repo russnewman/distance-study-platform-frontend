@@ -1,7 +1,11 @@
 package com.netcracker.edu.distancestudyweb.controller;
 
+import com.netcracker.edu.distancestudyweb.configuration.SecurityConfig;
 import com.netcracker.edu.distancestudyweb.dto.authentication.AuthenticationRequest;
 import com.netcracker.edu.distancestudyweb.service.AuthenticationService;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Import;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -16,8 +20,10 @@ import static com.netcracker.edu.distancestudyweb.controller.ControllerUtils.SER
 
 @Controller
 @RequestMapping("/auth")
+@Slf4j
 public class AuthController {
-    private AuthenticationService authService;
+    private final AuthenticationService authService;
+
 
     public AuthController(AuthenticationService authService) {
         this.authService = authService;

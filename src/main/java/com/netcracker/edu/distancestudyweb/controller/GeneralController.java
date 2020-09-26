@@ -30,7 +30,7 @@ public class GeneralController {
         return "teacher_profile";
     }
 
-    @GetMapping(value = "/test")
+    //@GetMapping(value = "/test")
     public String getTest() {
         return "testUploadFile";
     }

@@ -1,0 +1,87 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js" integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV" crossorigin="anonymous"></script>
+    <th:block th:insert="fragments/commonHeaders.html :: commonHead"/>
+    <link rel="stylesheet" th:href="@{/static/css/studentHomework.css}"/>
+</head>
+<body>
+<th:block th:insert="fragments/navbar.html :: navbar" />
+<h2 align="center" class="container">Choose subject</h2>
+<div align="center" class = "container">
+    <table class="table table-hover">
+        <tr th:if="${schedules.empty}">
+            <td colspan="2"> No Schedule Available </td>
+        </tr>
+        <tr>
+            <th scope="col">Subject</th>
+            <th scope="col">Teacher</th>
+            <th scope="col">Day Name</th>
+            <th scope="col">ClassTime</th>
+        </tr>
+        <tr th:each="schedule : ${schedules}">
+            <td scope="row" th:utext="${schedule.subjectDto.name}"></td>
+            <td scope="row" th:utext="${schedule.teacher.name + ' ' + schedule.teacher.surname}"></td>
+            <td scope="row" th:utext="${schedule.dayName}"></td>
+            <td scope="row" th:utext="${schedule.classTimeDto.startTime + '-' + schedule.classTimeDto.endTime}"></td>
+        </tr>
+    </table>
+    <div class="form-group">
+        <h1>Form</h1>
+        <form action="#" th:action="'/studentSchedule/subjectSchedule/' + ${studentId}" th:object="${subjects}" method="get">
+            <select class="form-control" name="subject">
+                <option th:value="null">Все предметы</option>
+                <option  th:each="subject: ${subjects}" th:value="${subject.id}" th:text="${subject.name}" th:selected="${subject}==${subject.id}"></option>>
+            </select>
+            <p><input class="form-control"  type="submit" value="Показать"/></p>
+        </form>
+    </div>
+    <div align="center" class = "container">
+        <h1>Сегодня</h1>
+        <table class="table">
+            <!--                <tr th:if="${todaySchedules.empty}">-->
+            <!--                    <td colspan="2"> No Schedule Available </td>-->
+            <!--                </tr>-->
+            <tr>
+                <th scope="col">Subject</th>
+                <th scope="col">Teacher</th>
+                <th scope="col">Day Name</th>
+                <th scope="col">ClassTime</th>
+            </tr>
+            <tr th:each="schedule : ${todaySchedules}">
+                <td scope="row" th:utext="${schedule.subjectDto.name}"></td>
+                <td scope="row" th:utext="${schedule.teacher.name + ' ' + schedule.teacher.surname}"></td>
+                <td scope="row" th:utext="${schedule.dayName}"></td>
+                <td scope="row" th:utext="${schedule.classTimeDto.startTime + '-' + schedule.classTimeDto.endTime}"></td>
+            </tr>
+        </table>
+        <h1>Завтра</h1>
+        <table class="table">
+            <!--                <tr th:if="${tomorrowSchedules.empty}">-->
+            <!--                    <td colspan="2"> No Schedule Available </td>-->
+            <!--                </tr>-->
+            <tr>
+                <th scope="col">Subject</th>
+                <th scope="col">Teacher</th>
+                <th scope="col">Day Name</th>
+                <th scope="col">ClassTime</th>
+            </tr>
+            <tr th:each="schedule : ${tomorrowSchedules}">
+                <td scope="row" th:utext="${schedule.subjectDto.name}"></td>
+                <td scope="row" th:utext="${schedule.teacher.name + ' ' + schedule.teacher.surname}"></td>
+                <td scope="row" th:utext="${schedule.dayName}"></td>
+                <td scope="row" th:utext="${schedule.classTimeDto.startTime + '-' + schedule.classTimeDto.endTime}"></td>
+            </tr>
+        </table>
+    </div>
+    <footer class="footer">
+        <div class="container">
+            <span class="text-muted">Place sticky footer content here.</span>
+        </div>
+    </footer>
+</body>
+</html>   

@@ -1,11 +1,14 @@
 package com.netcracker.edu.distancestudyweb.dto;
 
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+import lombok.*;
 
 
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class  ScheduleDto {
     private Long id;
 
