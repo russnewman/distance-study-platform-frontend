@@ -1,0 +1,45 @@
+.wcont{
+    width: 60%;
+    max-width: 600px;
+    position: relative;
+    top: 10%;
+    left: 25%;
+}
+
+.schedule{
+    background-color:#38ab83;
+    width: 60%;
+    max-width: 600px;
+    position:  relative;
+    left: 25%;
+}
+
+.select-form {
+    width: 40%;
+    max-width: 600px;
+    position: relative;
+    left: 2%;
+}
+
+.sl-btn{
+    width:60%;
+    max-width:600px;
+    position: relative;
+    left: 25%;
+}
+
+.row.header {
+    font-weight: 900;
+    color: #ffffff;
+    background: #1cd095;
+}
+
+.table-title {
+    background-color: lightblue;
+    height: 60%;
+    width: 60%;
+    max-width: 600px;
+    position: relative;
+    left: 25%;
+    font-weight: bold;
+}

@@ -3,6 +3,9 @@
 <head>
     <title>Getting Started: Serving Web Content</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <link rel="stylesheet" th:href="@{/static/css/studentHomework.css}"/>
+    <link rel="stylesheet" th:href="@{/static/css/studentSchedule.css}"/>
+    <th:block th:insert="fragments/commonHeaders.html :: commonHead"/>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous"></script>
@@ -10,28 +13,28 @@
 </head>
 <body>
     <th:block th:insert="fragments/navbar.html :: navbar" />
-
+    <div class="container">
         <div class="col-md-3 text-center">
             <a class="btn btn-secondary btn-lg" href="/home">Back</a>
         </div>
 
-        <div align="center" class="form-group">
-            <h5 align="center" style="width:60%; max-width:600px" class="card-header info-color white-text text-center py-4">
+        <div class="form-group">
+            <h5 class="card-header info-color white-text text-center py-4 wcont">
                 <strong>Choose subject</strong>
             </h5>
-            <form align="center" style="width:60%; max-width:600px" class="text-center border border-light p-5" action="#" th:action="@{/studentSchedule/subjectSchedule/}" th:object="${subjects}" method="get">
-                <select style="width:60%; max-width:600px" class="mdb-select md-form" name="subject">
-                    <option th:value="null">All subjects</option>
+            <form class="text-center border border-light p-5" action="#" th:action="@{/studentSchedule/subjectSchedule/}" th:object="${subjects}" method="get">
+                <select class="mdb-select md-form select-form" name="subject">
+                    <option th:value="0">All subjects</option>
                     <option  th:each="subject: ${subjects}" th:value="${subject.id}" th:text="${subject.name}" th:selected="${subject}==${subject.id}"></option>>
                 </select>
-                <p align="center" style="width:60%; max-width:600px"><input align="center"  class="form-control"  type="submit" value="Show"/></p>
+                <p ><input  class="select-form"  type="submit" value="Show"/></p>
             </form>
         </div>
 
-        <div align="center" class = "center-block" th:each="mschedule : ${mappedSchedule}">
-            <div align="center" class="w-50 p-3 center-block text-left" th:text="${mschedule.key.key}" style="background-color:#1dabc1; ; width:60%; max-width:600px;font-weight:bold;"></div>
-            <div align="center" class="w-50 p-3 center-block text-left" th:text="${mschedule.key.value} ? 'Odd week' : 'Even week'" style="background-color:#1dabc1; height:60%; width:60%; max-width:600px;"></div>
-            <table class="table center-block" style="background-color:#38ab83; width:60%; max-width:600px">
+        <div class = "center-block" th:each="mschedule : ${mappedSchedule}">
+            <div class="w-100 p-3 center-block text-left table-title" th:text="${mschedule.key.key}" ></div>
+            <div class="w-100 p-3 center-block text-left table-title" th:text="${mschedule.key.value} ? 'Odd week' : 'Even week'" ></div>
+            <table class="table center-block schedule">
                 <tr style="background-color:#1cd095;">
                     <th scope="col">Subject</th>
                     <th scope="col">Teacher</th>
@@ -44,5 +47,7 @@
                 </tr>
             </table>
         </div>
+
+    </div>
 </body>
 </html>

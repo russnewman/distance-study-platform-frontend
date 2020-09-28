@@ -13,7 +13,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -49,8 +48,9 @@ public class StudentTimetableController {
     @GetMapping("/subjectSchedule")
     public String getSubjectSchedule(@RequestParam("subject") Long subjectId, Model model){
         Long studentId = SecurityUtils.getId();
+        if(subjectId == 0)  model.addAttribute("mappedSchedule", scheduleUiService.getStudentFullSchedule(studentId));
+        else model.addAttribute("mappedSchedule", scheduleUiService.getStudentSubjectSchedule(studentId, subjectId));
         model.addAttribute("subjects", subjectUiService.getAllSubjects());
-        model.addAttribute("mappedSchedule", scheduleUiService.getStudentSubjectSchedule(studentId, subjectId));
         model.addAttribute("todaySchedule", scheduleUiService.getStudentTodaySchedule(studentId));
         model.addAttribute("tomorrowSchedule", scheduleUiService.getStudentTomorrowSchedule(studentId));
         return "student_schedule";

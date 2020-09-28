@@ -37,7 +37,6 @@ public class AssignmentServiceImpl implements AssignmentService {
     }
 
 
-
     @Override
     public List<AssignmentDto> getAllStudentAssignments(Long studentId) {
         String URL = serverUrl + "/studentAssignments";
@@ -181,6 +180,7 @@ public class AssignmentServiceImpl implements AssignmentService {
     }
 
 
+
     @Override
     public List<List<AssignmentDto>> getAssignmentsByEvent(Long eventId, Long groupId) {
 
@@ -196,7 +196,6 @@ public class AssignmentServiceImpl implements AssignmentService {
         catch (UnsupportedEncodingException e) {
             throw new InternalServiceException(e);
         }
-
 
         for (AssignmentDto assignmentDto: assignments){
             System.out.println(assignmentDto.getDbFile());

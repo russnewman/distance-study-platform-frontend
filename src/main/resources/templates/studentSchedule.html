@@ -1,8 +1,10 @@
 <!DOCTYPE HTML>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Getting Started: Serving Web Content</title>
+    <title>Student schedule</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <link rel="stylesheet" th:href="@{/static/css/studentSchedule.css}"/>
+    <link rel="stylesheet" th:href="@{/static/css/studentHomework.css}"/>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous"></script>
@@ -10,22 +12,30 @@
 </head>
 <body>
 <th:block th:insert="fragments/navbar.html :: navbar" />
-
-<div class="col-md-3 text-center">
-    <a class="btn btn-secondary btn-lg" href="/home">Back</a>
-</div>
-
-<div align="center" class="form-group">
-    <h5 align="center" style="width:60%; max-width:600px" class="card-header info-color white-text text-center py-4">
-        <strong>Choose subject</strong>
-    </h5>
-    <form align="center" style="width:60%; max-width:600px" class="text-center border border-light p-5" action="#" th:action="@{/studentSchedule/subjectSchedule/}" th:object="${subjects}" method="get">
-        <select style="width:60%; max-width:600px" class="mdb-select md-form" name="subject">
-            <option th:value="null">All subjects</option>
-            <option  th:each="subject: ${subjects}" th:value="${subject.id}" th:text="${subject.name}" th:selected="${subject}==${subject.id}"></option>>
-        </select>
-        <p align="center" style="width:60%; max-width:600px"><input align="center"  class="form-control"  type="submit" value="Show"/></p>
-    </form>
+<div class="container wcont">
+    <div class="row mt-5">
+        <div class="col-md-3 text-center">
+            <a class="btn btn-secondary btn-lg" href="/home">Back</a>
+        </div>
+        <div class="col-md-6">
+            <form action="#" th:action="@{/studentSchedule/subjectSchedule/}" th:object="${subjects}" method="get" id="subject-choose-form">
+                <div class="form-group row">
+                    <label for="subject-input" class="col-md-4 col-form-label text-center">Subject</label>
+                                <select class="mdb-select md-form" name="subject" id="subject-input">
+                                    <option th:value="null">Subject</option>
+                                    <option  th:each="subject: ${subjects}" th:value="${subject.id}" th:text="${subject.name}" th:selected="${subject}==${subject.id}"></option>>
+                                </select>
+                </div>
+                <div class="form-group row">
+                    <div class="col-md-4 text-right">
+                        <button type="submit" class="btn btn-primary">Search</button>
+                    </div>
+                    <div class="col-md-8 offset-md-8">
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
 </div>
 
 <div align="center" class = "center-block" th:each="mschedule : ${mappedSchedule}">
