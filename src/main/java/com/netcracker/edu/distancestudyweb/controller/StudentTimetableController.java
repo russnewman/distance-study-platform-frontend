@@ -1,11 +1,7 @@
 package com.netcracker.edu.distancestudyweb.controller;
 
-import com.netcracker.edu.distancestudyweb.dto.ScheduleDto;
-import com.netcracker.edu.distancestudyweb.dto.ScheduleVDto;
-import com.netcracker.edu.distancestudyweb.dto.StudentScheduleDto;
 import com.netcracker.edu.distancestudyweb.service.ScheduleService;
 import com.netcracker.edu.distancestudyweb.service.SubjectService;
-import com.netcracker.edu.distancestudyweb.service.impl.ScheduleServiceImpl;
 import com.netcracker.edu.distancestudyweb.service.impl.SecurityUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,8 +11,6 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-
-import java.util.*;
 
 
 @Controller
@@ -36,7 +30,7 @@ public class StudentTimetableController {
 
     @GetMapping("/full")
     public String getSchedule(
-            Model model){
+            Model model) {
         Long studentId = SecurityUtils.getId();
         model.addAttribute("subjects", subjectUiService.getAllSubjects());
         model.addAttribute("mappedSchedule", scheduleUiService.getStudentFullSchedule(studentId));
@@ -46,9 +40,9 @@ public class StudentTimetableController {
     }
 
     @GetMapping("/subjectSchedule")
-    public String getSubjectSchedule(@RequestParam("subject") Long subjectId, Model model){
+    public String getSubjectSchedule(@RequestParam("subject") Long subjectId, Model model) {
         Long studentId = SecurityUtils.getId();
-        if(subjectId == 0)  model.addAttribute("mappedSchedule", scheduleUiService.getStudentFullSchedule(studentId));
+        if (subjectId == 0) model.addAttribute("mappedSchedule", scheduleUiService.getStudentFullSchedule(studentId));
         else model.addAttribute("mappedSchedule", scheduleUiService.getStudentSubjectSchedule(studentId, subjectId));
         model.addAttribute("subjects", subjectUiService.getAllSubjects());
         model.addAttribute("todaySchedule", scheduleUiService.getStudentTodaySchedule(studentId));

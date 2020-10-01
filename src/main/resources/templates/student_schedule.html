@@ -1,7 +1,7 @@
 <!DOCTYPE HTML>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Getting Started: Serving Web Content</title>
+    <title>DSP - Schedule</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <link rel="stylesheet" th:href="@{/static/css/studentHomework.css}"/>
     <link rel="stylesheet" th:href="@{/static/css/studentSchedule.css}"/>
@@ -14,40 +14,106 @@
 <body>
     <th:block th:insert="fragments/navbar.html :: navbar" />
     <div class="container">
-        <div class="col-md-3 text-center">
-            <a class="btn btn-secondary btn-lg" href="/home">Back</a>
-        </div>
+        <div class="row">
 
-        <div class="form-group">
-            <h5 class="card-header info-color white-text text-center py-4 wcont">
-                <strong>Choose subject</strong>
-            </h5>
-            <form class="text-center border border-light p-5" action="#" th:action="@{/studentSchedule/subjectSchedule/}" th:object="${subjects}" method="get">
-                <select class="mdb-select md-form select-form" name="subject">
-                    <option th:value="0">All subjects</option>
-                    <option  th:each="subject: ${subjects}" th:value="${subject.id}" th:text="${subject.name}" th:selected="${subject}==${subject.id}"></option>>
-                </select>
-                <p ><input  class="select-form"  type="submit" value="Show"/></p>
-            </form>
-        </div>
+            <div class="col-md-4">
+                <div class="row">
+                    <div class="col-md-12">
+                        <h3 class="text-center mx-auto p-3 mt-2 bg-info text-light">Today Schedule</h3>
+                        <div th:if="${todaySchedule.empty}">
+                            <p class="text-secondary text-center">No classes today</p>
+                        </div>
+                        <div class = "center-block" th:each="tsrow : ${todaySchedule}">
+                            <div class="w-100 p-3 center-block text-left bg-primary text-light font-weight-bold" th:text="${tsrow.dayName}" ></div>
+                            <div class="w-100 p-3 center-block text-left bg-primary text-light font-weight-bold" th:text="${tsrow.weekIsOdd} ? 'Odd week' : 'Even week'" ></div>
+                            <table class="table center-block">
+                                <thead class="bg-primary text-light font-weight-bold">
+                                    <tr>
+                                        <th class="font-weight-bold" scope="col">Subject</th>
+                                        <th class="font-weight-bold" scope="col">Teacher</th>
+                                        <th class="font-weight-bold" scope="col">ClassTime</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="tbrow font-weight-normal">
+                                    <tr>
+                                        <td class="tbrow font-weight-normal" scope="row" th:utext="${tsrow.subject}"></td>
+                                        <td class="tbrow font-weight-normal" scope="row" th:utext="${tsrow.teacher}"></td>
+                                        <td class="tbrow font-weight-normal" scope="row" th:utext="${tsrow.classTimeDto.startTime + '-' + tsrow.classTimeDto.endTime}"></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <h3 class="text-center mx-auto p-3 mt-2 bg-info text-light">Tomorrow Schedule</h3>
+                        <div th:if="${tomorrowSchedule.empty}">
+                            <p class="text-secondary text-center">No classes tomorrow</p>
+                        </div>
+                        <div class = "center-block">
+                            <div class="w-100 p-3 center-block text-left bg-primary text-light font-weight-bold" th:text="${tomorrowSchedule[0].dayName}" ></div>
+                            <div class="w-100 p-3 center-block text-left bg-primary text-light font-weight-bold" th:text="${tomorrowSchedule[0].weekIsOdd} ? 'Odd week' : 'Even week'" ></div>
+                            <table class="table center-block">
+                                <thead class="bg-primary text-light font-weight-bold">
+                                    <tr>
+                                        <th class="font-weight-bold" scope="col">Subject</th>
+                                        <th class="font-weight-bold" scope="col">Teacher</th>
+                                        <th class="font-weight-bold" scope="col">ClassTime</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="tbrow font-weight-normal">
+                                    <tr th:each="ndrow : ${tomorrowSchedule}">
+                                        <td class="tbrow font-weight-normal" scope="row" th:utext="${ndrow.subject}"></td>
+                                        <td class="tbrow font-weight-normal" scope="row" th:utext="${ndrow.teacher}"></td>
+                                        <td class="tbrow font-weight-normal" scope="row" th:utext="${ndrow.classTimeDto.startTime + '-' + ndrow.classTimeDto.endTime}"></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
 
-        <div class = "center-block" th:each="mschedule : ${mappedSchedule}">
-            <div class="w-100 p-3 center-block text-left table-title" th:text="${mschedule.key.key}" ></div>
-            <div class="w-100 p-3 center-block text-left table-title" th:text="${mschedule.key.value} ? 'Odd week' : 'Even week'" ></div>
-            <table class="table center-block schedule">
-                <tr style="background-color:#1cd095;">
-                    <th scope="col">Subject</th>
-                    <th scope="col">Teacher</th>
-                    <th scope="col">ClassTime</th>
-                </tr>
-                <tr th:each="row : ${mschedule.value}">
-                    <td scope="row" th:utext="${row.subject}"></td>
-                    <td scope="row" th:utext="${row.teacher}"></td>
-                    <td scope="row" th:utext="${row.classTimeDto.startTime + '-' + row.classTimeDto.endTime}"></td>
-                </tr>
-            </table>
-        </div>
+            </div>
 
+            <div class="col-md-8">
+
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <h3 class="card-header info-color white-text text-center py-4">
+                                <strong>Choose subject</strong>
+                            </h3>
+                            <form class="text-center" action="#" th:action="@{/studentSchedule/subjectSchedule/}" th:object="${subjects}" method="get">
+                                <select class="mdb-select md-form select-form" name="subject">
+                                    <option th:value="0">All subjects</option>
+                                    <option  th:each="subject: ${subjects}" th:value="${subject.id}" th:text="${subject.name}" th:selected="${subject}==${subject.id}"></option>>
+                                </select>
+                                <p ><input  class="select-form btn btn-primary"  type="submit" value="Show"/></p>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-12">
+                        <h3 class="text-center mx-auto p-3 mt-2 bg-info text-light">Schedule</h3>
+                        <div class = "center-block" th:each="mschedule : ${mappedSchedule}">
+                            <div class="w-100 p-3 center-block text-left bg-primary text-light font-weight-bold" th:text="${mschedule.key.key}" ></div>
+                            <div class="w-100 p-3 center-block text-left bg-primary text-light font-weight-bold" th:text="${mschedule.key.value} ? 'Odd week' : 'Even week'" ></div>
+                            <table class="table center-block">
+                                <tr class="bg-primary text-light font-weight-bold">
+                                    <th class="font-weight-bold" scope="col">Subject</th>
+                                    <th class="font-weight-bold" scope="col">Teacher</th>
+                                    <th class="font-weight-bold" scope="col">ClassTime</th>
+                                </tr>
+                                <tr th:each="row : ${mschedule.value}">
+                                    <td class="tbrow font-weight-normal" th:utext="${row.subject}"></td>
+                                    <td class="tbrow font-weight-normal" th:utext="${row.teacher}"></td>
+                                    <td class="tbrow font-weight-normal" th:utext="${row.classTimeDto.startTime + '-' + row.classTimeDto.endTime}"></td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </body>
 </html>
