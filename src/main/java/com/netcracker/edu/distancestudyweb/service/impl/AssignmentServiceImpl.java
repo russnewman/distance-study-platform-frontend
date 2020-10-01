@@ -198,9 +198,7 @@ public class AssignmentServiceImpl implements AssignmentService {
         }
 
         for (AssignmentDto assignmentDto: assignments){
-            System.out.println(assignmentDto.getDbFile());
         }
-
 
 
         List<StudentDto> Students = studentService.getStudentsByGroup(groupId);
@@ -230,7 +228,6 @@ public class AssignmentServiceImpl implements AssignmentService {
         studentsNameSorting(assessedAssignments);
         studentsNameSorting(unassessedAssignments);
 
-        System.out.println(unassessedAssignments.size());
         res.add(assessedAssignments);
         res.add(unassessedAssignments);
         return res;

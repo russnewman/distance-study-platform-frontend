@@ -112,8 +112,6 @@ public class TeacherHomeworkController {
         model.addAttribute("teacherId", teacherId);
         model.addAttribute("groups", groupService.findGroupsByTeacherAndSubject(teacherId, event.getSubject().getName()));
         model.addAttribute("dateTimeFormatter", DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-//        model.addAttribute("uiUrl", uiUrl);
-
 
         model.addAttribute("sortingType", sortingType);
         model.addAttribute("subjectName", subjectName);
@@ -213,7 +211,6 @@ public class TeacherHomeworkController {
         if (!fileOptional.isEmpty()){
 
             Response response = databaseFileService.saveDatabaseFile(fileOptional);
-            System.out.println(response);
 
             DatabaseFileDto databaseFileDto = new DatabaseFileDto();
             databaseFileDto.setId(response.getFileId());

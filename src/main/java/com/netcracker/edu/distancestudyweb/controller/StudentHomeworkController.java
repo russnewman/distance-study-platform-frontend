@@ -32,22 +32,30 @@ public class StudentHomeworkController {
 
     @GetMapping
     public String getHomework(Model model, EventFormRequest formRequest) {
-        List<StudentEvent> studentEvents = homeworkService.getEvents(formRequest);
-        studentEvents.forEach(event -> event.setElapsed(event.getEndDate().isBefore(LocalDateTime.now())));
-        List<Subject> subjects = subjectService.getAll();
-        subjects.stream()
-                .filter(subject -> subject.getId().equals(formRequest.getSubjectId()))
-                .findFirst().ifPresent(value -> value.setSelected(true));
-        model.addAttribute("events", studentEvents);
-        model.addAttribute("subjects", subjects);
-        model.addAttribute("serverUrl", url);
-        return "studentHomework";
+        try {
+            List<StudentEvent> studentEvents = homeworkService.getEvents(formRequest);
+            studentEvents.forEach(event -> event.setElapsed(event.getEndDate().isBefore(LocalDateTime.now())));
+            List<Subject> subjects = subjectService.getAll();
+            subjects.stream()
+                    .filter(subject -> subject.getId().equals(formRequest.getSubjectId()))
+                    .findFirst().ifPresent(value -> value.setSelected(true));
+            model.addAttribute("events", studentEvents);
+            model.addAttribute("subjects", subjects);
+            model.addAttribute("serverUrl", url);
+            return "studentHomework";
+        } catch (Exception e) {
+            return "error";
+        }
     }
 
 
     @PostMapping
     public String uploadHomework(AssignmentFormRequest formRequest) {
-        homeworkService.uploadHomework(formRequest);
-        return "redirect:/studentHomework";
+        try {
+            homeworkService.uploadHomework(formRequest);
+            return "redirect:/studentHomework";
+        } catch (Exception e) {
+            return "error";
+        }
     }
 }
