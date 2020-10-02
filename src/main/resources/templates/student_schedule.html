@@ -23,9 +23,9 @@
                         <div th:if="${todaySchedule.empty}">
                             <p class="text-secondary text-center">No classes today</p>
                         </div>
-                        <div class = "center-block" th:each="tsrow : ${todaySchedule}">
-                            <div class="w-100 p-3 center-block text-left bg-primary text-light font-weight-bold" th:text="${tsrow.dayName}" ></div>
-                            <div class="w-100 p-3 center-block text-left bg-primary text-light font-weight-bold" th:text="${tsrow.weekIsOdd} ? 'Odd week' : 'Even week'" ></div>
+                        <div th:if="${not todaySchedule.empty}" class = "center-block">
+                            <div class="w-100 p-3 center-block text-left bg-primary text-light font-weight-bold" th:text="${todaySchedule[0].dayName}"></div>
+                            <div class="w-100 p-3 center-block text-left bg-primary text-light font-weight-bold" th:text="${todaySchedule[0].weekIsOdd} ? 'Odd week' : 'Even week'" ></div>
                             <table class="table center-block">
                                 <thead class="bg-primary text-light font-weight-bold">
                                     <tr>
@@ -35,7 +35,7 @@
                                     </tr>
                                 </thead>
                                 <tbody class="tbrow font-weight-normal">
-                                    <tr>
+                                    <tr th:each="tsrow : ${todaySchedule}">
                                         <td class="tbrow font-weight-normal" scope="row" th:utext="${tsrow.subject}"></td>
                                         <td class="tbrow font-weight-normal" scope="row" th:utext="${tsrow.teacher}"></td>
                                         <td class="tbrow font-weight-normal" scope="row" th:utext="${tsrow.classTimeDto.startTime + '-' + tsrow.classTimeDto.endTime}"></td>
@@ -47,7 +47,7 @@
                         <div th:if="${tomorrowSchedule.empty}">
                             <p class="text-secondary text-center">No classes tomorrow</p>
                         </div>
-                        <div class = "center-block">
+                        <div th:if="${not tomorrowSchedule.empty}" class = "center-block">
                             <div class="w-100 p-3 center-block text-left bg-primary text-light font-weight-bold" th:text="${tomorrowSchedule[0].dayName}" ></div>
                             <div class="w-100 p-3 center-block text-left bg-primary text-light font-weight-bold" th:text="${tomorrowSchedule[0].weekIsOdd} ? 'Odd week' : 'Even week'" ></div>
                             <table class="table center-block">
