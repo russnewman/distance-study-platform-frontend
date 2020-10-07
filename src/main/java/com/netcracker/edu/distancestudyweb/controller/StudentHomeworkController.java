@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Controller
 @RequestMapping("/studentHomework")
@@ -45,7 +46,7 @@ public class StudentHomeworkController {
             model.addAttribute("subjects", subjects);
             model.addAttribute("serverUrl", url);
             model.addAttribute("pageCount", response.getPageCount());
-            model.addAttribute("activePage", formRequest.getPage());
+            model.addAttribute("activePage", Optional.ofNullable(formRequest.getPage()).orElse(1));
             model.addAttribute("subjectId", formRequest.getSubjectId());
             return "studentHomework";
         } catch (Exception e) {
@@ -55,10 +56,10 @@ public class StudentHomeworkController {
 
 
     @PostMapping
-    public String uploadHomework(AssignmentFormRequest formRequest) {
+    public String uploadHomework(AssignmentFormRequest formRequest, Model model) {
         try {
             homeworkService.uploadHomework(formRequest);
-            return "redirect:/studentHomework";
+            return getHomework(model, new EventFormRequest(formRequest.getSubjectId(), formRequest.getActivePage()));
         } catch (Exception e) {
             return "error";
         }

@@ -32,6 +32,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 
 import static com.netcracker.edu.distancestudyweb.controller.ControllerUtils.URL_DELIMITER;
 
@@ -53,10 +54,13 @@ public class HomeworkServiceImpl implements HomeworkService {
             Long studentId = SecurityUtils.getId();
             HttpEntity<StudentEvent> httpEntity = entityProvider.getDefaultWithTokenFromContext(null, null);
             Map<String, Object> parameters = new HashMap<>();
-            parameters.put("subjectId", formRequest.getSubjectId());
+            if (formRequest.getSubjectId() != null) {
+                parameters.putIfAbsent("subjectId", formRequest.getSubjectId());
+            }
             parameters.put("studentId", studentId);
-            parameters.put("sort", "endDate,desc");
-            parameters.put("page", formRequest.getPage());
+            parameters.put("sort", "endDate");
+            parameters.put("page", Optional.ofNullable(formRequest.getPage()).map(number -> --number).orElse(0));
+            parameters.put("size", 2);
             String url = ServiceUtils.injectParamsInUrl(serverUrl + "/events", parameters);
             ResponseEntity<GetStudentEventsResponseDto> restAuthResponse = restTemplate.exchange(url, HttpMethod.GET, httpEntity, GetStudentEventsResponseDto.class);
             if (!restAuthResponse.getStatusCode().is2xxSuccessful()) {
@@ -65,9 +69,15 @@ public class HomeworkServiceImpl implements HomeworkService {
             GetStudentEventsResponseDto responseDto = Objects.requireNonNull(restAuthResponse.getBody());
             List<StudentEvent> events =  responseDto.getEvents();
             events.forEach(event -> event.setAssignments(getAssignments(studentId, event.getId())));
-            events.sort(Comparator.comparing(StudentEvent::getEndDate).reversed());
             return responseDto;
         } catch (UnsupportedEncodingException e) {
+            log.error("Unsupported encoding exception has occurred while injecting parameters in url", e);
+            throw new InternalServiceException(e);
+        } catch (ExternalServiceException e) {
+            log.error("An unexpected external exception has occurred", e);
+            throw e;
+        } catch (Exception e ) {
+            log.error("An unexpected internal exception has occurred", e);
             throw new InternalServiceException(e);
         }
     }
