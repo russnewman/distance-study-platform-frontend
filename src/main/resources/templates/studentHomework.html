@@ -21,6 +21,7 @@
                                 th:selected="${subject.isSelected()}"></option>
                     </select>
                 </div>
+                <input type="hidden" name="page" value="1">
                 <div class="form-group row">
                     <div class="col-md-4 text-right">
                         <button type="submit" class="btn btn-primary">Search</button>
@@ -156,6 +157,12 @@
                 </div>
             </div>
         </div>
+    </div>
+    <div th:if="${pageCount > 0}" class="pagination"
+         th:each="pageNumber : ${#numbers.sequence(0, pageCount)}">
+        <a th:href="@{/studentHomework(subjectid=${subjectId}, page=${pageNumber})}"
+           th:text="${pageNumber}"
+           th:class="${pageNumber==activePage} ? active"></a>
     </div>
 </div>
 <th:block th:insert="fragments/commoneJsFiles.html :: jsFiles"/>

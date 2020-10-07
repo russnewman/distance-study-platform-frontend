@@ -1,11 +1,9 @@
 package com.netcracker.edu.distancestudyweb.controller;
 
-import com.netcracker.edu.distancestudyweb.domain.Role;
 import com.netcracker.edu.distancestudyweb.domain.User;
 import com.netcracker.edu.distancestudyweb.dto.user.ChangePasswordRequest;
 import com.netcracker.edu.distancestudyweb.exception.DifferentPasswordsException;
 import com.netcracker.edu.distancestudyweb.service.UserService;
-import com.netcracker.edu.distancestudyweb.service.impl.SecurityUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;

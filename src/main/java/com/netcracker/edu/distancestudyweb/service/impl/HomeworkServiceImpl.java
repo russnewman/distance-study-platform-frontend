@@ -1,5 +1,8 @@
 package com.netcracker.edu.distancestudyweb.service.impl;
 
+import com.netcracker.edu.distancestudyweb.controller.ControllerUtils;
+import com.netcracker.edu.distancestudyweb.domain.Assignment;
+import com.netcracker.edu.distancestudyweb.dto.GetStudentEventsResponseDto;
 import com.netcracker.edu.distancestudyweb.dto.homework.DatabaseFileDto;
 import com.netcracker.edu.distancestudyweb.domain.StudentEvent;
 import com.netcracker.edu.distancestudyweb.dto.homework.AssignmentFormRequest;
@@ -12,6 +15,7 @@ import com.netcracker.edu.distancestudyweb.service.HttpEntityProvider;
 import com.netcracker.edu.distancestudyweb.service.ServiceUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpEntity;
@@ -23,9 +27,11 @@ import org.springframework.web.client.RestTemplate;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import static com.netcracker.edu.distancestudyweb.controller.ControllerUtils.URL_DELIMITER;
 
@@ -42,15 +48,40 @@ public class HomeworkServiceImpl implements HomeworkService {
     }
 
     @Override
-    public List<StudentEvent> getEvents(EventFormRequest formRequest) {
+    public GetStudentEventsResponseDto getEvents(EventFormRequest formRequest) {
         try {
             Long studentId = SecurityUtils.getId();
             HttpEntity<StudentEvent> httpEntity = entityProvider.getDefaultWithTokenFromContext(null, null);
             Map<String, Object> parameters = new HashMap<>();
             parameters.put("subjectId", formRequest.getSubjectId());
             parameters.put("studentId", studentId);
+            parameters.put("sort", "endDate,desc");
+            parameters.put("page", formRequest.getPage());
             String url = ServiceUtils.injectParamsInUrl(serverUrl + "/events", parameters);
-            ResponseEntity<List<StudentEvent>> restAuthResponse = restTemplate.exchange(url, HttpMethod.GET, httpEntity, new ParameterizedTypeReference<>() {});
+            ResponseEntity<GetStudentEventsResponseDto> restAuthResponse = restTemplate.exchange(url, HttpMethod.GET, httpEntity, GetStudentEventsResponseDto.class);
+            if (!restAuthResponse.getStatusCode().is2xxSuccessful()) {
+                throw new ExternalServiceException("Unexpected code: " + restAuthResponse.getStatusCode().value());
+            }
+            GetStudentEventsResponseDto responseDto = Objects.requireNonNull(restAuthResponse.getBody());
+            List<StudentEvent> events =  responseDto.getEvents();
+            events.forEach(event -> event.setAssignments(getAssignments(studentId, event.getId())));
+            events.sort(Comparator.comparing(StudentEvent::getEndDate).reversed());
+            return responseDto;
+        } catch (UnsupportedEncodingException e) {
+            throw new InternalServiceException(e);
+        }
+    }
+
+    private List<Assignment> getAssignments(Long studentId, Long eventId) {
+        try {
+            HttpEntity<Assignment> httpEntity = entityProvider.getDefaultWithTokenFromContext(null, null);
+            Map<String, Object> parameters = new HashMap<>();
+            parameters.put("studentId", studentId);
+            String url = ServiceUtils.injectParamsInUrl(serverUrl + "/events/" + eventId + URL_DELIMITER + "/assignments", parameters);
+            ResponseEntity<List<Assignment>> restAuthResponse = restTemplate.exchange(url, HttpMethod.GET, httpEntity, new ParameterizedTypeReference<>() {});
+            if (!restAuthResponse.getStatusCode().is2xxSuccessful()) {
+                throw new ExternalServiceException("Unexpected code: " + restAuthResponse.getStatusCode().value());
+            }
             return restAuthResponse.getBody();
         } catch (UnsupportedEncodingException e) {
             throw new InternalServiceException(e);
