@@ -35,11 +35,30 @@
 }
 
 .table-title {
-    background-color: lightblue;
+    background-color: #1789b3;
     height: 60%;
     width: 60%;
     max-width: 600px;
     position: relative;
     left: 25%;
     font-weight: bold;
+}
+
+.hrow{
+    background-color: #33b5e5;
+    font-weight: bolder;
+    font-size: large;
+}
+
+
+td.crow{
+    background-color: #40d4ab;
+    font-weight: 600;
+    font-size: 16px;
+}
+
+.tbrow{
+    background-color: #b9dbff;
+    font-weight: 500;
+    font-size: 14px;
 }

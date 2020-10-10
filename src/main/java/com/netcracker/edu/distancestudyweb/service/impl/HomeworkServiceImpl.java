@@ -5,15 +5,18 @@ import com.netcracker.edu.distancestudyweb.domain.StudentEvent;
 import com.netcracker.edu.distancestudyweb.dto.homework.AssignmentFormRequest;
 import com.netcracker.edu.distancestudyweb.dto.homework.AssignmentRequestDto;
 import com.netcracker.edu.distancestudyweb.dto.homework.EventFormRequest;
+import com.netcracker.edu.distancestudyweb.exception.ExternalServiceException;
 import com.netcracker.edu.distancestudyweb.exception.InternalServiceException;
 import com.netcracker.edu.distancestudyweb.service.HomeworkService;
 import com.netcracker.edu.distancestudyweb.service.HttpEntityProvider;
 import com.netcracker.edu.distancestudyweb.service.ServiceUtils;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -27,6 +30,7 @@ import java.util.Map;
 import static com.netcracker.edu.distancestudyweb.controller.ControllerUtils.URL_DELIMITER;
 
 @Service
+@Slf4j
 public class HomeworkServiceImpl implements HomeworkService {
     private @Value("${rest.url}") String serverUrl;
     private RestTemplate restTemplate;
@@ -59,7 +63,12 @@ public class HomeworkServiceImpl implements HomeworkService {
             AssignmentRequestDto requestDto = prepareRequestForAssignment(formRequest);
             HttpEntity<AssignmentRequestDto> httpEntity = entityProvider.getDefaultWithTokenFromContext(requestDto, null);
             String url = serverUrl + "/events" + URL_DELIMITER + formRequest.getEventId() + "/assignments";
-            restTemplate.exchange(url, HttpMethod.POST, httpEntity, String.class);
+            ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.POST, httpEntity, String.class);
+            HttpStatus status = response.getStatusCode();
+            if (!status.is2xxSuccessful()) {
+                log.error("Unexpected status code: " + status.value());
+                throw new ExternalServiceException("Unexpected status: " + status.value());
+            }
         } catch (Exception e) {
             throw new InternalServiceException(e);
         }
