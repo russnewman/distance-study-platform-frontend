@@ -9,7 +9,6 @@
         <link href="https://cdnjs.cloudflare.com/ajax/libs/mdbootstrap/4.19.1/css/mdb.min.css" rel="stylesheet">
     </th:block>
 
-
     <style>
         .table{
             width: 30%;
@@ -25,24 +24,33 @@
         .btn-light btn-sm{
             width: 80%;
         }
+        .card-header{
+            border-width: 3px;
+        }
     </style>
 
 </head>
 <body>
 <th:block th:insert="fragments/navbar.html :: navbar" />
 
+
+<br>
+<div class="col-md-3 text-center">
+    <a class="btn btn-outline-info" href="/teacherHomework">Back</a>
+</div>
+
 <form  align="center" th:action="'/teacherHomework/getEvents/'"  method='GET'>
     <table align= "center" class="table">
         <tr>
             <td width="35%">Sort</td>
-            <td width="65%"><select name="sortingTypeOptional" class="form-control">
+            <td width="65%"><select name="sortingType" class="form-control">
                 <option th:value="'addSort'">by adding date</option>
                 <option th:value="'deadlineSort'" th:selected="${sortingType}=='deadlineSort'">by deadline date</option>
             </select></td>
         </tr>
         <tr>
             <td width="35%">Subject</td>
-            <td width="65%"><select name="subjectNameOptional" class="form-control">
+            <td width="65%"><select name="subjectName" class="form-control">
                 <option th:value="'all'">All</option>
                 <option  th:each="el: ${subjects}" th:value="${el.getName()}" th:text="${el.getName()}" th:selected="${subjectName}==${el.getName()}"></option>
             </select></td>
@@ -57,12 +65,13 @@
 
 <div class="container">
     <div class="row p-3">
-        <div class="col-md-4 p-3" th:each="event: ${events}" >
-            <div class="card bg-light rounded mt-4 h-100">
-                <div class="card-header" style="transform: rotate(0);">
-
-                    <div th:text="${event.getStartDate().format(dateTimeFormatter)} +' - '+ ${event.getEndDate().format(dateTimeFormatter)}"></div>
-
+        <div class="col-md-4 p-3" th:each="event: ${eventsPage}" >
+            <div class="card bg-light mt-4 h-100">
+                <div th:if="${event.getStatus() == true}" class="card-header bg-transparent border-success" style="transform: rotate(0);">
+                    <h5><div th:text="${event.getStartDate().format(dateTimeFormatter)} +' - '+ ${event.getEndDate().format(dateTimeFormatter)}"></div></h5>
+                </div>
+                <div th:if="${event.getStatus() == false}" class="card-header bg-transparent border-primary" style="transform: rotate(0);">
+                    <h5><div th:text="${event.getStartDate().format(dateTimeFormatter)} +' - '+ ${event.getEndDate().format(dateTimeFormatter)}"></div></h5>
                 </div>
                 <div class="card-body text-center">
 
@@ -70,14 +79,12 @@
                     <h5 th:text="'Group: '+ ${event.getGroup().getGroupName()}"></h5>
 
 
-<!--                    <div class="btn-group">-->
                         <button type="button" class="btn btn-light btn-sm dropdown-toggle" data-toggle="dropdown">
                             Description
                         </button>
                         <div class="dropdown-menu p-4 text-muted" style="max-width: 300px;">
                             <p class="card-text" th:text="${event.getDescription()}"></p>
                         </div>
-<!--                    </div>-->
 
                     <div th:unless="${event.getDatabaseFileDto() == null}">
                         <a th:href="'/teacherHomework/downloadFile/' + ${event.getDatabaseFileDto().getId()}" class="btn btn-light btn-sm" download>Download file</a>
@@ -97,6 +104,7 @@
                         <form th:action="'/teacherHomework/editEvent/' + ${event.getId()}" th:method="GET">
                             <input type="hidden" name="sortingType" th:value="${sortingType}">
                             <input type="hidden" name="subjectName" th:value="${subjectName}">
+                            <input type="hidden" name="pageNumber" th:value="${pageNumber}">
                             <button class="btn btn-primary btn-sm" type="submit">Edit</button>
                         </form>
 
@@ -104,6 +112,7 @@
                             <form th:action="'/teacherHomework/deleteEvent/' + ${event.getId()}" th:method="POST">
                                 <input type="hidden" name="sortingType" th:value="${sortingType}">
                                 <input type="hidden" name="subjectName" th:value="${subjectName}">
+                                <input type="hidden" name="pageNumber" th:value="${pageNumber}">
                                 <button class="btn btn-danger btn-sm" type="submit">Delete</button>
                             </form>
                         </div>
@@ -113,6 +122,43 @@
         </div>
 </div>
 </div>
+
+<br><br>
+<div class="row justify-content-md-center">
+    <ul class="pagination">
+
+        <li th:if="${pageNumber > 0}" class="page-item">
+            <a class="page-link" th:href="'/teacherHomework/getEvents?sortingType='+${sortingType}+
+                                          '&subjectName='+${subjectName}+'&pageNumber='+${pageNumber - 1}" >Previous</a>
+        </li>
+
+        <li th:unless="${pageNumber > 0}" class="page-item disabled">
+            <a class="page-link" href="#" >Previous</a>
+        </li>
+
+
+        <div  th:each="i : ${#numbers.sequence(0, totalPages - 1, 1)}">
+            <li th:if="${pageNumber != i}" class="page-item"><a class="page-link" th:href="'/teacherHomework/getEvents?sortingType='+${sortingType}+
+                                                                                           '&subjectName='+${subjectName}+'&pageNumber='+${i}" th:text="${i + 1}"></a></li>
+            <li th:if="${pageNumber == i}" class="page-item active">
+                <a class="page-link" href="#" th:text="${i + 1}"><span class="sr-only">(current)</span></a>
+            </li>
+        </div>
+
+
+
+        <li th:if="${pageNumber < totalPages - 1}" class="page-item">
+            <a class="page-link" th:href="'/teacherHomework/getEvents?sortingType='+${sortingType}+
+                                          '&subjectName='+${subjectName}+'&pageNumber='+${pageNumber + 1}">Next</a>
+        </li>
+        <li th:unless="${pageNumber < totalPages - 1}" class="page-item disabled">
+            <a class="page-link" href="#">Next</a>
+        </li>
+
+    </ul>
+</div>
+
+
 
 <th:block th:insert="fragments/commoneJsFiles.html :: jsFiles"/>
 

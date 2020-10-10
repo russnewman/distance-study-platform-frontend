@@ -181,7 +181,6 @@ public class ScheduleServiceImpl implements ScheduleService {
 
             ResponseEntity<ScheduleDtoList> restAuthResponse = restTemplate.exchange(builder.toUriString(), HttpMethod.GET, httpEntity, ScheduleDtoList.class);
             return restAuthResponse.getBody().getSchedules();
-
     }
 
 
@@ -202,7 +201,6 @@ public class ScheduleServiceImpl implements ScheduleService {
     }
 
 
-
     //Redefined hashCode and equals of the ScheduleDto
     @Override
     public Map<ScheduleDto, List<GroupDto>> mapScheduleToGroups(List<ScheduleDto> schedules) {
@@ -221,6 +219,7 @@ public class ScheduleServiceImpl implements ScheduleService {
         }
         return res;
     }
+
     @Override
     public List<ScheduleDto> mapKeysList(Map<ScheduleDto, List<GroupDto>> map){
         return map.entrySet().stream().map(Map.Entry::getKey).collect(Collectors.toList());

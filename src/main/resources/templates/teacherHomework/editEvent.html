@@ -25,7 +25,12 @@
 <body>
 <th:block th:insert="fragments/navbar.html :: navbar" />
 
-<br></br>
+
+<br>
+<div class="col-md-3 text-center">
+    <a class="btn btn-outline-info" href="/teacherHomework/getEvents">Back</a>
+</div>
+
 
 <form enctype="multipart/form-data" th:action="'/teacherHomework/editEvent/'+ ${event.getId()}" th:method="POST">
 
@@ -71,6 +76,8 @@
 
         <input type="hidden" name="sortingType" th:value="${sortingType}">
         <input type="hidden" name="subjectName" th:value="${subjectName}">
+        <input type="hidden" name="pageNumber" th:value="${pageNumber}">
+
 </form>
 
 </body>

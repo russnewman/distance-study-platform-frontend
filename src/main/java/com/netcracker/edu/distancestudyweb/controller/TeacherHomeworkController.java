@@ -1,15 +1,14 @@
 package com.netcracker.edu.distancestudyweb.controller;
 
-import com.netcracker.edu.distancestudyweb.dto.AssignmentDto;
-import com.netcracker.edu.distancestudyweb.dto.DatabaseFileDto;
-import com.netcracker.edu.distancestudyweb.dto.EventDto;
-import com.netcracker.edu.distancestudyweb.dto.EventFormDto;
+import com.netcracker.edu.distancestudyweb.dto.*;
 import com.netcracker.edu.distancestudyweb.payload.Response;
 import com.netcracker.edu.distancestudyweb.service.*;
 import com.netcracker.edu.distancestudyweb.service.impl.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -18,14 +17,11 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.io.IOException;
-import java.sql.SQLOutput;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.format.DateTimeFormatter;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Controller
 @RequestMapping("/teacherHomework")
@@ -69,18 +65,20 @@ public class TeacherHomeworkController {
 
 
     @GetMapping("/getEvents")
-    public String getEvents(@RequestParam Optional<String> sortingTypeOptional,
-                            @RequestParam Optional<String> subjectNameOptional,
+    public String getEvents(@RequestParam (defaultValue = "addSort") String sortingType,
+                            @RequestParam (defaultValue = "all") String subjectName,
+                            @RequestParam(defaultValue = "0") Integer pageNumber,
                             Model model){
 
         final Long teacherId = SecurityUtils.getId();
 
-        String sortingType = sortingTypeOptional.orElse("addSort");
-        String subjectName = subjectNameOptional.orElse("all");
+        Page<EventDto> eventsPage = eventUiService.getEvents(teacherId, sortingType, subjectName, pageNumber);
+        List<SubjectDto> subjects = subjectUiService.getSubjectsByTeacherId(teacherId);
 
-
-        model.addAttribute("events", eventUiService.getEvents(teacherId, sortingType, subjectName));
-        model.addAttribute("subjects", subjectUiService.getSubjectsByTeacherId(teacherId));
+        model.addAttribute("eventsPage", eventsPage);
+        model.addAttribute("totalPages", eventsPage.getTotalPages());
+        model.addAttribute("pageNumber", pageNumber);
+        model.addAttribute("subjects", subjects);
         model.addAttribute("dateTimeFormatter", DateTimeFormatter.ofPattern("dd.MM.yyyy"));
 
         model.addAttribute("sortingType", sortingType);
@@ -104,6 +102,7 @@ public class TeacherHomeworkController {
     public String editEvent(@PathVariable Long eventId,
                             @RequestParam("sortingType") String sortingType,
                             @RequestParam("subjectName") String subjectName,
+                            @RequestParam("pageNumber") Integer pageNumber,
                             Model model){
 
         final Long teacherId = SecurityUtils.getId();
@@ -115,26 +114,11 @@ public class TeacherHomeworkController {
 
         model.addAttribute("sortingType", sortingType);
         model.addAttribute("subjectName", subjectName);
+        model.addAttribute("pageNumber", pageNumber);
 
         return "teacherHomework/editEvent";
     }
 
-
-    @PostMapping("/deleteEvent/{eventId}")
-    public String deleteEvent(@PathVariable Long eventId,
-                              @RequestParam("sortingType") String sortingType,
-                              @RequestParam("subjectName") String subjectName){
-        eventUiService.deleteEvent(eventId);
-
-
-        String URL = uiUrl + "teacherHomework/getEvents";
-
-        UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(URL)
-                .queryParam("sortingTypeOptional", sortingType)
-                .queryParam("subjectNameOptional", subjectName);
-
-        return "redirect:" +  builder.toUriString();
-    }
 
     @PostMapping("/editEvent/{eventId}")
     public String editEvent(@PathVariable Long eventId,
@@ -144,8 +128,9 @@ public class TeacherHomeworkController {
                             @RequestParam MultipartFile fileOptional,
 
                             @RequestParam("sortingType") String sortingType,
-                            @RequestParam("subjectName") String subjectName) throws IOException
-                                                                            {
+                            @RequestParam("subjectName") String subjectName,
+                            @RequestParam("pageNumber") Integer pageNumber) throws IOException
+    {
 
 
         DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
@@ -175,10 +160,33 @@ public class TeacherHomeworkController {
         String URL = uiUrl + "teacherHomework/getEvents";
 
         UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(URL)
-                .queryParam("sortingTypeOptional", sortingType)
-                .queryParam("subjectNameOptional", subjectName);
+                .queryParam("sortingType", sortingType)
+                .queryParam("subjectName", subjectName)
+                .queryParam("pageNumber", pageNumber);
 
         return "redirect:" + builder.toUriString();
+    }
+
+
+
+
+    @PostMapping("/deleteEvent/{eventId}")
+    public String deleteEvent(@PathVariable Long eventId,
+                              @RequestParam("sortingType") String sortingType,
+                              @RequestParam("subjectName") String subjectName,
+                              @RequestParam("pageNumber") Integer pageNumber){
+        eventUiService.deleteEvent(eventId);
+
+
+        String URL = uiUrl + "teacherHomework/getEvents";
+
+        UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(URL)
+                .queryParam("sortingType", sortingType)
+                .queryParam("subjectName", subjectName)
+                .queryParam("pageNumber", pageNumber);
+
+
+        return "redirect:" +  builder.toUriString();
     }
 
 

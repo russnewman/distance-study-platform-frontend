@@ -25,6 +25,11 @@
 <body>
 <th:block th:insert="fragments/navbar.html :: navbar" />
 
+<br>
+<div class="col-md-3 text-center">
+    <a class="btn btn-outline-info" href="/teacherHomework/showSubjects">Back</a>
+</div>
+
 <br></br>
 <form enctype="multipart/form-data" th:action="'/teacherHomework/addEvent/'" th:method="POST">
     <input type="hidden" name="subjectName" th:value="${subjectName}">
