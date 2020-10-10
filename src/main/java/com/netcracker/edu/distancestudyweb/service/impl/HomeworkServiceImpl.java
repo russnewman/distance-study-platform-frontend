@@ -1,12 +1,11 @@
 package com.netcracker.edu.distancestudyweb.service.impl;
 
-import com.netcracker.edu.distancestudyweb.controller.ControllerUtils;
 import com.netcracker.edu.distancestudyweb.domain.Assignment;
-import com.netcracker.edu.distancestudyweb.dto.GetStudentEventsResponseDto;
-import com.netcracker.edu.distancestudyweb.dto.homework.DatabaseFileDto;
 import com.netcracker.edu.distancestudyweb.domain.StudentEvent;
+import com.netcracker.edu.distancestudyweb.dto.GetStudentEventsResponseDto;
 import com.netcracker.edu.distancestudyweb.dto.homework.AssignmentFormRequest;
 import com.netcracker.edu.distancestudyweb.dto.homework.AssignmentRequestDto;
+import com.netcracker.edu.distancestudyweb.dto.homework.DatabaseFileDto;
 import com.netcracker.edu.distancestudyweb.dto.homework.EventFormRequest;
 import com.netcracker.edu.distancestudyweb.exception.ExternalServiceException;
 import com.netcracker.edu.distancestudyweb.exception.InternalServiceException;
@@ -15,7 +14,6 @@ import com.netcracker.edu.distancestudyweb.service.HttpEntityProvider;
 import com.netcracker.edu.distancestudyweb.service.ServiceUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpEntity;
@@ -27,7 +25,6 @@ import org.springframework.web.client.RestTemplate;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -55,12 +52,12 @@ public class HomeworkServiceImpl implements HomeworkService {
             HttpEntity<StudentEvent> httpEntity = entityProvider.getDefaultWithTokenFromContext(null, null);
             Map<String, Object> parameters = new HashMap<>();
             if (formRequest.getSubjectId() != null) {
-                parameters.putIfAbsent("subjectId", formRequest.getSubjectId());
+                parameters.put("subjectId", formRequest.getSubjectId());
             }
             parameters.put("studentId", studentId);
             parameters.put("sort", "endDate");
             parameters.put("page", Optional.ofNullable(formRequest.getPage()).map(number -> --number).orElse(0));
-            parameters.put("size", 2);
+            parameters.put("size", 10);
             String url = ServiceUtils.injectParamsInUrl(serverUrl + "/events", parameters);
             ResponseEntity<GetStudentEventsResponseDto> restAuthResponse = restTemplate.exchange(url, HttpMethod.GET, httpEntity, GetStudentEventsResponseDto.class);
             if (!restAuthResponse.getStatusCode().is2xxSuccessful()) {
