@@ -20,7 +20,5 @@ public interface AssignmentService {
 
     void update(AssignmentDto assignment);
     List<List<AssignmentDto>> getAssignmentsByEvent(Long eventId, Long groupId);
-//    List<List<AssignmentDto>> getAssessedStudentsAssignments(Long eventId);
-//    List<AssignmentDto> getUnassessedStudentsAssignments(Long eventId);
 }
 

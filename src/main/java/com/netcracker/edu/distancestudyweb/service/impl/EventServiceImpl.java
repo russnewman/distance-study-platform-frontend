@@ -2,23 +2,21 @@ package com.netcracker.edu.distancestudyweb.service.impl;
 
 import com.netcracker.edu.distancestudyweb.dto.EventDto;
 import com.netcracker.edu.distancestudyweb.dto.EventFormDto;
-import com.netcracker.edu.distancestudyweb.dto.ScheduleDto;
-import com.netcracker.edu.distancestudyweb.dto.wrappers.EventDtoList;
-import com.netcracker.edu.distancestudyweb.dto.wrappers.GroupDtoList;
-import com.netcracker.edu.distancestudyweb.dto.wrappers.ScheduleDtoList;
 import com.netcracker.edu.distancestudyweb.exception.InternalServiceException;
 import com.netcracker.edu.distancestudyweb.service.EventService;
 import com.netcracker.edu.distancestudyweb.service.HttpEntityProvider;
+import com.netcracker.edu.distancestudyweb.service.RestPageImpl;
 import com.netcracker.edu.distancestudyweb.service.ServiceUtils;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
-import org.springframework.web.util.UriComponentsBuilder;
 
 import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 @Service
@@ -33,8 +31,6 @@ public class EventServiceImpl implements EventService {
         this.restTemplate = restTemplate;
         this.entityProvider = entityProvider;
     }
-
-
 
 
     @Override
@@ -67,10 +63,8 @@ public class EventServiceImpl implements EventService {
         }
     }
 
-
     @Override
-    public List<EventDto> getEvents(Long teacherId, String sortingType, String subjectName) {
-
+    public RestPageImpl<EventDto> getEvents(Long teacherId, String sortingType, String subjectName, Integer pageNumber) {
 
         try{
             HttpEntity<?> httpEntity = entityProvider.getDefaultWithTokenFromContext(null, null);
@@ -78,15 +72,15 @@ public class EventServiceImpl implements EventService {
             parameters.put("teacherId", teacherId);
             parameters.put("sortingType", sortingType);
             parameters.put("subjectName", subjectName);
+            parameters.put("pageNumber", pageNumber);
             String url = ServiceUtils.injectParamsInUrl(serverUrl + "/getEvents", parameters);
-            ResponseEntity<EventDtoList> restAuthResponse = restTemplate.exchange(url, HttpMethod.GET, httpEntity, EventDtoList.class);
-            return restAuthResponse.getBody().getEvents();
+            ResponseEntity<RestPageImpl<EventDto>> restAuthResponse = restTemplate.exchange(url, HttpMethod.GET, httpEntity, new ParameterizedTypeReference<RestPageImpl<EventDto>>(){});
+            return restAuthResponse.getBody();
         }
         catch (UnsupportedEncodingException e) {
             throw new InternalServiceException(e);
         }
     }
-
 
 
     @Override

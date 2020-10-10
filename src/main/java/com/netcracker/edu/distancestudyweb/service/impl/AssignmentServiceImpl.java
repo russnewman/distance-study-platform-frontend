@@ -3,14 +3,11 @@ package com.netcracker.edu.distancestudyweb.service.impl;
 
 
 import com.netcracker.edu.distancestudyweb.dto.AssignmentDto;
+import com.netcracker.edu.distancestudyweb.dto.EventDto;
 import com.netcracker.edu.distancestudyweb.dto.StudentDto;
 import com.netcracker.edu.distancestudyweb.dto.wrappers.AssignmentDtoList;
-import com.netcracker.edu.distancestudyweb.dto.wrappers.GroupDtoList;
 import com.netcracker.edu.distancestudyweb.exception.InternalServiceException;
-import com.netcracker.edu.distancestudyweb.service.AssignmentService;
-import com.netcracker.edu.distancestudyweb.service.HttpEntityProvider;
-import com.netcracker.edu.distancestudyweb.service.ServiceUtils;
-import com.netcracker.edu.distancestudyweb.service.StudentService;
+import com.netcracker.edu.distancestudyweb.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
@@ -20,6 +17,7 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.io.UnsupportedEncodingException;
+import java.time.LocalDateTime;
 import java.util.*;
 
 @Service
@@ -28,12 +26,14 @@ public class AssignmentServiceImpl implements AssignmentService {
     private RestTemplate restTemplate;
     private HttpEntityProvider entityProvider;
     private final StudentService studentService;
+    private final EventService eventService;
 
     @Autowired
-    public AssignmentServiceImpl(StudentService studentService, RestTemplate restTemplate, HttpEntityProvider entityProvider) {
+    public AssignmentServiceImpl(StudentService studentService, RestTemplate restTemplate, HttpEntityProvider entityProvider, EventService eventService) {
         this.restTemplate = restTemplate;
         this.entityProvider = entityProvider;
         this.studentService = studentService;
+        this.eventService = eventService;
     }
 
 
@@ -171,7 +171,7 @@ public class AssignmentServiceImpl implements AssignmentService {
             parameters.put("eventId", eventId);
             parameters.put("studentId", studentId);
             String url = ServiceUtils.injectParamsInUrl(serverUrl + "/saveEmptyAssignment", parameters);
-            ResponseEntity<AssignmentDto> restAuthResponse = restTemplate.exchange(url, HttpMethod.GET, httpEntity, AssignmentDto.class);
+            ResponseEntity<AssignmentDto> restAuthResponse = restTemplate.exchange(url, HttpMethod.POST, httpEntity, AssignmentDto.class);
             return restAuthResponse.getBody();
         }
         catch (UnsupportedEncodingException e) {
@@ -197,9 +197,6 @@ public class AssignmentServiceImpl implements AssignmentService {
             throw new InternalServiceException(e);
         }
 
-        for (AssignmentDto assignmentDto: assignments){
-        }
-
 
         List<StudentDto> Students = studentService.getStudentsByGroup(groupId);
 
@@ -207,11 +204,15 @@ public class AssignmentServiceImpl implements AssignmentService {
         List<AssignmentDto> unassessedAssignments = new ArrayList<>();
         List<List<AssignmentDto>> res = new ArrayList<>(2);
 
+        EventDto currentEvent = eventService.getEventById(eventId);
+        LocalDateTime deadlineTime = currentEvent.getEndDate();
+        LocalDateTime currentTime = LocalDateTime.now();
+
 
         outer:
         for(StudentDto student: Students){
-            for(AssignmentDto assignment: assignments){
-                if (assignment.getStudent().getId().equals(student.getId())){
+            for(AssignmentDto assignment: assignments) {
+                if (assignment.getStudent().getId().equals(student.getId())) {
                     if (assignment.getGrade() == null) {
                         unassessedAssignments.add(assignment);
                     } else {
@@ -220,10 +221,16 @@ public class AssignmentServiceImpl implements AssignmentService {
                     continue outer;
                 }
             }
-            AssignmentDto savingAssignment = saveEmptyAssignment(eventId, student.getId());
-            unassessedAssignments.add(savingAssignment);
+            if (currentTime.isBefore(deadlineTime)){
+                AssignmentDto emptyAssignment = new AssignmentDto();
+                emptyAssignment.setStudent(student);
+                unassessedAssignments.add(emptyAssignment);
+            }
+            else{
+                AssignmentDto savingEmptyAssignment = saveEmptyAssignment(eventId, student.getId());
+                assessedAssignments.add(savingEmptyAssignment);
+            }
         }
-
 
         studentsNameSorting(assessedAssignments);
         studentsNameSorting(unassessedAssignments);
