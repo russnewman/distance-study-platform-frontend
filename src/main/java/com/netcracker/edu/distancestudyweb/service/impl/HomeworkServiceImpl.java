@@ -1,9 +1,11 @@
 package com.netcracker.edu.distancestudyweb.service.impl;
 
-import com.netcracker.edu.distancestudyweb.dto.homework.DatabaseFileDto;
+import com.netcracker.edu.distancestudyweb.domain.Assignment;
 import com.netcracker.edu.distancestudyweb.domain.StudentEvent;
+import com.netcracker.edu.distancestudyweb.dto.GetStudentEventsResponseDto;
 import com.netcracker.edu.distancestudyweb.dto.homework.AssignmentFormRequest;
 import com.netcracker.edu.distancestudyweb.dto.homework.AssignmentRequestDto;
+import com.netcracker.edu.distancestudyweb.dto.homework.DatabaseFileDto;
 import com.netcracker.edu.distancestudyweb.dto.homework.EventFormRequest;
 import com.netcracker.edu.distancestudyweb.exception.ExternalServiceException;
 import com.netcracker.edu.distancestudyweb.exception.InternalServiceException;
@@ -26,6 +28,8 @@ import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 
 import static com.netcracker.edu.distancestudyweb.controller.ControllerUtils.URL_DELIMITER;
 
@@ -42,15 +46,49 @@ public class HomeworkServiceImpl implements HomeworkService {
     }
 
     @Override
-    public List<StudentEvent> getEvents(EventFormRequest formRequest) {
+    public GetStudentEventsResponseDto getEvents(EventFormRequest formRequest) {
         try {
             Long studentId = SecurityUtils.getId();
             HttpEntity<StudentEvent> httpEntity = entityProvider.getDefaultWithTokenFromContext(null, null);
             Map<String, Object> parameters = new HashMap<>();
-            parameters.put("subjectId", formRequest.getSubjectId());
+            if (formRequest.getSubjectId() != null) {
+                parameters.put("subjectId", formRequest.getSubjectId());
+            }
             parameters.put("studentId", studentId);
+            parameters.put("sort", "endDate");
+            parameters.put("page", Optional.ofNullable(formRequest.getPage()).map(number -> --number).orElse(0));
+            parameters.put("size", 10);
             String url = ServiceUtils.injectParamsInUrl(serverUrl + "/events", parameters);
-            ResponseEntity<List<StudentEvent>> restAuthResponse = restTemplate.exchange(url, HttpMethod.GET, httpEntity, new ParameterizedTypeReference<>() {});
+            ResponseEntity<GetStudentEventsResponseDto> restAuthResponse = restTemplate.exchange(url, HttpMethod.GET, httpEntity, GetStudentEventsResponseDto.class);
+            if (!restAuthResponse.getStatusCode().is2xxSuccessful()) {
+                throw new ExternalServiceException("Unexpected code: " + restAuthResponse.getStatusCode().value());
+            }
+            GetStudentEventsResponseDto responseDto = Objects.requireNonNull(restAuthResponse.getBody());
+            List<StudentEvent> events =  responseDto.getEvents();
+            events.forEach(event -> event.setAssignments(getAssignments(studentId, event.getId())));
+            return responseDto;
+        } catch (UnsupportedEncodingException e) {
+            log.error("Unsupported encoding exception has occurred while injecting parameters in url", e);
+            throw new InternalServiceException(e);
+        } catch (ExternalServiceException e) {
+            log.error("An unexpected external exception has occurred", e);
+            throw e;
+        } catch (Exception e ) {
+            log.error("An unexpected internal exception has occurred", e);
+            throw new InternalServiceException(e);
+        }
+    }
+
+    private List<Assignment> getAssignments(Long studentId, Long eventId) {
+        try {
+            HttpEntity<Assignment> httpEntity = entityProvider.getDefaultWithTokenFromContext(null, null);
+            Map<String, Object> parameters = new HashMap<>();
+            parameters.put("studentId", studentId);
+            String url = ServiceUtils.injectParamsInUrl(serverUrl + "/events/" + eventId + URL_DELIMITER + "/assignments", parameters);
+            ResponseEntity<List<Assignment>> restAuthResponse = restTemplate.exchange(url, HttpMethod.GET, httpEntity, new ParameterizedTypeReference<>() {});
+            if (!restAuthResponse.getStatusCode().is2xxSuccessful()) {
+                throw new ExternalServiceException("Unexpected code: " + restAuthResponse.getStatusCode().value());
+            }
             return restAuthResponse.getBody();
         } catch (UnsupportedEncodingException e) {
             throw new InternalServiceException(e);

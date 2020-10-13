@@ -64,8 +64,8 @@ public class HttpEntityProviderImpl implements HttpEntityProvider {
     }
 
     @Override
-    public <T> HttpEntity<T> getDefaultWithTokenFromContext(@Nullable T body, @Nullable Map<String, String> parameters) {
-        return getWithTokenFromContext(body, parameters, MediaType.APPLICATION_JSON, MediaType.APPLICATION_JSON);
+    public <T> HttpEntity<T> getDefaultWithTokenFromContext(@Nullable T body, @Nullable Map<String, String> headers) {
+        return getWithTokenFromContext(body, headers, MediaType.APPLICATION_JSON, MediaType.APPLICATION_JSON);
     }
 
     @Override
@@ -81,7 +81,7 @@ public class HttpEntityProviderImpl implements HttpEntityProvider {
 
 
     @Override
-    public <T> HttpEntity<T> getDefaultWithTokenFromContextMULTIPART_FORM_DATA(@Nullable T body, @Nullable Map<String, String> parameters) {
-        return getWithTokenFromContext(body, parameters, MediaType.MULTIPART_FORM_DATA, MediaType.MULTIPART_FORM_DATA);
+    public <T> HttpEntity<T> getDefaultWithTokenFromContextMULTIPART_FORM_DATA(@Nullable T body, @Nullable Map<String, String> headers) {
+        return getWithTokenFromContext(body, headers, MediaType.MULTIPART_FORM_DATA, MediaType.MULTIPART_FORM_DATA);
     }
 }

@@ -21,6 +21,7 @@
                                 th:selected="${subject.isSelected()}"></option>
                     </select>
                 </div>
+                <input type="hidden" name="page" value="1">
                 <div class="form-group row">
                     <div class="col-md-4 text-right">
                         <button type="submit" class="btn btn-primary">Search</button>
@@ -127,6 +128,10 @@
                                                             </div>
                                                             <input type="hidden" name="eventId"
                                                                    th:value="${event.getId()}">
+                                                            <input type="hidden" name="subjectId"
+                                                                   th:value="${subjectId}">
+                                                            <input type="hidden" name="activePage"
+                                                                   th:value="${activePage}">
                                                             <button type="submit" class="btn btn-primary btn-sm">
                                                                 Upload
                                                             </button>
@@ -155,6 +160,20 @@
                     </div>
                 </div>
             </div>
+        </div>
+    </div>
+    <div class="row mt-1">
+        <div class="col-12 d-flex justify-content-center">
+            <nav aria-label="...">
+                <ul class="pagination">
+                    <li th:if="${pageCount > 1}" th:each="pageNumber : ${#numbers.sequence(1, pageCount)}"
+                        class="page-item" th:classappend="${pageNumber==activePage} ? active">
+                        <a th:href="@{/studentHomework(subjectId=${subjectId}, page=${pageNumber})}"
+                           th:text="${pageNumber}"
+                           th:class="page-link"></a>
+                    </li>
+                </ul>
+            </nav>
         </div>
     </div>
 </div>

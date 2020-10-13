@@ -8,4 +8,6 @@ public class AssignmentFormRequest {
     private Long eventId;
     private String commentary;
     private MultipartFile file;
+    private Long subjectId;
+    private Integer activePage;
 }
