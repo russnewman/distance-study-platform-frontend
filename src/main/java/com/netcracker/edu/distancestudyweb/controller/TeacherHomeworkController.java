@@ -252,7 +252,6 @@ public class TeacherHomeworkController {
 
 
 
-
     @PostMapping("/saveResponseForAssignment/{assignmentId}")
     public String saveResponseForAssignment(@RequestParam String commentary,
                                             @RequestParam Integer grade,
@@ -266,7 +265,7 @@ public class TeacherHomeworkController {
 
         AssignmentDto assignment = new AssignmentDto();
         assignment.setId(assignmentId);
-        assignment.setCommentary(commentary);
+        assignment.setTeacherCommentary(commentary);
         assignment.setGrade(grade);
         assignmentService.update(assignment);
 

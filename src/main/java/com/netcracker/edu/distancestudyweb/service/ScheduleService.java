@@ -17,11 +17,13 @@ public interface ScheduleService {
 
     List<ScheduleDto> getSubjectTeacherSchedule(List<ScheduleDto> list, Long subjectId);
     Map<ScheduleDto, List<GroupDto>> mapScheduleToGroups(List<ScheduleDto> list);
-    List<ScheduleDto> mapKeysList(Map<ScheduleDto, List<GroupDto>> map);
+    List<List<ScheduleDto>> schedulesByDays(Map<ScheduleDto, List<GroupDto>> map);
 
     List<ScheduleVDto> getStudentTodaySchedule(Long studentId);
     List<ScheduleVDto> getStudentTomorrowSchedule(Long studentId);
     SubjectDto getStudentCurrentSubject(Long studentId);
     SubjectDto getStudentNextSubject(Long studentId);
     Map<AbstractMap.SimpleEntry<String, Boolean>, List<ScheduleVDto>> getStudentSubjectSchedule(Long studentId, Long subjectId);
+    String getTodayDayName();
+    void updateLessonLink(Long scheduleId, String link);
 }

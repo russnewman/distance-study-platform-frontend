@@ -79,13 +79,19 @@
                                 <p><a th:href="'/teacherHomework/downloadFile/' + ${el.getDbFile().getId()}" class="btn btn-sm" download>Download</a>
                             </div>
                         </td>
+
                         <td width="35%">
-                            <input th:if="${el.getCommentary() == null}" type="text" name="commentary" class="form-control">
-                            <input th:unless="${el.getCommentary() == null}" type="text" name="commentary" class="form-control" th:value="${el.getCommentary()}">
+                            <div th:if="${el.getStudentCommentary() != null && !el.getStudentCommentary().equals('')}"class="text-left font-weight-bold">Student commentary:</div>
+                            <div class="text-left" th:text="${el.getStudentCommentary()}"></div>
+                            <div class ="text-left font-weight-bold">Your commentary:</div>
+                            <input th:if="${el.getTeacherCommentary() == null}" type="text" name="commentary" class="form-control">
+                            <input th:unless="${el.getTeacherCommentary() == null}" type="text" name="commentary" class="form-control" th:value="${el.getTeacherCommentary()}">
                         </td>
+
                         <td width="10%">
                             <input type="text" name="grade" class="form-control">
                         </td>
+
                         <input  type="hidden" name="eventId" class="form-control" th:value="${el.getEvent().getId()}">
                         <input  type="hidden" name="groupId" class="form-control" th:value="${el.getEvent().getGroup().getId()}">
                         <input type="hidden" name="startDate" class="form-control" th:value="${startDate}">
@@ -141,8 +147,12 @@
                             </div>
                         </td>
                         <td width="35%">
-                            <input th:if="${el.getCommentary() == null}" type="text" name="commentary" class="form-control">
-                            <input th:unless="${el.getCommentary() == null}" type="text" name="commentary" class="form-control" th:value="${el.getCommentary()}">
+                            <div th:if="${el.getStudentCommentary() != null && !el.getStudentCommentary().equals('')}"class="text-left font-weight-bold">Student commentary:</div>
+                            <div class="text-left" th:text="${el.getStudentCommentary()}"></div>
+                            <div class ="text-left font-weight-bold">Your commentary:</div>
+                            <input th:if="${el.getTeacherCommentary() == null}" type="text" name="commentary" class="form-control">
+                            <input th:unless="${el.getTeacherCommentary() == null}" type="text" name="commentary" class="form-control" th:value="${el.getTeacherCommentary()}">
+
                         </td>
                         <td width="10%">
                             <input th:if="${el.getGrade() == null}" type="text" name="grade" class="form-control">
@@ -167,6 +177,6 @@
         </tbody>
     </table>
 </div>
-
+<th:block th:insert="fragments/commoneJsFiles.html :: jsFiles"/>
 </body>
 </html>

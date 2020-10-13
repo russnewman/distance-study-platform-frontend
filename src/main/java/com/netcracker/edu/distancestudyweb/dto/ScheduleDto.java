@@ -29,21 +29,7 @@ public class  ScheduleDto {
     @EqualsAndHashCode.Include
     private Boolean weekIsOdd;
 
-//    @Override
-//    public boolean equals(Object o) {
-//        if (this == o) return true;
-//        if (o == null || getClass() != o.getClass()) return false;
-//        ScheduleDto schedule = (ScheduleDto) o;
-//        return teacher.equals(schedule.getTeacher()) &&
-//                classTimeDto.getStartTime().equals(schedule.classTimeDto.getStartTime()) &&
-//                dayName.equals(schedule.dayName) &&
-//                weekIsOdd.equals(schedule.weekIsOdd) &&
-//                subjectDto.equals(schedule.getSubjectDto());
-//    }
-//
-//    @Override
-//    public int hashCode() {
-//        return Objects.hash(teacher, classTimeDto.getStartTime(), dayName, weekIsOdd, subjectDto);
-//    }
+    private String lessonLink;
+
 
 }

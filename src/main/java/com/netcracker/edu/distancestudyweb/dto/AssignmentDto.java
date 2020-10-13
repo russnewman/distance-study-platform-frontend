@@ -9,5 +9,6 @@ public class AssignmentDto {
     private EventDto event;
     private StudentDto student;
     private DatabaseFileDto dbFile;
-    private String commentary;
+    private String studentCommentary;
+    private String teacherCommentary;
 }

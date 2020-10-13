@@ -7,20 +7,22 @@ import com.netcracker.edu.distancestudyweb.service.ScheduleService;
 import com.netcracker.edu.distancestudyweb.service.SubjectService;
 import com.netcracker.edu.distancestudyweb.service.impl.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.util.UriComponentsBuilder;
 
 
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 @Controller
 public class TeacherTimetableController {
 
     private final ScheduleService scheduleUiService;
     private final SubjectService subjectUiService;
+    private @Value("${server.url}") String uiUrl;
+
 
 
     @Autowired
@@ -70,13 +72,35 @@ public class TeacherTimetableController {
             tomorrowScheduleMap = scheduleUiService.mapScheduleToGroups(tomorrowSchedule);
         }
 
-        List<ScheduleDto> weekScheduleMapKeys = scheduleUiService.mapKeysList(weekScheduleMap);
-        List<ScheduleDto> tomorrowScheduleMapKeys = scheduleUiService.mapKeysList(tomorrowScheduleMap);
+        List<List<ScheduleDto>> weekSchedulesByDays = scheduleUiService.schedulesByDays(weekScheduleMap);
+        List<List<ScheduleDto>> tomorrowSchedulesByDays = scheduleUiService.schedulesByDays(tomorrowScheduleMap);
 
+
+        model.addAttribute("todayDayName", scheduleUiService.getTodayDayName());
         model.addAttribute("weekScheduleMap", weekScheduleMap);
-        model.addAttribute("weekScheduleMapKeys", weekScheduleMapKeys);
+        model.addAttribute("weekSchedulesByDays", weekSchedulesByDays);
         model.addAttribute("tomorrowScheduleMap", tomorrowScheduleMap);
-        model.addAttribute("tomorrowScheduleMapKeys", tomorrowScheduleMapKeys);
+        model.addAttribute("tomorrowSchedulesByDays", tomorrowSchedulesByDays);
 
     }
+
+
+    @PostMapping("/updateLessonLink")
+    public String updateLessonLink(
+            @RequestParam Long scheduleId,
+            @RequestParam String lessonLink,
+            @RequestParam Boolean weekIsOdd,
+            @RequestParam Long subjectId){
+        scheduleUiService.updateLessonLink(scheduleId, lessonLink);
+
+
+        String url = uiUrl + "/teacherSchedule";
+
+        UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(url)
+                .queryParam("weekIsOdd", weekIsOdd)
+                .queryParam("subjectId", subjectId);
+
+        return "redirect:" + builder.toUriString();
+    }
+
 }

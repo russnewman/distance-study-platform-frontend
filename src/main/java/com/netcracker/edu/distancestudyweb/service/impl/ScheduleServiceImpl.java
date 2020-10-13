@@ -204,6 +204,7 @@ public class ScheduleServiceImpl implements ScheduleService {
     //Redefined hashCode and equals of the ScheduleDto
     @Override
     public Map<ScheduleDto, List<GroupDto>> mapScheduleToGroups(List<ScheduleDto> schedules) {
+        List<Map<ScheduleDto, List<GroupDto>>> l = new ArrayList<>();
         Map<ScheduleDto, List<GroupDto>> res = new LinkedHashMap<>();
         for (int i = 0; i < schedules.size(); i++) {
             ScheduleDto sch = schedules.get(i);
@@ -221,7 +222,55 @@ public class ScheduleServiceImpl implements ScheduleService {
     }
 
     @Override
-    public List<ScheduleDto> mapKeysList(Map<ScheduleDto, List<GroupDto>> map){
-        return map.entrySet().stream().map(Map.Entry::getKey).collect(Collectors.toList());
+    public List<List<ScheduleDto>> schedulesByDays(Map<ScheduleDto, List<GroupDto>> map){
+        List<List<ScheduleDto>> res = new ArrayList<>();
+        for(int j = 0; j < 7; j++){ res.add(new ArrayList<>()); }
+
+        List<ScheduleDto> keysList = new ArrayList<>(map.keySet());
+        if (keysList.size() > 0) {
+            int resInd = 0;
+            res.get(0).add(keysList.get(0));
+            for (int keyListInd = 1; keyListInd < keysList.size(); keyListInd++) {
+                if (!keysList.get(keyListInd).getDayName().equals(keysList.get(keyListInd - 1).getDayName())) {
+                    resInd++;
+                }
+                res.get(resInd).add(keysList.get(keyListInd));
+            }
+        }
+        return res;
+    }
+
+    @Override
+    public String getTodayDayName(){
+
+        Calendar c = Calendar.getInstance();
+        String todayDayName = "";
+        c.setTime(new Date());
+        int dayOfWeek = c.get(Calendar.DAY_OF_WEEK);
+        switch (dayOfWeek) {
+            case 1 -> todayDayName = "SUNDAY";
+            case 2 -> todayDayName = "MONDAY";
+            case 3 -> todayDayName = "TUESDAY";
+            case 4 -> todayDayName = "WEDNESDAY";
+            case 5 -> todayDayName = "THURSDAY";
+            case 6 -> todayDayName = "FRIDAY";
+            case 7 -> todayDayName = "SATURDAY";
+        }
+
+        return todayDayName;
+    }
+
+    @Override
+    public void updateLessonLink(Long scheduleId, String link) {
+        try{
+            HttpEntity<String> httpEntity = entityProvider.getDefaultWithTokenFromContext(link,null);
+            Map<String, Object> parameters = new HashMap<>();
+            parameters.put("scheduleId", scheduleId);
+            String url = ServiceUtils.injectParamsInUrl(serverUrl + "/updateLessonLink", parameters);
+            ResponseEntity<String> restAuthResponse = restTemplate.exchange(url, HttpMethod.POST, httpEntity, String.class);
+        }
+        catch (UnsupportedEncodingException e) {
+            throw new InternalServiceException(e);
+        }
     }
 }
