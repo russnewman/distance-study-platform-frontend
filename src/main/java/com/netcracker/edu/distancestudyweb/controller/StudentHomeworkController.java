@@ -7,6 +7,7 @@ import com.netcracker.edu.distancestudyweb.dto.SubjectDto;
 import com.netcracker.edu.distancestudyweb.dto.homework.AssignmentFormRequest;
 import com.netcracker.edu.distancestudyweb.dto.homework.EventFormRequest;
 import com.netcracker.edu.distancestudyweb.service.HomeworkService;
+import com.netcracker.edu.distancestudyweb.service.ServiceUtils;
 import com.netcracker.edu.distancestudyweb.service.SubjectService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
@@ -14,9 +15,11 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 
@@ -56,10 +59,15 @@ public class StudentHomeworkController {
 
 
     @PostMapping
-    public String uploadHomework(AssignmentFormRequest formRequest, Model model) {
+    public String uploadHomework(AssignmentFormRequest formRequest) {
         try {
             homeworkService.uploadHomework(formRequest);
-            return getHomework(model, new EventFormRequest(formRequest.getSubjectId(), formRequest.getActivePage()));
+            StringBuilder sb = new StringBuilder("redirect:/studentHomework?");
+            sb.append("page=").append(formRequest.getActivePage());
+            if (formRequest.getSubjectId() != null) {
+                sb.append("&subjectId").append(formRequest.getSubjectId());
+            }
+            return sb.toString();
         } catch (Exception e) {
             return "error";
         }
