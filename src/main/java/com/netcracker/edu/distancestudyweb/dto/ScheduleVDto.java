@@ -8,9 +8,12 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ScheduleVDto {
-    String dayName;
-    ClassTimeDto classTimeDto;
-    String subject;
-    String teacher;
-    Boolean weekIsOdd;
+    private Long id;
+    private String dayName;
+    private ClassTimeDto classTimeDto;
+    private SubjectDto subject;
+    private String teacher;
+    private Boolean weekIsOdd;
+    private String classType;
+    private String lessonLink;
 }
