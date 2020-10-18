@@ -73,9 +73,9 @@
                                 <tbody class="tbrow font-weight-normal">
                                     <tr th:each="ndrow : ${tomorrowSchedule}">
                                         <td class="tbrow font-weight-normal">
-                                            <a href="#subjectInfo" th:utext="${ndrow.subject.name}" data-toggle="collapse" data-target="#subjectInfo-" aria-expanded="false"
+                                            <a href="#subjectInfo" th:utext="${ndrow.subject.name}" data-toggle="collapse" data-target="#subjectInfo--" aria-expanded="false"
                                                th:attrappend="data-target=${ndrow.id}" aria-controls="subjectInfo-"></a>
-                                            <div class="collapse" th:id="|subjectInfo-${ndrow.id}|">
+                                            <div class="collapse" th:id="|subjectInfo--${ndrow.id}|">
                                                 <div class="card card-body">
                                                     <a th:href="@{http://localhost:8081/studentHomework(subjectId = ${ndrow.subject.id}, page = 1)}" class="text-default">Homework</a>
                                                     <a class="text-default" th:if="${ndrow.getLessonLink() != null}" th:href="${ndrow.getLessonLink()}" th:text="'Lesson link: ' + ${ndrow.getLessonLink()}"></a>
@@ -129,9 +129,9 @@
                                 </tr>
                                 <tr th:each="row : ${mschedule.value}">
                                     <td class="tbrow font-weight-normal">
-                                        <a href="#subjectInfo" th:utext="${row.subject.name}" data-toggle="collapse" data-target="#subjectInfo-" aria-expanded="false"
+                                        <a href="#subjectInfo" th:utext="${row.subject.name}" data-toggle="collapse" data-target="#subjectInfo---" aria-expanded="false"
                                            th:attrappend="data-target=${row.id}" aria-controls="subjectInfo-"></a>
-                                        <div class="collapse" th:id="|subjectInfo-${row.id}|">
+                                        <div class="collapse" th:id="|subjectInfo---${row.id}|">
                                             <div class="card card-body">
                                                 <a th:href="@{http://localhost:8081/studentHomework(subjectId = ${row.subject.id}, page = 1)}" class="text-default">Homework</a>
                                                 <a class="text-default" th:if="${row.getLessonLink() != null}" th:href="${row.getLessonLink()}" th:text="'Lesson link: ' + ${row.getLessonLink()}"></a>

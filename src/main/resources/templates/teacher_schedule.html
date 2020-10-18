@@ -94,7 +94,7 @@
                             </div>
                             <div class="collapse" th:id="|collapse--${schd.getId()}|">
                                 <div>
-                                    <div th:if="${schd.getLessonLink() != null}">
+                                    <div th:if="${schd.getLessonLink() != null && !schd.getLessonLink().equals('')}">
                                         <div class="col-md-12" th:text="'Lesson link:'"></div>
 
                                         <a class="col-md-12" th:href="${schd.getLessonLink()}" th:text="${schd.getLessonLink()}" style="word-break: break-word"></a>
@@ -102,7 +102,7 @@
                                              th:attrappend="data-target=${schd.getId()}">update</div>
 
                                     </div>
-                                    <div class="col-md-12" th:if="${schd.getLessonLink() == null}">
+                                    <div class="col-md-12" th:if="${schd.getLessonLink() == null || schd.getLessonLink().equals('')}">
                                         <div class="btn btn-sm" data-toggle="modal" data-target="#modalAddLink-"
                                              th:attrappend="data-target=${schd.getId()}">add link</div>
                                     </div>
