@@ -31,13 +31,24 @@
                                     <tr>
                                         <th class="font-weight-bold" scope="col">Subject</th>
                                         <th class="font-weight-bold" scope="col">Teacher</th>
+                                        <th class="font-weight-bold" scope="col">Type</th>
                                         <th class="font-weight-bold" scope="col">ClassTime</th>
                                     </tr>
                                 </thead>
                                 <tbody class="tbrow font-weight-normal">
                                     <tr th:each="tsrow : ${todaySchedule}">
-                                        <td class="tbrow font-weight-normal" scope="row" th:utext="${tsrow.subject}"></td>
+                                        <td class="tbrow font-weight-normal">
+                                            <a href="#subjectInfo" th:utext="${tsrow.subject.name}" data-toggle="collapse" data-target="#subjectInfo-" aria-expanded="false"
+                                               th:attrappend="data-target=${tsrow.id}" aria-controls="subjectInfo-"></a>
+                                            <div class="collapse" th:id="|subjectInfo-${tsrow.id}|">
+                                                <div class="card card-body">
+                                                    <a th:href="@{http://localhost:8081/studentHomework(subjectId = ${tsrow.subject.id}, page = 1)}" class="text-default">Homework</a>
+                                                    <a class="text-default" th:if="${tsrow.getLessonLink() != null}" th:href="${tsrow.getLessonLink()}" th:text="'Lesson link: ' + ${tsrow.getLessonLink()}"></a>
+                                                </div>
+                                            </div>
+                                        </td>
                                         <td class="tbrow font-weight-normal" scope="row" th:utext="${tsrow.teacher}"></td>
+                                        <td class="tbrow font-weight-normal" scope="row" th:utext="${tsrow.classType}"></td>
                                         <td class="tbrow font-weight-normal" scope="row" th:utext="${tsrow.classTimeDto.startTime + '-' + tsrow.classTimeDto.endTime}"></td>
                                     </tr>
                                 </tbody>
@@ -55,13 +66,24 @@
                                     <tr>
                                         <th class="font-weight-bold" scope="col">Subject</th>
                                         <th class="font-weight-bold" scope="col">Teacher</th>
+                                        <th class="font-weight-bold" scope="col">Type</th>
                                         <th class="font-weight-bold" scope="col">ClassTime</th>
                                     </tr>
                                 </thead>
                                 <tbody class="tbrow font-weight-normal">
                                     <tr th:each="ndrow : ${tomorrowSchedule}">
-                                        <td class="tbrow font-weight-normal" scope="row" th:utext="${ndrow.subject}"></td>
+                                        <td class="tbrow font-weight-normal">
+                                            <a href="#subjectInfo" th:utext="${ndrow.subject.name}" data-toggle="collapse" data-target="#subjectInfo-" aria-expanded="false"
+                                               th:attrappend="data-target=${ndrow.id}" aria-controls="subjectInfo-"></a>
+                                            <div class="collapse" th:id="|subjectInfo-${ndrow.id}|">
+                                                <div class="card card-body">
+                                                    <a th:href="@{http://localhost:8081/studentHomework(subjectId = ${ndrow.subject.id}, page = 1)}" class="text-default">Homework</a>
+                                                    <a class="text-default" th:if="${ndrow.getLessonLink() != null}" th:href="${ndrow.getLessonLink()}" th:text="'Lesson link: ' + ${ndrow.getLessonLink()}"></a>
+                                                </div>
+                                            </div>
+                                        </td>
                                         <td class="tbrow font-weight-normal" scope="row" th:utext="${ndrow.teacher}"></td>
+                                        <td class="tbrow font-weight-normal" scope="row" th:utext="${ndrow.classType}"></td>
                                         <td class="tbrow font-weight-normal" scope="row" th:utext="${ndrow.classTimeDto.startTime + '-' + ndrow.classTimeDto.endTime}"></td>
                                     </tr>
                                 </tbody>
@@ -101,11 +123,23 @@
                                 <tr class="bg-primary text-light font-weight-bold">
                                     <th class="font-weight-bold" scope="col">Subject</th>
                                     <th class="font-weight-bold" scope="col">Teacher</th>
+                                    <th class="font-weight-bold" scope="col">Type</th>
                                     <th class="font-weight-bold" scope="col">ClassTime</th>
+
                                 </tr>
                                 <tr th:each="row : ${mschedule.value}">
-                                    <td class="tbrow font-weight-normal" th:utext="${row.subject}"></td>
+                                    <td class="tbrow font-weight-normal">
+                                        <a href="#subjectInfo" th:utext="${row.subject.name}" data-toggle="collapse" data-target="#subjectInfo-" aria-expanded="false"
+                                           th:attrappend="data-target=${row.id}" aria-controls="subjectInfo-"></a>
+                                        <div class="collapse" th:id="|subjectInfo-${row.id}|">
+                                            <div class="card card-body">
+                                                <a th:href="@{http://localhost:8081/studentHomework(subjectId = ${row.subject.id}, page = 1)}" class="text-default">Homework</a>
+                                                <a class="text-default" th:if="${row.getLessonLink() != null}" th:href="${row.getLessonLink()}" th:text="'Lesson link: ' + ${row.getLessonLink()}"></a>
+                                            </div>
+                                        </div>
+                                    </td>
                                     <td class="tbrow font-weight-normal" th:utext="${row.teacher}"></td>
+                                    <td class="tbrow font-weight-normal" th:utext="${row.classType}"></td>
                                     <td class="tbrow font-weight-normal" th:utext="${row.classTimeDto.startTime + '-' + row.classTimeDto.endTime}"></td>
                                 </tr>
                             </table>

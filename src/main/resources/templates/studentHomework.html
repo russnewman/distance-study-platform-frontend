@@ -85,8 +85,7 @@
                                     <span>
                                         Student attachment:
                                     </span>
-                                    <th:block
-                                            th:if="${event.getAssignments() != null && !#lists.isEmpty(event.getAssignments())}">
+                                    <th:block th:if="${event.getAssignments() != null && !#lists.isEmpty(event.getAssignments()) && event.getAssignments().get(0).getFileId() != null}">
                                         <a th:href="${serverUrl} + '/files/' + ${event.getAssignments().get(0).getFileId()}"
                                            class="ml-3 btn btn-primary btn-sm" download>Download</a>
                                     </th:block>
@@ -144,17 +143,33 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="col-md-8 align-self-center">
+                        <div class="col-md-5 align-self-center">
+                            <div class="col-md-12">
+                                <span th:if="${event.getAssignments() != null && !#lists.isEmpty(event.getAssignments()) && event.getAssignments().get(0).getTeacherCommentary() != null}"
+                                      th:text="${event.getAssignments().get(0).getTeacherCommentary()}">
+                            </span>
+                                <span class="h3" th:unless="${event.getAssignments() != null && !#lists.isEmpty(event.getAssignments()) && event.getAssignments().get(0).getTeacherCommentary() != null}">
+                                No comment
+                            </span>
+                            </div>
+                        </div>
+                        <div class="col-md-3 align-self-center">
                             <div class="row">
-                                <span class="h3">Grade:</span>
-                                <span class="h3 ml-3"
-                                      th:if="${event.getAssignments() != null && !#lists.isEmpty(event.getAssignments()) && event.getAssignments().get(0).getGrade() > 0}"
-                                      th:text="${event.getAssignments().get(0).getGrade()}">
-                                        </span>
-                                <span class="h3 ml-3"
-                                      th:unless="${event.getAssignments() != null && !#lists.isEmpty(event.getAssignments()) && event.getAssignments().get(0).getGrade() > 0}">
+                                <div class="col-md-12 text-center">
+                                    Grade:
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12 text-center">
+                                    <span class="h4"
+                                          th:if="${event.getAssignments() != null && !#lists.isEmpty(event.getAssignments()) && event.getAssignments().get(0).getGrade() > 0}"
+                                          th:text="${event.getAssignments().get(0).getGrade()}">
+                                    </span>
+                                    <span class="h4"
+                                          th:unless="${event.getAssignments() != null && !#lists.isEmpty(event.getAssignments()) && event.getAssignments().get(0).getGrade() > 0}">
                                             Homework not rated
-                                        </span>
+                                    </span>
+                                </div>
                             </div>
                         </div>
                     </div>
