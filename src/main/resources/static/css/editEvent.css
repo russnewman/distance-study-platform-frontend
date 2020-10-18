@@ -1,0 +1,18 @@
+.bg-c-blue{
+    width: 60%;
+    text-align: center;
+    background-color: #0093AF;
+    border-radius: 15px;
+    color: white;
+}
+
+.bg-c-red{
+    width: 60%;
+    text-align: center;
+    background-color: #fd5c63;
+    border-radius: 15px;
+    color: white;
+}
+.btn{
+    border-radius: 25px;
+}

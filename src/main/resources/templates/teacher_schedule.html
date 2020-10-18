@@ -2,30 +2,20 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Getting Started: Serving Web Content</title>
+    <title>DSP - Schedule</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 
     <th:block th:fragment="links" >
         <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
         <link href="https://cdnjs.cloudflare.com/ajax/libs/mdbootstrap/4.19.1/css/mdb.min.css" rel="stylesheet">
-    </th:block>
+        <link rel="stylesheet" th:href="@{/static/css/teacher_schedule.css}"/>
 
-    <style>
-        /*.card{*/
-        /*    !*width: 60%;*!*/
-        /*    text-align: center;*/
-        /*    background-color: #000080;*/
-        /*}*/
-        .form-control {
-            font-size: 120%;
-            width: 20%;
-        }
-    </style>
+    </th:block>
 </head>
 
 <body>
 
-        <th:block th:insert="fragments/navbar.html :: navbar" />
+        <th:block th:insert="fragments/navbarTeacher.html :: navbar" />
 
 
         <br></br>
@@ -61,7 +51,7 @@
 
         <h5 th:if="${tomorrowSchedulesByDays.get(0).size() == 0}" align="center">There are no classes tomorrow</h5>
         <div th:if="${tomorrowSchedulesByDays.get(0).size() != 0}" class="col-md-8 offset-md-2" th:with="schdList= ${tomorrowSchedulesByDays.get(0)}">
-            <div class="card  mt-4">
+            <div class="card mt-4">
                 <div class="card-header" style="background-color: lightsteelblue">
                     <div th:if="${schdList.size() != 0}" align="center" th:switch="${schdList.get(0).getDayName()}">
                         <h3 class="font-weight-bold" th:case="'MONDAY'">Monday</h3>
@@ -86,7 +76,7 @@
                 <div class="card-body" style="background-color: #C0D0E5">
                     <div>
                         <div th:each="schd: ${schdList}" class="row" >
-                            <a class="h5 text-left col-md-4" th:text="${schd.getSubjectDto().getName()}" data-toggle="collapse" data-target="#collapse-" aria-expanded="true"
+                            <a class="h5 text-left col-md-4" th:text="${schd.getSubjectDto().getName()}" data-toggle="collapse" data-target="#collapse--" aria-expanded="true"
                                th:attrappend="data-target=${schd.getId()}" style="color: black">
                             </a>
                             <dl class="col-md-3">
@@ -102,10 +92,22 @@
                                     <dt class="font-weight-light" th:text="${group.getGroupName()}"></dt>
                                 </dl>
                             </div>
-                            <div class="collapse" th:id="|collapse-${schd.getId()}|">
-                                <div th:text="${schd.getId()}" style="background-color: #C0D0E5">
+                            <div class="collapse" th:id="|collapse--${schd.getId()}|">
+                                <div>
+                                    <div th:if="${schd.getLessonLink() != null}">
+                                        <div class="col-md-12" th:text="'Lesson link:'"></div>
+
+                                        <a class="col-md-12" th:href="${schd.getLessonLink()}" th:text="${schd.getLessonLink()}" style="word-break: break-word"></a>
+                                        <div class="btn btn-sm" data-toggle="modal" data-target="#modalAddLink-"
+                                             th:attrappend="data-target=${schd.getId()}">update</div>
+
+                                    </div>
+                                    <div class="col-md-12" th:if="${schd.getLessonLink() == null}">
+                                        <div class="btn btn-sm" data-toggle="modal" data-target="#modalAddLink-"
+                                             th:attrappend="data-target=${schd.getId()}">add link</div>
+                                    </div>
+                                    <br>
                                 </div>
-                                <br>
                             </div>
                         </div>
                     </div>
@@ -113,15 +115,13 @@
             </div>
         </div>
 
-
         <br><br></br></br>
 
         <h2 align="center">Week schedule</h2>
         <br></br>
 
-
         <div class="col-md-8 offset-md-2" th:each="schdList: ${weekSchedulesByDays}">
-            <div class="card  mt-4" th:if="${schdList.size() != 0}">
+            <div class="card rounded mt-4" th:if="${schdList.size() != 0}" style="border-radius: 5px">
                 <div class="card-header" th:style="${schdList.get(0).getDayName().equals(todayDayName)} ? 'background-color: #f39999' :
                                                                                                           'background-color: lightsteelblue'">
 
@@ -169,22 +169,22 @@
                         </div>
                         <div class="collapse" th:id="|collapse-${schd.getId()}|">
                             <div>
-                                <div th:if="${schd.getLessonLink() != null}">
+                                <div th:if="${schd.getLessonLink() != null && !schd.getLessonLink().equals('')}">
                                     <div class="col-md-12" th:text="'Lesson link:'"></div>
 
-                                    <a class="col-md-12" th:href="${schd.getLessonLink()}" th:text="${schd.getLessonLink()}"></a>
+                                    <a class="col-md-12" style="word-break: break-word" th:href="${schd.getLessonLink()}" th:text="${schd.getLessonLink()}"></a>
                                     <div class="btn btn-sm" data-toggle="modal" data-target="#modalAddLink-"
                                          th:attrappend="data-target=${schd.getId()}">update</div>
 
                                 </div>
-                                <div class="col-md-12" th:if="${schd.getLessonLink() == null}">
+                                <div class="col-md-12" th:if="${schd.getLessonLink() == null || schd.getLessonLink().equals('')}">
                                     <div class="btn btn-sm" data-toggle="modal" data-target="#modalAddLink-"
                                          th:attrappend="data-target=${schd.getId()}">add link</div>
                                 </div>
                                 <br>
                             </div>
-
                         </div>
+
                         <div class="modal fade" th:id="|modalAddLink-${schd.getId()}|" tabindex="-1" role="dialog" aria-hidden="true">
                             <div class="modal-dialog" role="document">
                                 <div class="modal-content">
@@ -193,6 +193,8 @@
                                     </div>
                                     <div class="modal-body">
                                         <form th:action="'/updateLessonLink'" method="post">
+
+
                                             <input name="scheduleId" type="hidden"  th:value="${schd.getId()}" class="form-control">
                                             <input name="weekIsOdd" type="hidden"  th:value="${weekIsOdd}" class="form-control">
                                             <input name="subjectId" type="hidden"  th:value="${subjectId}" class="form-control">
@@ -213,32 +215,7 @@
             </div>
         </div>
     <th:block th:insert="fragments/commoneJsFiles.html :: jsFiles"/>
-
-
-<!--        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">-->
-<!--            Запустить модальное окно-->
-<!--        </button>-->
-
-        <!-- Modal -->
-<!--        <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">-->
-<!--            <div class="modal-dialog" role="document">-->
-<!--                <div class="modal-content">-->
-<!--                    <div class="modal-header">-->
-<!--                        <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>-->
-<!--                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">-->
-<!--                            <span aria-hidden="true">&times;</span>-->
-<!--                        </button>-->
-<!--                    </div>-->
-<!--                    <div class="modal-body">-->
-<!--                        ...-->
-<!--                    </div>-->
-<!--                    <div class="modal-footer">-->
-<!--                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>-->
-<!--                        <button type="button" class="btn btn-primary">Save changes</button>-->
-<!--                    </div>-->
-<!--                </div>-->
-<!--            </div>-->
-<!--        </div>-->
+<br><br>
 
 </body>
 </html>

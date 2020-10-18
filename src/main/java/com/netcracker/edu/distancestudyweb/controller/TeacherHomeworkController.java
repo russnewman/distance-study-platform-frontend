@@ -79,7 +79,11 @@ public class TeacherHomeworkController {
         model.addAttribute("totalPages", eventsPage.getTotalPages());
         model.addAttribute("pageNumber", pageNumber);
         model.addAttribute("subjects", subjects);
-        model.addAttribute("dateTimeFormatter", DateTimeFormatter.ofPattern("dd.MM.yyyy"));
+
+        model.addAttribute("dateTimeFormatterYear", DateTimeFormatter.ofPattern("yyyy"));
+        model.addAttribute("dateTimeFormatter1", DateTimeFormatter.ofPattern("dd.MM"));
+        model.addAttribute("dateTimeFormatter2", DateTimeFormatter.ofPattern("dd.MM.yyyy"));
+
 
         model.addAttribute("sortingType", sortingType);
         model.addAttribute("subjectName", subjectName);
@@ -236,7 +240,12 @@ public class TeacherHomeworkController {
                                  @RequestParam Long groupId,
                                  @RequestParam String startDate,
                                  @RequestParam String endDate,
-                                 @RequestParam String subjectName, Model model){
+                                 @RequestParam String subjectName,
+                                 Model model,
+
+                                 @RequestParam String subjectNameSort,
+                                 @RequestParam String sortingType,
+                                 @RequestParam String pageNumber){
 
 
         List<List<AssignmentDto>> assignments = assignmentService.getAssignmentsByEvent(eventId, groupId);
@@ -244,7 +253,12 @@ public class TeacherHomeworkController {
         model.addAttribute( "unassessedAssignments", assignments.get(1));
         model.addAttribute("startDate", startDate);
         model.addAttribute("endDate", endDate);
+
         model.addAttribute("subjectName", subjectName);
+
+        model.addAttribute("subjectNameSort", subjectNameSort);
+        model.addAttribute("sortingType", sortingType);
+        model.addAttribute("pageNumber", pageNumber);
         model.addAttribute("restUrl", restUrl);
 
         return "assignments_for_teacher";

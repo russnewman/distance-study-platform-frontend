@@ -11,8 +11,6 @@ public interface EventService {
     void editEvent(Long eventId, EventFormDto eventFormDto);
 
     Page<EventDto> getEvents(Long teacherId, String sortingType, String subjectName, Integer pageNumber);
-//    List<EventDto> getEvents(Long teacherId, String sortingType, String subjectName);
-
 
     void deleteEvent(Long eventId);
     EventDto getEventById(Long eventId);

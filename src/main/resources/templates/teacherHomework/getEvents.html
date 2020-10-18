@@ -1,37 +1,18 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Getting Started: Serving Web Content</title>
+    <title>DSP - Homework</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 
     <th:block th:fragment="links" >
         <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
         <link href="https://cdnjs.cloudflare.com/ajax/libs/mdbootstrap/4.19.1/css/mdb.min.css" rel="stylesheet">
+        <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet">
+        <link rel="stylesheet" th:href="@{/static/css/getEvents.css}"/>
     </th:block>
-
-    <style>
-        .table{
-            width: 30%;
-            text-align: center;
-        }
-        select {
-            font-size: 120%;
-            width: 20%;
-        }
-        .btn-light{
-            width: 80%;
-        }
-        .btn-light btn-sm{
-            width: 80%;
-        }
-        .card-header{
-            border-width: 3px;
-        }
-    </style>
-
 </head>
 <body>
-<th:block th:insert="fragments/navbar.html :: navbar" />
+<th:block th:insert="fragments/navbarTeacher.html :: navbar" />
 
 
 <br>
@@ -64,66 +45,88 @@
 
 
 <div class="container">
-    <div class="row p-3">
-        <div class="col-md-4 p-3" th:each="event: ${eventsPage}" >
-            <div class="card bg-light mt-4 h-100">
-                <div th:if="${event.getStatus() == true}" class="card-header bg-transparent border-success" style="transform: rotate(0);">
-                    <h5><div th:text="${event.getStartDate().format(dateTimeFormatter)} +' - '+ ${event.getEndDate().format(dateTimeFormatter)}"></div></h5>
-                </div>
-                <div th:if="${event.getStatus() == false}" class="card-header bg-transparent border-primary" style="transform: rotate(0);">
-                    <h5><div th:text="${event.getStartDate().format(dateTimeFormatter)} +' - '+ ${event.getEndDate().format(dateTimeFormatter)}"></div></h5>
-                </div>
-                <div class="card-body text-center">
+    <div class="row p-2">
+        <div class="col-md-4 p-2" th:each="event: ${eventsPage}">
+            <div th:class=" ${event.getStatus()} ? 'card bg-c-blue order-card': 'card bg-c-pink order-card'">
+                <div class="card-block">
 
-                    <h5 th:text="${event.getSubject().getName()}"></h5>
-                    <h5 th:text="'Group: '+ ${event.getGroup().getGroupName()}"></h5>
+                    <a class="h3 m-b-10" th:text="${event.getSubject().getName()}" data-toggle="collapse" data-target="#collapse-"  th:attrappend="data-target=${event.getId()}"></a>
+                    <br><br>
+                    <h6 th:if="${event.getStartDate().format(dateTimeFormatterYear) == event.getEndDate().format(dateTimeFormatterYear)}" class="m-b-0">Date<span class="f-right"
+                        th:text="${event.getStartDate().format(dateTimeFormatter1)} +' - '+ ${event.getEndDate().format(dateTimeFormatter1)}"></span></h6>
+
+                    <h6 th:if="${event.getStartDate().format(dateTimeFormatterYear) != event.getEndDate().format(dateTimeFormatterYear)}" class="m-b-0">Date<span class="f-right"
+                        th:text="${event.getStartDate().format(dateTimeFormatter2)} +' - '+ ${event.getEndDate().format(dateTimeFormatter2)}"></span></h6>
+                    <h6 class="m-b-0">Group<span class="f-right" th:text="${event.getGroup().getGroupName()}"></span></h6>
 
 
-                        <button type="button" class="btn btn-light btn-sm dropdown-toggle" data-toggle="dropdown">
-                            Description
-                        </button>
-                        <div class="dropdown-menu p-4 text-muted" style="max-width: 300px;">
-                            <p class="card-text" th:text="${event.getDescription()}"></p>
-                        </div>
+                    <div class="collapse" th:id="|collapse-${event.getId()}|" style="margin-left: -15px">
 
-                    <div th:unless="${event.getDatabaseFileDto() == null}">
-                        <a th:href="'/teacherHomework/downloadFile/' + ${event.getDatabaseFileDto().getId()}" class="btn btn-light btn-sm" download>Download file</a>
-                    </div>
+                            <button th:class="${event.getStatus()} ? 'btn btn-sm':'btn btn-sm lcoral'"style="width: 46%" data-toggle="modal" data-target="#modalGetDescription"
+                            th:attrappend="data-target=${event.getId()}">
+                                Description
+                            </button>
 
-                    <form th:action="'/teacherHomework/getAssignments/' + ${event.getId()}" th:method="GET">
-                        <input type="hidden" name="groupId" th:value="${event.getGroup().getId()}">
-                        <input type="hidden" name="startDate"  th:value="${event.getStartDate().format(dateTimeFormatter)}">
-                        <input type="hidden" name="endDate"  th:value="${event.getEndDate().format(dateTimeFormatter)}">
-                        <input type="hidden" name="subjectName" th:value="${event.getSubject().getName()}">
-                        <button class="btn btn-light btn-sm" type="submit">Attachments</button>
-                    </form>
-                </div>
-                <div class="card-footer">
-                    <div class="row justify-content-md-center">
+                            <div th:unless="${event.getDatabaseFileDto() == null}">
+                                <a th:href="'/teacherHomework/downloadFile/' + ${event.getDatabaseFileDto().getId()}" th:class="${event.getStatus()} ? 'btn btn-sm':'btn btn-sm lcoral'" download style="width: 46%">Download file</a>
+                            </div>
 
-                        <form th:action="'/teacherHomework/editEvent/' + ${event.getId()}" th:method="GET">
-                            <input type="hidden" name="sortingType" th:value="${sortingType}">
-                            <input type="hidden" name="subjectName" th:value="${subjectName}">
-                            <input type="hidden" name="pageNumber" th:value="${pageNumber}">
-                            <button class="btn btn-primary btn-sm" type="submit">Edit</button>
-                        </form>
+                            <form th:action="'/teacherHomework/getAssignments/' + ${event.getId()}" th:method="GET">
+                                <input type="hidden" name="groupId" th:value="${event.getGroup().getId()}">
+                                <input type="hidden" name="startDate"  th:value="${event.getStartDate().format(dateTimeFormatter2)}">
+                                <input type="hidden" name="endDate"  th:value="${event.getEndDate().format(dateTimeFormatter2)}">
+                                <input type="hidden" name="subjectName" th:value="${event.getSubject().getName()}">
 
-                        <div th:if="${event.getCanDeleteEvent() == true}">
-                            <form th:action="'/teacherHomework/deleteEvent/' + ${event.getId()}" th:method="POST">
+                                <input type="hidden" name="subjectNameSort" th:value="${subjectName}">
                                 <input type="hidden" name="sortingType" th:value="${sortingType}">
-                                <input type="hidden" name="subjectName" th:value="${subjectName}">
                                 <input type="hidden" name="pageNumber" th:value="${pageNumber}">
-                                <button class="btn btn-danger btn-sm" type="submit">Delete</button>
+
+                                <button th:class="${event.getStatus()} ? 'btn btn-sm':'btn btn-sm lcoral'" type="submit" style="width: 46%">Attachments</button>
                             </form>
+
+
+                            <div class="row">
+
+                                <form class="col-lg-8" th:action="'/teacherHomework/editEvent/' + ${event.getId()}" th:method="GET">
+                                    <input type="hidden" name="sortingType" th:value="${sortingType}">
+                                    <input type="hidden" name="subjectName" th:value="${subjectName}">
+                                    <input type="hidden" name="pageNumber" th:value="${pageNumber}">
+                                    <button th:class="${event.getStatus()} ? 'btn btn-sm':'btn btn-sm lcoral'" type="submit" style="width: 73%">Edit</button>
+                                </form>
+
+
+                                <div th:if="${event.getCanDeleteEvent() == true}">
+                                    <form th:action="'/teacherHomework/deleteEvent/' + ${event.getId()}" th:method="POST">
+                                        <input type="hidden" name="sortingType" th:value="${sortingType}">
+                                        <input type="hidden" name="subjectName" th:value="${subjectName}">
+                                        <input type="hidden" name="pageNumber" th:value="${pageNumber}">
+                                        <button class="btn btn-sm" type="submit" style="background-color: red; border-radius: 16px; margin-left: -1px">Delete</button>
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                    </div>
+                </div>
+        </div>
+
+            <div class="modal fade" th:id="|modalGetDescription${event.getId()}|" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Description</h5>
+                        </div>
+                        <div class="modal-body">
+                            <div class="col" style="word-wrap: break-word" th:text="${event.getDescription()}"></div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
-</div>
+    </div>
 </div>
 
-<br><br>
+<br><br><br><br><br>
+
+
 <div class="row justify-content-md-center">
     <ul class="pagination">
 

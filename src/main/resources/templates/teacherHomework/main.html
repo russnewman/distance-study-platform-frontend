@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Getting Started: Serving Web Content</title>
+    <title>DSP - Homework</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 
     <th:block th:fragment="links" >
@@ -9,9 +9,15 @@
         <link href="https://cdnjs.cloudflare.com/ajax/libs/mdbootstrap/4.19.1/css/mdb.min.css" rel="stylesheet">
     </th:block>
 
+    <style>
+        .btn{
+            border-radius: 25px;
+        }
+    </style>
+
 </head>
 <body>
-<th:block th:insert="fragments/navbar.html :: navbar" />
+<th:block th:insert="fragments/navbarTeacher.html :: navbar" />
 
 
 <br>
@@ -22,9 +28,9 @@
 
     <div align="center">
         <br></br>
-        <a th:href="'/teacherHomework/showSubjects'" class="btn btn-outline-primary">Add homework event</a>
+        <a th:href="'/teacherHomework/showSubjects'" class="btn btn-outline-info" style="width: 20%">Add homework event</a>
         <br></br>
-        <a th:href="'/teacherHomework/getEvents'" class="btn btn-outline-primary">Show added events</a>
+        <a th:href="'/teacherHomework/getEvents'" class="btn btn-outline-info" style="width: 20%;">Show added events</a>
     </div>
 
 </body>

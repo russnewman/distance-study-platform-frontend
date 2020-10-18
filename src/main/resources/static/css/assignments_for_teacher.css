@@ -1,0 +1,14 @@
+.table {
+    border-radius: 15px;
+    width: 70%;
+    text-align: center;
+    background-color: #e9ecef;
+}
+.myTable{
+    width: 20%;
+    text-align: center;
+    background-color: white;
+}
+.btn{
+    border-radius: 25px;
+}

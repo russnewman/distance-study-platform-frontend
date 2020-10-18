@@ -2,68 +2,58 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Getting Started: Serving Web Content</title>
+    <title>DSP - Homework</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 
     <th:block th:fragment="links" >
         <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
         <link href="https://cdnjs.cloudflare.com/ajax/libs/mdbootstrap/4.19.1/css/mdb.min.css" rel="stylesheet">
+        <link rel="stylesheet" th:href="@{/static/css/assignments_for_teacher.css}"/>
     </th:block>
 
-    <style>
-        .table-bordered{
-            width: 70%;
-            text-align: center;
-            background-color: #e9ecef;
-        }
-        .myTable{
-            width: 20%;
-            text-align: center;
-        }
-        select {
-            font-size: 120%;
-            width: 20%;
-        }
-    </style>
 </head>
 <body>
-<th:block th:insert="fragments/navbar.html :: navbar" />
+<th:block th:insert="fragments/navbarTeacher.html :: navbar" />
 
 <br>
 
 <div class="col-md-3 text-center">
-    <a class="btn btn-outline-info" href="/teacherHomework/getEvents">Back</a>
+    <a class="btn btn-outline-info" th:href="'/teacherHomework/getEvents?sortingType='+${sortingType}+'&subjectName='+${subjectNameSort}+'&pageNumber='+${pageNumber}">Back</a>
 </div>
 
 
 <table align="center" class="table myTable">
-    <tr>
-        <td>Subject</td>
-        <td th:text="${subjectName}"></td>
-    </tr>
-    <tr>
-        <td>Start date</td>
-        <td th:text="${startDate}"></td>
-    </tr>
-    <tr>
-        <td>End date</td>
-        <td th:text="${endDate}"></td>
-    </tr>
+    <thead>
+        <tr>
+            <td>Subject</td>
+            <td th:text="${subjectName}"></td>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>Start date</td>
+            <td th:text="${startDate}"></td>
+        </tr>
+        <tr>
+            <td>End date</td>
+            <td th:text="${endDate}"></td>
+        </tr>
+    </tbody>
 </table>
 
 <br>
 <div th:if="${unassessedAssignments.size() > 0}">
     <h4 align="center" class="container">Unverified works</h4>
     <br>
-    <table  align="center" class="table table-bordered">
+    <table  align="center" class="table">
 
-        <thead class="thead-dark">
+        <thead class="thead">
         <tr>
-            <th scope="col">Student</th>
-            <th scope="col">File</th>
-            <th scope="col">Commentary</th>
-            <th scope="col">Grade</th>
-            <th scope="col"></th>
+            <th scope="col"><h5>Student</h5></th>
+            <th scope="col"><h5>File</h5></th>
+            <th scope="col"><h5>Commentary</h5></th>
+            <th scope="col"><h5>Grade</h5></th>
+<!--            <th scope="col"></th>-->
         </tr>
         </thead>
 
@@ -99,7 +89,7 @@
                         <input type="hidden" name="subjectName" class="form-control" th:value="${subjectName}">
 
                         <td width="15%">
-                            <button class="btn" type="submit">Save</button>
+                            <button class="btn btn-sm" type="submit">Save</button>
                         </td>
                     </form>
                     <div th:if="${el.getId()==null}">
@@ -122,14 +112,14 @@
 <div th:if="${assessedAssignments.size() > 0}">
     <h4 align="center" class="container">Verified works</h4>
     <br>
-    <table align="center" class="table table-bordered">
+    <table align="center" class="table">
 
-        <thead class="thead-dark">
+        <thead class="thead">
         <tr>
-            <th scope="col">Student</th>
-            <th scope="col">File</th>
-            <th scope="col">Commentary</th>
-            <th scope="col">Grade</th>
+            <th scope="col"><h5>Student</h5></th>
+            <th scope="col"><h5>File</h5></th>
+            <th scope="col"><h5>Commentary</h5></th>
+            <th scope="col"><h5>Grade</h5></th>
             <th scope="col"></th>
         </tr>
         </thead>
@@ -167,7 +157,7 @@
 
 
                         <td width="15%">
-                            <button class="btn" type="submit">
+                            <button class="btn btn-sm" type="submit">
                                 Update
                             </button>
                         </td>

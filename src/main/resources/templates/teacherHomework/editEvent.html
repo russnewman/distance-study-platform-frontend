@@ -1,46 +1,38 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Getting Started: Serving Web Content</title>
+    <title>DSP - Homework</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 
     <th:block th:fragment="links" >
         <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
         <link href="https://cdnjs.cloudflare.com/ajax/libs/mdbootstrap/4.19.1/css/mdb.min.css" rel="stylesheet">
+        <link rel="stylesheet" th:href="@{/static/css/addEvent.css}"/>
     </th:block>
-
-
-    <style>
-        .table-dark{
-            width: 45%;
-            text-align: center;
-        }
-        select {
-            font-size: 120%;
-            width: 20%;
-        }
-    </style>
-
 </head>
 <body>
-<th:block th:insert="fragments/navbar.html :: navbar" />
+<th:block th:insert="fragments/navbarTeacher.html :: navbar" />
 
 
 <br>
 <div class="col-md-3 text-center">
-    <a class="btn btn-outline-info" href="/teacherHomework/getEvents">Back</a>
+    <a class="btn btn-outline-info" th:href="'/teacherHomework/getEvents?sortingType='+${sortingType}+'&subjectName='+${subjectName}+'&pageNumber='+${pageNumber}">Back</a>
 </div>
 
 
-<form enctype="multipart/form-data" th:action="'/teacherHomework/editEvent/'+ ${event.getId()}" th:method="POST">
 
-    <table align= "center" class="table table-dark">
+
+<form enctype="multipart/form-data" th:action="'/teacherHomework/editEvent/'+ ${event.getId()}" th:method="POST">
+    <table align="center" th:class="${event.getStatus()} ? 'table bg-c-blue' : 'table bg-c-red'">
+        <thead class="thead">
         <tr>
-            <td width="35%">Subject</td>
-            <td><h3 th:text="${event.getSubject().getName()}"></h3></td>
+            <th scope="col"><h6>Subject</h6></th>
+            <th scope="col"><h3 th:text="${event.getSubject().getName()}"></h3></th>
         </tr>
+        </thead>
+        <tbody>
         <tr>
-            <td width="35%">Group</td>
+            <th scope="row"><h6>Group</h6></th>
             <td width="65%"><select name="groupName" class="form-control" required>
                 <option  th:text="${event.getGroup().getGroupName()}"></option>
                 <option  th:each="group: ${groups}" th:if="${group.getGroupName()} != ${event.getGroup().getGroupName()}">
@@ -50,35 +42,35 @@
             </select></td>
         </tr>
         <tr>
-            <td width="35%">Description</td>
+            <th scope="row"><h6>Description</h6></th>
             <td width="65%">
-                <input type="text" th:value="${event.getDescription()}" name="description" class="form-control" required ><td>
+                <input type="text" th:value="${event.getDescription()}" name="description" class="form-control" required></td>
         </tr>
         <tr>
-            <td width="35%">Deadline</td>
-            <td width="65%"><input type="date" name="endTime" th:value="${event.getEndDate().format(dateTimeFormatter)}" class="form-control" required><td>
+            <th scope="row"><h6>Deadline</h6></th>
+            <td width="65%"><input type="date" name="endTime" th:value="${event.getEndDate().format(dateTimeFormatter)}" class="form-control" required></td>
         </tr>
 
         <tr th:unless="${event.getDatabaseFileDto() == null}">
             <td width="35%">File</td>
-            <td><p><a th:href="'/teacherHomework/downloadFile/' + ${event.getDatabaseFileDto().getId()}"  type="button" class="btn btn-light btn-sm" download>Download</a></p></td>
+            <td><p><a th:href="'/teacherHomework/downloadFile/' + ${event.getDatabaseFileDto().getId()}"  type="button" class="btn btn-sm" download>Download</a></p></td>
         </tr>
         <tr>
             <td width="35%">New file</td>
-            <td width="65%"><input type="file"  name ="fileOptional"><td>
+            <td width="65%"><input type="file"  name ="fileOptional"></td>
         </tr>
 
         <tr>
             <td colspan="2">
                 <button class="btn" type="submit">Update</button></td>
         </tr>
+
+        </tbody>
     </table>
 
-        <input type="hidden" name="sortingType" th:value="${sortingType}">
-        <input type="hidden" name="subjectName" th:value="${subjectName}">
-        <input type="hidden" name="pageNumber" th:value="${pageNumber}">
-
+    <input type="hidden" name="sortingType" th:value="${sortingType}">
+    <input type="hidden" name="subjectName" th:value="${subjectName}">
+    <input type="hidden" name="pageNumber" th:value="${pageNumber}">
 </form>
-
 </body>
 </html>

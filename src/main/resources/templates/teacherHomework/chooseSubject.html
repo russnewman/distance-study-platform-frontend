@@ -1,18 +1,18 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Getting Started: Serving Web Content</title>
+    <title>DSP - Homework</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 
     <th:block th:fragment="links" >
         <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
         <link href="https://cdnjs.cloudflare.com/ajax/libs/mdbootstrap/4.19.1/css/mdb.min.css" rel="stylesheet">
+        <link rel="stylesheet" th:href="@{/static/css/chooseSubject.css}"/>
+
     </th:block>
-
-
 </head>
 <body>
-<th:block th:insert="fragments/navbar.html :: navbar" />
+<th:block th:insert="fragments/navbarTeacher.html :: navbar" />
 
 <br>
 
@@ -20,17 +20,15 @@
     <a class="btn btn-outline-info" href="/teacherHomework">Back</a>
 </div>
 
-
 <h3 align="center" class="container">Сhoose the subject</h3>
-<br></br>
-
+<br>
 
 <div class="container">
     <div class="row">
-        <div class="col-md-6" th:each="subject: ${subjects}">
-            <div class="card bg-light rounded mt-6 h-100">
+        <div class="col-md-6 offset-md-3 p-3" th:each="subject: ${subjects}">
+            <div class="card mt-1" style="margin-top: 10px; margin-outside: 20px">
                 <div class="card-header">
-                    <a th:text="${subject.getName()}" th:href="'/teacherHomework/addEvent/'+ ${subject.getName()}" class="stretched-link"></a>
+                    <h4><a th:text="${subject.getName()}" th:href="'/teacherHomework/addEvent/'+ ${subject.getName()}" class="stretched-link" style="color: black"></a></h4>
                 </div>
                 <div class="card-body" th:text="${subject.getDescription()}">
                 </div>
@@ -38,6 +36,8 @@
         </div>
     </div>
 </div>
+<!--<script th:src="@{/static/js/home/home.js}"></script>-->
+<!--<th:block th:insert="fragments/commoneJsFiles.html :: jsFiles" />-->
 
 </body>
 </html>

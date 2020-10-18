@@ -1,0 +1,10 @@
+.table{
+    width: 60%;
+    text-align: center;
+    background-color: #e9ecef;
+    border-radius: 15px;
+    color: black;
+}
+.btn{
+    border-radius: 25px;
+}

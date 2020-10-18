@@ -88,12 +88,12 @@ public class TeacherTimetableController {
     @PostMapping("/updateLessonLink")
     public String updateLessonLink(
             @RequestParam Long scheduleId,
-            @RequestParam String lessonLink,
+            @RequestParam(defaultValue = "null") String lessonLink,
             @RequestParam Boolean weekIsOdd,
             @RequestParam Long subjectId){
+
+
         scheduleUiService.updateLessonLink(scheduleId, lessonLink);
-
-
         String url = uiUrl + "/teacherSchedule";
 
         UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(url)
