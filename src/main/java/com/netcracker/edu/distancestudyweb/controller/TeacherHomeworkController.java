@@ -275,7 +275,11 @@ public class TeacherHomeworkController {
                                             @RequestParam String startDate,
                                             @RequestParam String endDate,
                                             @RequestParam String subjectName,
-                                            @PathVariable Long assignmentId){
+                                            @PathVariable Long assignmentId,
+
+                                            @RequestParam String sortingType,
+                                            @RequestParam String subjectNameSort,
+                                            @RequestParam String pageNumber){
 
         AssignmentDto assignment = new AssignmentDto();
         assignment.setId(assignmentId);
@@ -290,7 +294,11 @@ public class TeacherHomeworkController {
                 .queryParam("groupId", groupId)
                 .queryParam("startDate", startDate)
                 .queryParam("endDate", endDate)
-                .queryParam("subjectName", subjectName);
+                .queryParam("subjectName", subjectName)
+
+                .queryParam("sortingType", sortingType)
+                .queryParam("subjectNameSort",subjectNameSort)
+                .queryParam("pageNumber", pageNumber);
 
         return "redirect:" + builder.toUriString();
     }
